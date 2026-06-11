@@ -135,11 +135,11 @@
     </div>
 
     <!-- 会员升级 Modal -->
-    <el-dialog v-model="showUpgrade" title="" width="720px" :close-on-click-modal="false" class="upgrade-dialog">
+    <el-dialog v-model="showUpgrade" title="" width="720px" class="upgrade-dialog">
       <div class="upgrade-hero">
         <div class="hero-badge">限时特惠</div>
         <h2 class="hero-title">思量</h2>
-        <p class="hero-sub">付思量，自难忘</p>
+        <p class="hero-sub">升级会员等级以解锁完整访问权限和更多实用功能</p>
       </div>
 
       <div class="plan-grid">
@@ -151,10 +151,10 @@
             <li><span class="check muted">✓</span> 面试题库浏览</li>
             <li><span class="check muted">✓</span> 核心概述 + 核心要点</li>
             <li><span class="check muted">✓</span> 20 次详细内容访问</li>
-            <li><span class="cross">✕</span> Agent 对话 5 次</li>
-            <li><span class="cross">✕</span> 代码示例查看</li>
-            <li><span class="cross">✕</span> 模拟面试功能</li>
-            <li><span class="cross">✕</span> 优先获取新题</li>
+            <li><span class="dash">–</span> Agent 对话 5 次</li>
+            <li><span class="dash">–</span> 代码示例查看</li>
+            <li><span class="dash">–</span> 模拟面试功能</li>
+            <li><span class="dash">–</span> 优先获取新题</li>
           </ul>
           <div class="plan-btn outline">当前方案</div>
         </div>
@@ -425,6 +425,7 @@ const handleNewline = (code) => {
 .check.muted { color: #ccc; }
 .check.glow { color: #667eea; text-shadow: 0 0 6px rgba(102,126,234,.3); }
 .cross { color: #ddd; font-weight: 700; }
+.dash { color: #ccc; }
 .plan-btn {
   padding: 10px 0; border-radius: 10px; font-size: 14px; font-weight: 600;
   margin-top: auto;

@@ -7,9 +7,9 @@
         <nav class="nav-menu">
           <a href="#" class="nav-item" @click.prevent="goToHome">主页</a>
           <a href="#" class="nav-item" @click.prevent="goToLibrary">题库</a>
-          <a href="#" class="nav-item">面经</a>
-          <a href="#" class="nav-item">模拟面试</a>
-          <a href="#" class="nav-item">交流社区</a>
+          <a href="#" class="nav-item" @click.prevent="showComing('面经')">面经</a>
+          <a href="#" class="nav-item" @click.prevent="showComing('模拟面试')">模拟面试</a>
+          <a href="#" class="nav-item" @click.prevent="showComing('交流社区')">交流社区</a>
         </nav>
       </div>
       <div class="header-right">
@@ -64,6 +64,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search, Close } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 
@@ -112,6 +113,10 @@ const handleLogout = () => {
   localStorage.removeItem('token')
   localStorage.removeItem('user')
   router.push('/login')
+}
+
+const showComing = (name) => {
+  ElMessage.info(`${name}——敬请期待`)
 }
 </script>
 
