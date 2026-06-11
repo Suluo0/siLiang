@@ -45,7 +45,7 @@
             <span class="username">{{ displayName }}</span>
           </span>
           <template #dropdown>
-              <el-dropdown-item>用户中心</el-dropdown-item>
+              <el-dropdown-item @click="goHome">用户中心</el-dropdown-item>
             <el-dropdown-menu>
               <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
             </el-dropdown-menu>

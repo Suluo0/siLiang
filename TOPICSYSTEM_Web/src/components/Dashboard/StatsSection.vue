@@ -15,7 +15,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { Collection, CircleCheck, CircleClose, Timer } from '@element-plus/icons-vue'
-import axios from 'axios'
+import request from '@/api/request'
 
 const emit = defineEmits(['stats-loaded'])
 
@@ -30,14 +30,11 @@ const cards = computed(() => [
 
 onMounted(async () => {
   try {
-    const token = localStorage.getItem('token') || ''
-    const res = await axios.get('/api/v1/topic/dashboard/stats', {
-      headers: token ? { Authorization: `Bearer ${token}` } : {}
-    })
-    stats.value = res.data
-    emit('stats-loaded', res.data.preferences_filled)
+    const res = await request.get('/v1/topic/dashboard/stats')
+    stats.value = res
+    emit('stats-loaded', res.preferences_filled)
   } catch {
-    emit('stats-loaded', false)  // 无 token 也触发弹窗
+    emit('stats-loaded', false)
   }
 })
 </script>
