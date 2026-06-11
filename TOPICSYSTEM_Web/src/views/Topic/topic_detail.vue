@@ -123,9 +123,9 @@
 
       <!-- 统一锁 Banner -->
       <div class="lock-bar" v-if="detail.locked">
-        <div class="lock-banner">
+        <div class="lock-banner" @click="showUpgrade = true">
           <el-icon><Lock /></el-icon>
-          <span>您的试用次数已耗尽</span>
+          <span>您的试用次数已耗尽 · 点击了解会员</span>
         </div>
       </div>
     </div>
@@ -133,6 +133,55 @@
     <div v-if="!loading && !detail" class="empty-state">
       <el-empty description="未找到该面试题" />
     </div>
+
+    <!-- 会员升级 Modal -->
+    <el-dialog v-model="showUpgrade" title="" width="720px" :close-on-click-modal="false" class="upgrade-dialog">
+      <div class="upgrade-hero">
+        <div class="hero-badge">限时特惠</div>
+        <h2 class="hero-title">解锁完整题库</h2>
+        <p class="hero-sub">选择适合你的方案，提升面试备战效率</p>
+      </div>
+
+      <div class="plan-grid">
+        <!-- 免费版 -->
+        <div class="plan-card free">
+          <div class="plan-head">免费版</div>
+          <div class="plan-price">¥0<span>/月</span></div>
+          <ul class="plan-features">
+            <li><span class="check muted">✓</span> 面试题库浏览</li>
+            <li><span class="check muted">✓</span> 核心概述 + 核心要点</li>
+            <li><span class="check muted">✓</span> 20 次详细内容访问</li>
+            <li><span class="cross">✕</span> Agent 对话 5 次</li>
+            <li><span class="cross">✕</span> 代码示例查看</li>
+            <li><span class="cross">✕</span> 模拟面试功能</li>
+            <li><span class="cross">✕</span> 优先获取新题</li>
+          </ul>
+          <div class="plan-btn outline">当前方案</div>
+        </div>
+
+        <!-- 高级版 -->
+        <div class="plan-card premium">
+          <div class="plan-ribbon">🔥 推荐</div>
+          <div class="plan-head">高级会员</div>
+          <div class="plan-price">¥29<span>/月</span></div>
+          <div class="plan-saving">省 ¥9/月 · 年付 ¥199</div>
+          <ul class="plan-features">
+            <li><span class="check glow">✓</span> 面试题库无限浏览</li>
+            <li><span class="check glow">✓</span> 完整详细解释</li>
+            <li><span class="check glow">✓</span> 所有代码示例</li>
+            <li><span class="check glow">✓</span> Agent 对话 200 次/月</li>
+            <li><span class="check glow">✓</span> AI 模拟面试</li>
+            <li><span class="check glow">✓</span> 常见陷阱 + 加分项</li>
+            <li><span class="check glow">✓</span> 优先获取新题</li>
+          </ul>
+          <div class="plan-btn gradient">立即升级</div>
+        </div>
+      </div>
+
+      <div class="upgrade-footer">
+        <el-button text @click="showUpgrade = false">暂不需要，继续试用</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -147,6 +196,7 @@ const route = useRoute()
 
 const detail = ref(null)
 const loading = ref(false)
+const showUpgrade = ref(false)
 
 const fetchDetail = async () => {
   loading.value = true
@@ -326,4 +376,65 @@ const handleNewline = (code) => {
   cursor: pointer;
 }
 .lock-banner:hover { background: rgba(99, 102, 241, 1); }
+
+/* ── 会员升级 Modal ── */
+.upgrade-dialog :deep(.el-dialog__header) { display: none; }
+.upgrade-dialog :deep(.el-dialog__body) { padding: 0; }
+
+.upgrade-hero {
+  text-align: center; padding: 32px 24px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff; border-radius: 12px 12px 0 0; margin: -1px;
+}
+.hero-badge {
+  display: inline-block; background: rgba(255,255,255,.2); color: #fff;
+  font-size: 12px; padding: 3px 14px; border-radius: 20px; margin-bottom: 12px;
+}
+.hero-title { font-size: 24px; font-weight: 800; margin: 0 0 6px; }
+.hero-sub { font-size: 14px; opacity: .85; margin: 0; }
+
+.plan-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  padding: 24px 32px 16px;
+}
+.plan-card {
+  border-radius: 14px; padding: 24px 20px 20px; position: relative;
+  border: 2px solid #e8e8e8; text-align: center;
+}
+.plan-card.premium {
+  border-color: #667eea; background: #fafaff;
+  box-shadow: 0 8px 30px rgba(102,126,234,.15);
+  transform: scale(1.03);
+}
+.plan-ribbon {
+  position: absolute; top: -12px; right: 16px;
+  background: linear-gradient(135deg, #f59e0b, #f97316); color: #fff;
+  font-size: 12px; font-weight: 700; padding: 4px 14px; border-radius: 8px;
+}
+.plan-head { font-size: 16px; font-weight: 700; color: #333; margin-bottom: 8px; }
+.plan-price { font-size: 36px; font-weight: 800; color: #1a1a2e; }
+.plan-price span { font-size: 14px; font-weight: 400; color: #999; }
+.premium .plan-price { color: #667eea; }
+.plan-saving { font-size: 12px; color: #f59e0b; margin: 4px 0 14px; font-weight: 500; }
+.plan-features {
+  list-style: none; padding: 0; margin: 0 0 16px; text-align: left;
+}
+.plan-features li { font-size: 13px; color: #555; padding: 6px 0; display: flex; align-items: center; gap: 8px; }
+.check { color: #10b981; font-weight: 700; }
+.check.muted { color: #ccc; }
+.check.glow { color: #667eea; text-shadow: 0 0 6px rgba(102,126,234,.3); }
+.cross { color: #ddd; font-weight: 700; }
+.plan-btn {
+  padding: 10px 0; border-radius: 10px; font-size: 14px; font-weight: 600;
+}
+.plan-btn.outline { border: 2px solid #ddd; color: #999; }
+.plan-btn.gradient {
+  background: linear-gradient(135deg, #667eea, #764ba2); color: #fff;
+  box-shadow: 0 4px 14px rgba(102,126,234,.4); cursor: pointer;
+}
+.plan-btn.gradient:hover { opacity: .9; }
+.upgrade-footer { text-align: center; padding: 0 0 20px; }
+
+.lock-banner { cursor: pointer; transition: all .2s; }
+.lock-banner:hover { transform: translateY(-1px); }
 </style>
