@@ -93,6 +93,8 @@ services:
       TS_DS_APIKEY: "${TS_DS_APIKEY:-}"
       API_ADDRESS: "${API_ADDRESS:-https://api.deepseek.com/v1}"
       API_MODEL: "${API_MODEL:-deepseek-chat}"
+      SMTP_USER: "${SMTP_USER:-}"
+      SMTP_PASS: "${SMTP_PASS:-}"
     depends_on:
       postgres:
         condition: service_healthy

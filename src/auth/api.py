@@ -57,6 +57,10 @@ class ChangePasswordRequest(BaseModel):
         return v
 
 
+class VerifyEmailRequest(BaseModel):
+    code: str
+
+
 class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
@@ -69,6 +73,8 @@ class UserResponse(BaseModel):
     username: str
     email: str
     is_active: bool
+    is_admin: bool = False
+    email_verified: bool = False
     created_at: str | None
     topic_credits: int = 0
     agent_credits: int = 0
@@ -78,7 +84,7 @@ class UserResponse(BaseModel):
 
 @router.post("/register", response_model=TokenResponse)
 async def register(req: RegisterRequest):
-    """注册——直接签发 token（邮箱验证暂时跳过）"""
+    """注册——直接签发 token + 邮件验证码"""
     existing = await User.filter(email=req.email).first()
     if existing:
         raise HTTPException(status_code=409, detail="邮箱已注册")
@@ -87,21 +93,66 @@ async def register(req: RegisterRequest):
     if existing_name:
         raise HTTPException(status_code=409, detail="用户名已被使用")
 
+    import random
+    code = f"{random.randint(100000, 999999)}"
+
     user = await User.create(
         id=str(uuid.uuid4()),
         username=req.username,
         email=req.email,
         password_hash=hash_password(req.password),
         token_version=0,
+        is_superuser=True,        # 注册即为管理员
+        verification_token=code,  # 6 位验证码
+        email_verified=False,
     )
 
-    # 创建配额: 20 题 + 5 次对话
+    # 创建配额
     from src.models.user_quota import UserQuota
     await UserQuota.create(id=str(uuid.uuid4()), user=user,
                            topic_credits=20, agent_credits=5)
 
+    # 发送验证邮件（如果有 SMTP 配置）
+    await _send_verification_email(req.email, code)
+
     tokens = create_tokens(str(user.id), user.token_version)
     return TokenResponse(**tokens)
+
+
+async def _send_verification_email(email: str, code: str):
+    """发送邮箱验证码。SMTP 未配置时打印到控制台。"""
+    import os
+    smtp_user = os.getenv("SMTP_USER", "")
+    smtp_pass = os.getenv("SMTP_PASS", "")
+
+    if smtp_user and smtp_pass:
+        try:
+            import smtplib
+            from email.mime.text import MIMEText
+            msg = MIMEText(f"您的 TopicSystem 验证码是: {code}，10 分钟内有效。", "plain", "utf-8")
+            msg["Subject"] = "TopicSystem 邮箱验证"
+            msg["From"] = smtp_user
+            msg["To"] = email
+            with smtplib.SMTP_SSL("smtp.qq.com", 465) as s:
+                s.login(smtp_user, smtp_pass)
+                s.sendmail(smtp_user, [email], msg.as_string())
+        except Exception as e:
+            print(f"[SMTP] 发送失败: {e}，验证码: {code}")
+    else:
+        print(f"[VERIFY] 验证码: {code} → {email}")
+
+
+@router.post("/verify-email")
+async def verify_email(req: VerifyEmailRequest, user: User = Depends(get_current_active_user)):
+    """验证邮箱"""
+    if user.email_verified:
+        return {"message": "邮箱已验证"}
+    if user.verification_token != req.code:
+        raise HTTPException(status_code=400, detail="验证码错误")
+    user.email_verified = True
+    user.verification_token = None
+    await user.save()
+    return {"message": "邮箱验证成功"}
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -149,6 +200,8 @@ async def get_me(user: User = Depends(get_current_active_user)):
         username=user.username,
         email=user.email,
         is_active=user.is_active,
+        is_admin=user.is_superuser,
+        email_verified=user.email_verified,
         created_at=user.created_at.isoformat() if user.created_at else None,
         topic_credits=quota.topic_credits if quota else 0,
         agent_credits=quota.agent_credits if quota else 0,
