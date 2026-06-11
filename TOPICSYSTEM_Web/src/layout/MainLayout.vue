@@ -121,8 +121,7 @@ const showComing = (name) => {
 }
 
 const goUserCenter = () => {
-  localStorage.removeItem('skip_prefs_modal')  // 强制弹出偏好设置
-  router.push('/dashboard')
+  router.push('/user-center')
 }
 </script>
 
