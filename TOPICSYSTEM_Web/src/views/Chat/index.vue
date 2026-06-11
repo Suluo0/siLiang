@@ -188,71 +188,32 @@ const sendMessage = async () => {
   isLoading.value = true
 
   try {
-    // 使用流式 API
-    const response = await fetch('http://localhost:8000/api/v1/topic/generate/stream', {
+    // 使用 v3 Agent API
+    const token = localStorage.getItem('token') || ''
+    const response = await fetch('/api/v3/topic/generate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({
-        user_input: text
-      })
+      body: JSON.stringify({ user_input: text })
     })
 
-    const reader = response.body.getReader()
-    const decoder = new TextDecoder()
-    let fullContent = ''
-    let buffer = ''
-
-    // 先添加一条空的 assistant 消息用于流式更新
+    const data = await response.json()
+    
     const assistantMsg = {
       type: 'assistant',
-      text: '',
-      streaming: true
+      topic: data.topic_name || '',
+      domain: data.domain || '',
+      source: data.source || '',
+      trace: data.trace_id || ''
     }
     messages.value.push(assistantMsg)
-
-    await nextTick()
-    scrollToBottom()
-
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      buffer += decoder.decode(value, { stream: true })
-
-      // 处理 SSE 格式的数据
-      const lines = buffer.split('\n')
-      buffer = lines.pop() // 保留未完成的行
-
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          try {
-            const data = JSON.parse(line.slice(6))
-            if (data.type === 'chunk') {
-              fullContent += data.content
-              const msgIndex = messages.value.length - 1
-              messages.value[msgIndex].text = fullContent
-              await nextTick()
-              scrollToBottom()
-            } else if (data.type === 'done') {
-              isLoading.value = false
-              assistantMsg.streaming = false
-            } else if (data.type === 'error') {
-              assistantMsg.text = '生成失败：' + data.message
-              assistantMsg.streaming = false
-              isLoading.value = false
-            }
-          } catch (e) {
-            // 忽略 JSON 解析错误
-          }
-        }
-      }
-    }
+    
   } catch (error) {
-    console.error('API 调用失败:', error)
     messages.value.push({
-      type: 'assistant',
-      text: '抱歉，服务暂时不可用，请稍后再试。'
+      type: 'error',
+      text: 'Agent 调用失败: ' + (error.message || '未知错误')
     })
   } finally {
     isLoading.value = false
