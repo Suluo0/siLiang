@@ -42,7 +42,7 @@
         <el-dropdown>
           <span class="user-info">
             <el-avatar :size="32" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
-            <span class="username">管理员</span>
+            <span class="username">{{ displayName }}</span>
           </span>
           <template #dropdown>
             <el-dropdown-menu>
@@ -61,7 +61,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search, Close } from '@element-plus/icons-vue'
 
@@ -69,6 +69,13 @@ const router = useRouter()
 
 const isSearchExpanded = ref(false)
 const searchQuery = ref('')
+
+const displayName = computed(() => {
+  try {
+    const u = JSON.parse(localStorage.getItem('user') || '{}')
+    return u.username || u.email || '访客'
+  } catch { return '访客' }
+})
 
 const toggleSearch = () => {
   isSearchExpanded.value = !isSearchExpanded.value

@@ -102,7 +102,7 @@ async function handleLogin() {
       username: loginForm.username, password: loginForm.password,
       captcha_id: captchaId.value, captcha_answer: loginForm.captcha
     })
-    _saveToken(res.data)
+    _saveToken(res.data, loginForm.username, '')
     router.push('/dashboard')
   } catch (e) {
     ElMessage.error(e.response?.data?.detail || '登录失败')
@@ -132,7 +132,7 @@ async function handleRegister() {
       username: regForm.username, email: regForm.email, password: regForm.password,
       captcha_id: captchaId.value, captcha_answer: regForm.captcha, email_code: regForm.emailCode
     })
-    _saveToken(res.data)
+    _saveToken(res.data, regForm.username, regForm.email)
     router.push('/dashboard')
   } catch (e) {
     ElMessage.error(e.response?.data?.detail || '注册失败')
@@ -140,9 +140,9 @@ async function handleRegister() {
   } finally { regLoading.value = false }
 }
 
-function _saveToken(data) {
+function _saveToken(data, uname, uemail) {
   localStorage.setItem('token', data.access_token)
-  localStorage.setItem('user', JSON.stringify({ email: '' }))
+  localStorage.setItem('user', JSON.stringify({ username: uname || '', email: uemail || '' }))
 }
 
 onMounted(() => refreshCaptcha())
