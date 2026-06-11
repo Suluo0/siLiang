@@ -55,37 +55,51 @@ async def global_auth_middleware(request: Request, call_next):
     if not payload:
         return JSONResponse(status_code=401, content={"detail": "令牌无效或已过期"})
 
-    user = await User.filter(id=payload["sub"], is_active=True).first()
-    if not user:
-        return JSONResponse(status_code=401, content={"detail": "用户不存在或已禁用"})
-    if user.token_version != payload.get("ver", 0):
-        return JSONResponse(status_code=401, content={"detail": "令牌版本不匹配"})
+    uid = payload["sub"]
+    # 用户缓存（60s），减少 DB 查询
+    from src.api.cache import cache as user_cache
+    user = user_cache.get(f"user_{uid}")
+    if user is None:
+        user = await User.filter(id=uid, is_active=True).first()
+        if user:
+            user_cache.set(f"user_{uid}", {
+                "id": str(user.id), "token_version": user.token_version, "is_active": user.is_active
+            }, ttl=60)
+        else:
+            return JSONResponse(status_code=401, content={"detail": "用户不存在或已禁用"})
+    else:
+        if user.get("token_version", 0) != payload.get("ver", 0):
+            user_cache.set(f"user_{uid}", None, ttl=1)  # 失效缓存
+            return JSONResponse(status_code=401, content={"detail": "令牌版本不匹配"})
+        if not user.get("is_active"):
+            return JSONResponse(status_code=401, content={"detail": "用户不存在或已禁用"})
+
+    # 注入到 request.state（协程局部）
+    request.state.user_id = uid
+    request.state.user_token_version = payload.get("ver", 0)
 
     # 注入用户到 request.state
     request.state.user = user
 
     # ── 配额检查 + 扣减 ──
     from src.models.user_quota import UserQuota
-    quota = await UserQuota.filter(user=user).first()
+    quota = await UserQuota.filter(user_id=uid).first()
     if not quota:
-        quota = await UserQuota.create(id=str(uuid.uuid4()), user=user)
+        quota = await UserQuota.create(id=str(uuid.uuid4()), user_id=uid)
 
     path = request.url.path.rstrip("/")
-
     # Agent 对话扣减
     if path == "/api/v3/topic/generate" and request.method == "POST":
         if quota.agent_credits <= 0:
             return JSONResponse(status_code=403, content={"detail": "Agent 对话次数已用尽"})
         quota.agent_credits -= 1
         await quota.save()
-
-    # 题目浏览扣减（列表 + 详情）
-    if path.startswith("/api/v1/topic") or path.startswith("/api/v2/topic"):
+    # 题目浏览扣减（仅详情页，列表页不扣）
+    if request.method == "GET" and path.startswith("/api/v1/topic/") and "/list" not in path and "/tags" not in path:
         if quota.topic_credits <= 0:
             return JSONResponse(status_code=403, content={"detail": "题目访问次数已用尽"})
-        if request.method == "GET" and ("/list" in path or len(path.split("/")) > 3):
-            quota.topic_credits -= 1
-            await quota.save()
+        quota.topic_credits -= 1
+        await quota.save()
 
     return await call_next(request)
 
