@@ -30,6 +30,7 @@ app.add_middleware(
 # ── 全局鉴权中间件 (AOP) ──
 PUBLIC_PATHS = {"/", "/ping", "/docs", "/openapi.json", "/redoc",
                 "/api/auth/register", "/api/auth/login", "/api/auth/refresh",
+                "/api/auth/captcha", "/api/auth/send-code",
                 "/api/v1/topic/tags"}
 
 
