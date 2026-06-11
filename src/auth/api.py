@@ -97,6 +97,10 @@ class UserResponse(BaseModel):
     created_at: str | None
     topic_credits: int = 0
     agent_credits: int = 0
+    target_position: str | None = None
+    learning_preference: str | None = None
+    experience_level: str | None = None
+    today_target: int = 0
 
 
 # ── 工具 ──
@@ -236,6 +240,10 @@ async def get_me(request: Request):
         created_at=user.created_at.isoformat() if user.created_at else None,
         topic_credits=quota.topic_credits if quota else 0,
         agent_credits=quota.agent_credits if quota else 0,
+        target_position=user.target_position,
+        learning_preference=user.learning_preference,
+        experience_level=user.experience_level,
+        today_target=user.today_target or 0,
     )
 
 

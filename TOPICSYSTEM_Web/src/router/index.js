@@ -31,6 +31,12 @@ const routes = [
         meta: { title: '用户等级' }
       },
       {
+        path: '/user-center',
+        name: 'UserCenter',
+        component: () => import('../views/User/Center.vue'),
+        meta: { title: '用户中心' }
+      },
+      {
         path: '/topic/library',
         name: 'TopicLibrary',
         component: () => import('../views/Topic/topic_list.vue'),
