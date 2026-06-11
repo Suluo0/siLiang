@@ -19,6 +19,7 @@ class Topic(Model):
     keywords = CompatibleJSONField(null=True)
 
     core_summary = fields.TextField(null=True)
+    one_liner = fields.CharField(max_length=200, null=True)
     core_points = fields.TextField(null=True)
     detailed_explanation = fields.TextField(null=True)
 
