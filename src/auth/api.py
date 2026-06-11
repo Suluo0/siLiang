@@ -70,6 +70,8 @@ class UserResponse(BaseModel):
     email: str
     is_active: bool
     created_at: str | None
+    topic_credits: int = 0
+    agent_credits: int = 0
 
 
 # ── Endpoints ──
@@ -92,6 +94,11 @@ async def register(req: RegisterRequest):
         password_hash=hash_password(req.password),
         token_version=0,
     )
+
+    # 创建配额: 20 题 + 5 次对话
+    from src.models.user_quota import UserQuota
+    await UserQuota.create(id=str(uuid.uuid4()), user=user,
+                           topic_credits=20, agent_credits=5)
 
     tokens = create_tokens(str(user.id), user.token_version)
     return TokenResponse(**tokens)
@@ -134,13 +141,17 @@ async def refresh_token(req: RefreshRequest):
 
 @router.get("/me", response_model=UserResponse)
 async def get_me(user: User = Depends(get_current_active_user)):
-    """获取当前登录用户信息"""
+    """获取当前用户信息 + 配额"""
+    from src.models.user_quota import UserQuota
+    quota = await UserQuota.filter(user=user).first()
     return UserResponse(
         id=str(user.id),
         username=user.username,
         email=user.email,
         is_active=user.is_active,
         created_at=user.created_at.isoformat() if user.created_at else None,
+        topic_credits=quota.topic_credits if quota else 0,
+        agent_credits=quota.agent_credits if quota else 0,
     )
 
 

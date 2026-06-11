@@ -5,9 +5,11 @@ import path from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src')
-    }
-  }
+  resolve: { alias: { '@': path.resolve(__dirname, 'src') } },
+  server: {
+    proxy: {
+      '/api': 'http://localhost:8000',
+      '/ping': 'http://localhost:8000',
+    },
+  },
 })

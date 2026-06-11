@@ -26,6 +26,9 @@ from .prompt_call_log import PromptCallLog, AgentTrace
 # Outbox 补偿表
 from .outbox import Outbox
 
+# Quota 配额表
+from .user_quota import UserQuota
+
 __all__ = [
     # Topic
     "Topic",
@@ -51,4 +54,6 @@ __all__ = [
     "AgentTrace",
     # Outbox
     "Outbox",
+    # Quota
+    "UserQuota",
 ]

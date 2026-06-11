@@ -29,7 +29,8 @@ app.add_middleware(
 
 # ── 全局鉴权中间件 (AOP) ──
 PUBLIC_PATHS = {"/", "/ping", "/docs", "/openapi.json", "/redoc",
-                "/api/auth/register", "/api/auth/login"}
+                "/api/auth/register", "/api/auth/login",
+                "/api/v1/topic/tags"}
 
 
 @app.middleware("http")
@@ -60,8 +61,32 @@ async def global_auth_middleware(request: Request, call_next):
     if user.token_version != payload.get("ver", 0):
         return JSONResponse(status_code=401, content={"detail": "令牌版本不匹配"})
 
-    # 注入用户到 request.state，下游可通过 request.state.user 访问
+    # 注入用户到 request.state
     request.state.user = user
+
+    # ── 配额检查 + 扣减 ──
+    from src.models.user_quota import UserQuota
+    quota = await UserQuota.filter(user=user).first()
+    if not quota:
+        quota = await UserQuota.create(id=str(uuid.uuid4()), user=user)
+
+    path = request.url.path.rstrip("/")
+
+    # Agent 对话扣减
+    if path == "/api/v3/topic/generate" and request.method == "POST":
+        if quota.agent_credits <= 0:
+            return JSONResponse(status_code=403, content={"detail": "Agent 对话次数已用尽"})
+        quota.agent_credits -= 1
+        await quota.save()
+
+    # 题目浏览扣减（列表 + 详情）
+    if path.startswith("/api/v1/topic") or path.startswith("/api/v2/topic"):
+        if quota.topic_credits <= 0:
+            return JSONResponse(status_code=403, content={"detail": "题目访问次数已用尽"})
+        if request.method == "GET" and ("/list" in path or len(path.split("/")) > 3):
+            quota.topic_credits -= 1
+            await quota.save()
+
     return await call_next(request)
 
 

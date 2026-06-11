@@ -124,6 +124,18 @@ def _build_items(topics, tag: str = "") -> list[dict]:
     return items
 
 
+@router.get("/tags")
+async def list_tags():
+    """返回所有唯一的标签"""
+    from src.models import Topic
+    topics = await Topic.all().limit(2000)
+    tag_set = set()
+    for t in topics:
+        tags = t.tags if isinstance(t.tags, list) else []
+        tag_set.update(tags)
+    return {"tags": sorted(tag_set)}
+
+
 @router.get("/{topic_id}", response_model=DetailResponse)
 async def get_topic_detail(topic_id: str):
     """获取 Topic 详情（含关联数据）"""
