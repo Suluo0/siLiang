@@ -5,7 +5,6 @@ from fastapi.responses import JSONResponse
 from tortoise.contrib.fastapi import register_tortoise
 from src.config.settings import settings
 from src.api.topic_api import router as topic_v1_router
-from src.api.topic_api_v2 import router as topic_v2_router
 from src.api.topic_api_v3 import router as topic_v3_router
 from src.api.healthcheck import router as healthcheck_router
 from src.controller.menuController import router as menu_router
@@ -107,7 +106,6 @@ async def global_auth_middleware(request: Request, call_next):
 
 
 app.include_router(topic_v1_router)
-app.include_router(topic_v2_router)
 app.include_router(topic_v3_router)
 app.include_router(healthcheck_router)
 app.include_router(auth_router)

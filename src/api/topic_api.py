@@ -7,30 +7,7 @@ Topic API - HTTP 接口层
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
-from src.service.topic_service import TopicService
-
-# 请求/响应模型
-class GenerateRequest(BaseModel):
-    """生成 Topic 请求"""
-    user_input: str
-    save_response: bool = True
-    streaming: bool = False  # 是否使用流式生成
-
-
-class GenerateStreamRequest(BaseModel):
-    """流式生成 Topic 请求"""
-    user_input: str
-
-
-class GenerateResponse(BaseModel):
-    """生成 Topic 响应"""
-    success: bool
-    message: str
-    topic_id: str | None = None
-    topic_name: str | None = None
-    domain: str | None = None
-    difficulty: int | None = None
-    error_detail: str | None = None
+router = APIRouter(prefix="/api/v1/topic", tags=["topic"])
 
 
 class ListResponse(BaseModel):
@@ -69,17 +46,6 @@ class DetailResponse(BaseModel):
 router = APIRouter(prefix="/api/v1/topic", tags=["topic"])
 
 # Service 实例（延迟初始化）
-_service: TopicService | None = None
-
-
-def get_service() -> TopicService:
-    """获取 Service 实例"""
-    global _service
-    if _service is None:
-        _service = TopicService()
-    return _service
-
-
 @router.get("/list", response_model=ListResponse)
 async def list_topics(
     keyword: str = "", tag: str = "", limit: int = 20, offset: int = 0
@@ -301,101 +267,3 @@ async def get_topic_detail(topic_id: str, request: Request = None):
         raise HTTPException(status_code=404, detail=f"Topic 不存在: {str(e)}")
 
 
-@router.post("/generate", response_model=GenerateResponse)
-async def generate_topic(request: GenerateRequest):
-    """
-    生成 Topic 完整链路
-    
-    输入问题 -> 语义转换 -> LLM生成 -> 落库
-    """
-    try:
-        service = get_service()
-        result = await service.get_topic_flow(request.user_input)
-        
-        if not result.success:
-            return GenerateResponse(
-                success=False,
-                message="生成失败",
-                error_detail=result.error.message if result.error else None,
-            )
-        
-        return GenerateResponse(
-            success=True,
-            message="Topic 创建成功",
-            topic_id=result.data.get("topic_id"),
-            topic_name=result.data.get("topic_name"),
-            domain=result.data.get("domain"),
-            difficulty=result.data.get("difficulty"),
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-from fastapi.responses import StreamingResponse
-from src.service.semantic_trans import semantic_convert, SemanticData
-
-
-@router.post("/generate/stream")
-async def generate_topic_stream(request: GenerateStreamRequest):
-    """
-    流式生成 Topic（Server-Sent Events）
-    完整链路：语义转换 -> 落库 -> 流式LLM生成
-    """
-    async def event_generator():
-        # 1. 语义转换
-        trans_result = semantic_convert(request.user_input)
-        if not trans_result.success:
-            yield 'data: {"type": "error", "message": "语义转换失败"}\n\n'
-            return
-
-        semantic_data = trans_result.data
-        if not isinstance(semantic_data, SemanticData):
-            yield 'data: {"type": "error", "message": "语义转换结果格式异常"}\n\n'
-            return
-
-        standardized_output = semantic_data.standardized_output
-
-        # 2. 流式生成，同时收集 chunks
-        from src.service.topic_llm import TopicLLMService
-        topic_llm = TopicLLMService()
-
-        chunks_list = []
-        def save_chunk(chunk):
-            chunks_list.append(chunk)
-
-        try:
-            # 流式获取数据，落库需要完整 JSON
-            topic_data = await topic_llm.generate_topic_and_get_chunks(standardized_output, save_chunk)
-        except Exception as e:
-            yield f'data: {{"type": "error", "message": "生成面试题失败: {str(e)}"}}\n\n'
-            return
-
-        # 3. 落库（包括 topic 表和发送向量队列消息）
-        from src.service.topic_service import TopicService
-        service = TopicService()
-
-        try:
-            topic = await service.save_topic(topic_data)
-            yield f'data: {{"type": "saved", "topic_id": "{topic.id}", "topic_name": "{topic.topic}"}}\n\n'
-
-            # 发送向量队列消息
-            await service.db_service.send_single_to_embedding_queue(topic.topic)
-            yield f'data: {{"type": "embedding_queued"}}\n\n'
-        except Exception as e:
-            yield f'data: {{"type": "error", "message": "落库失败: {str(e)}"}}\n\n'
-            return
-
-        # 4. 流式输出已收集的 chunks
-        for chunk in chunks_list:
-            yield f'data: {{"type": "chunk", "content": "{chunk}"}}\n\n'
-
-        yield 'data: {"type": "done"}\n\n'
-
-    return StreamingResponse(
-        event_generator(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-        }
-    )
