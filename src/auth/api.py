@@ -35,14 +35,21 @@ class RegisterRequest(BaseModel):
     @field_validator("password")
     @classmethod
     def pw(cls, v: str) -> str:
-        if len(v) < 6: raise ValueError("密码至少 6 位")
+        if len(v) < 8:
+            raise ValueError("密码至少 8 位")
+        if not re.search(r'[a-zA-Z]', v) or not re.search(r'\d', v):
+            raise ValueError("密码需包含字母和数字")
         return v
 
     @field_validator("username")
     @classmethod
     def uname(cls, v: str) -> str:
-        if len(v.strip()) < 2: raise ValueError("用户名至少 2 个字符")
-        return v.strip()
+        v = v.strip()
+        if len(v) < 6:
+            raise ValueError("用户名至少 6 个字符")
+        if not v[0].isalpha():
+            raise ValueError("用户名必须以字母开头")
+        return v
 
     @field_validator("email")
     @classmethod
@@ -76,7 +83,10 @@ class ChangePasswordRequest(BaseModel):
     @field_validator("new_password")
     @classmethod
     def pw(cls, v: str) -> str:
-        if len(v) < 6: raise ValueError("新密码至少 6 位")
+        if len(v) < 8:
+            raise ValueError("新密码至少 8 位")
+        if not re.search(r'[a-zA-Z]', v) or not re.search(r'\d', v):
+            raise ValueError("新密码需包含字母和数字")
         return v
 
 
