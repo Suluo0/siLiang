@@ -3,7 +3,7 @@ Auth API — 注册 / 登录 / 续期 / 改密 / CAPTCHA / 邮箱验证
 """
 import uuid, random, re
 from datetime import datetime, timezone
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel, field_validator
 
 from src.auth.jwt import create_tokens, decode_token
@@ -220,7 +220,14 @@ async def refresh_token(req: RefreshRequest):
 
 
 @router.get("/me", response_model=UserResponse)
-async def get_me(user: User = Depends(get_current_active_user)):
+async def get_me(request: Request):
+    """获取当前用户（中间件已鉴权）"""
+    uid = getattr(request.state, "user_id", None)
+    if not uid:
+        raise HTTPException(status_code=401, detail="未登录")
+    user = await User.filter(id=uid).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="用户不存在")
     from src.models.user_quota import UserQuota
     quota = await UserQuota.filter(user=user).first()
     return UserResponse(
@@ -234,8 +241,14 @@ async def get_me(user: User = Depends(get_current_active_user)):
 
 
 @router.post("/change-password")
-async def change_password(req: ChangePasswordRequest,
-                          user: User = Depends(get_current_active_user)):
+async def change_password(req: ChangePasswordRequest, request: Request):
+    """修改密码（中间件已鉴权）"""
+    uid = getattr(request.state, "user_id", None)
+    if not uid:
+        raise HTTPException(status_code=401, detail="未登录")
+    user = await User.filter(id=uid).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="用户不存在")
     if not verify_password(req.old_password, user.password_hash):
         raise HTTPException(status_code=400, detail="旧密码错误")
     user.password_hash = hash_password(req.new_password)
