@@ -50,12 +50,6 @@
         <h2 class="section-title">详细解释</h2>
         <div class="locked-wrap" :class="{ masked: isLocked('detailed_explanation') }">
           <div class="text" v-html="formatText(detail.detailed_explanation || '')" v-if="detail.detailed_explanation"></div>
-          <div class="mask-overlay" v-if="isLocked('detailed_explanation')">
-            <div class="mask-banner">
-              <el-icon class="mask-icon"><Lock /></el-icon>
-              <span>您的试用次数已耗尽</span>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -63,12 +57,6 @@
         <h2 class="section-title">代码示例</h2>
         <div class="locked-wrap" :class="{ masked: isLocked('code_example') }">
           <pre class="code-block" v-if="detail.code_example"><code>{{ handleNewline(detail.code_example) }}</code></pre>
-          <div class="mask-overlay" v-if="isLocked('code_example')">
-            <div class="mask-banner">
-              <el-icon class="mask-icon"><Lock /></el-icon>
-              <span>您的试用次数已耗尽</span>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -94,12 +82,6 @@
         <h2 class="section-title">常见陷阱</h2>
         <div class="locked-wrap" :class="{ masked: isLocked('traps') }">
           <p class="text" v-html="formatText(detail.traps || '')" v-if="detail.traps"></p>
-          <div class="mask-overlay" v-if="isLocked('traps')">
-            <div class="mask-banner">
-              <el-icon class="mask-icon"><Lock /></el-icon>
-              <span>您的试用次数已耗尽</span>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -107,12 +89,6 @@
         <h2 class="section-title">加分项</h2>
         <div class="locked-wrap" :class="{ masked: isLocked('bonuses') }">
           <p class="text" v-html="formatText(detail.bonuses || '')" v-if="detail.bonuses"></p>
-          <div class="mask-overlay" v-if="isLocked('bonuses')">
-            <div class="mask-banner">
-              <el-icon class="mask-icon"><Lock /></el-icon>
-              <span>您的试用次数已耗尽</span>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -144,6 +120,14 @@
           </li>
         </ul>
       </section>
+
+      <!-- 统一锁 Banner -->
+      <div class="lock-bar" v-if="detail.locked">
+        <div class="lock-banner">
+          <el-icon><Lock /></el-icon>
+          <span>您的试用次数已耗尽</span>
+        </div>
+      </div>
     </div>
 
     <div v-if="!loading && !detail" class="empty-state">
@@ -330,18 +314,16 @@ const handleNewline = (code) => {
   background: linear-gradient(transparent, #fff);
   z-index: 1;
 }
-.mask-overlay {
-  position: absolute; bottom: 12px; left: 0; right: 0;
+.lock-bar {
+  padding: 32px 0 16px;
   display: flex; justify-content: center;
-  z-index: 2;
 }
-.mask-banner {
+.lock-banner {
   background: rgba(99, 102, 241, 0.92); color: #fff;
-  padding: 10px 24px; border-radius: 10px; font-size: 14px; font-weight: 600;
+  padding: 10px 28px; border-radius: 10px; font-size: 14px; font-weight: 600;
   display: flex; align-items: center; gap: 8px;
   box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
   cursor: pointer;
 }
-.mask-banner:hover { background: rgba(99, 102, 241, 1); }
-.mask-icon { font-size: 18px; }
+.lock-banner:hover { background: rgba(99, 102, 241, 1); }
 </style>
