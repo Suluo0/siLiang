@@ -266,13 +266,18 @@ async def update_preferences(request: Request = None):
     user = await User.filter(id=uid).first()
     if not user:
         raise HTTPException(status_code=404)
-    for field in ("target_position", "learning_preference", "experience_level"):
+    for field in ("target_position", "learning_preference", "experience_level", "today_target"):
         if field in body:
-            setattr(user, field, body[field])
+            if field == "today_target":
+                setattr(user, field, int(body[field]))
+            else:
+                setattr(user, field, body[field])
+    user.preferences_filled = True
     await user.save()
     return {"target_position": user.target_position,
             "learning_preference": user.learning_preference,
-            "experience_level": user.experience_level}
+            "experience_level": user.experience_level,
+            "today_target": user.today_target}
 
 
 # ═══════════════════════════════════════

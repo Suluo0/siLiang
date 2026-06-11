@@ -185,8 +185,14 @@ async def get_dashboard_stats(request: Request = None):
     from src.models.user_topic_status import UserTopicStatus
     uid = getattr(getattr(request, "state", None), "user_id", None) if request else None
     total = await Topic.all().count()
-    responded = 0
+    today_target = 0
+    preferences_filled = False
     if uid:
+        from src.models.user import User
+        user = await User.filter(id=uid).first()
+        if user:
+            today_target = user.today_target or 0
+            preferences_filled = user.preferences_filled
         mastered = await UserTopicStatus.filter(user_id=uid, status="mastered").count()
         learning = await UserTopicStatus.filter(user_id=uid, status="learning").count()
     else:
@@ -195,7 +201,8 @@ async def get_dashboard_stats(request: Request = None):
         "total_topics": total,
         "mastered": mastered,
         "learning": learning,
-        "today_target": 5,
+        "today_target": today_target,
+        "preferences_filled": preferences_filled,
     }
 
 

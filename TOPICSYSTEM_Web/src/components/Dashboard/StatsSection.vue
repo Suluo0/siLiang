@@ -15,10 +15,11 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { Collection, CircleCheck, CircleClose, Timer } from '@element-plus/icons-vue'
-import { getTopicList } from '@/api/topic'
 import axios from 'axios'
 
-const stats = ref({ total_topics: 0, mastered: 0, learning: 0, today_target: 5 })
+const emit = defineEmits(['stats-loaded'])
+
+const stats = ref({ total_topics: 0, mastered: 0, learning: 0, today_target: 0, preferences_filled: false })
 
 const cards = computed(() => [
   { icon: Collection,  value: stats.value.total_topics, label: '题目数量', bgColor: 'rgba(64, 158, 255, 0.1)' },
@@ -34,6 +35,7 @@ onMounted(async () => {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     })
     stats.value = res.data
+    emit('stats-loaded', res.data.preferences_filled)
   } catch { /* keep defaults */ }
 })
 </script>

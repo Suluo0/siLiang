@@ -23,6 +23,8 @@ class User(Model):
     target_position = fields.CharField(max_length=100, null=True)
     learning_preference = fields.CharField(max_length=50, null=True)
     experience_level = fields.CharField(max_length=20, null=True)
+    today_target = fields.IntField(default=0)
+    preferences_filled = fields.BooleanField(default=False)
 
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
