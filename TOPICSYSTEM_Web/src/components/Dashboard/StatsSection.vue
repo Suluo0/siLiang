@@ -36,7 +36,9 @@ onMounted(async () => {
     })
     stats.value = res.data
     emit('stats-loaded', res.data.preferences_filled)
-  } catch { /* keep defaults */ }
+  } catch {
+    emit('stats-loaded', false)  // 无 token 也触发弹窗
+  }
 })
 </script>
 
