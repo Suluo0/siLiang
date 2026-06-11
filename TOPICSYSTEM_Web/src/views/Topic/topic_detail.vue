@@ -328,17 +328,20 @@ const handleNewline = (code) => {
 .locked-wrap.masked::after {
   content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
   background: linear-gradient(transparent, #fff);
+  z-index: 1;
 }
 .mask-overlay {
-  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-  display: flex; align-items: center; justify-content: center;
-  pointer-events: none;
+  position: absolute; bottom: 12px; left: 0; right: 0;
+  display: flex; justify-content: center;
+  z-index: 2;
 }
 .mask-banner {
   background: rgba(99, 102, 241, 0.92); color: #fff;
-  padding: 12px 28px; border-radius: 10px; font-size: 15px; font-weight: 600;
+  padding: 10px 24px; border-radius: 10px; font-size: 14px; font-weight: 600;
   display: flex; align-items: center; gap: 8px;
   box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+  cursor: pointer;
 }
-.mask-icon { font-size: 20px; }
+.mask-banner:hover { background: rgba(99, 102, 241, 1); }
+.mask-icon { font-size: 18px; }
 </style>
