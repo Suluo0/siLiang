@@ -41,7 +41,7 @@ onMounted(async () => {
     const res = await request.get('/v1/topic/dashboard/stats')
     stats.value = res
     authenticated.value = res.authenticated !== false
-    emit('stats-loaded', res.preferences_filled)
+    emit('stats-loaded', { pref: res.preferences_filled, auth: authenticated.value })
   } catch {
     authenticated.value = false
     emit('stats-loaded', false)
