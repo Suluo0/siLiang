@@ -400,11 +400,11 @@ const handleNewline = (code) => {
 .plan-card {
   border-radius: 14px; padding: 24px 20px 20px; position: relative;
   border: 2px solid #e8e8e8; text-align: center;
+  display: flex; flex-direction: column;
 }
 .plan-card.premium {
   border-color: #667eea; background: #fafaff;
   box-shadow: 0 8px 30px rgba(102,126,234,.15);
-  transform: scale(1.03);
 }
 .plan-ribbon {
   position: absolute; top: -12px; right: 16px;
@@ -418,6 +418,7 @@ const handleNewline = (code) => {
 .plan-saving { font-size: 12px; color: #f59e0b; margin: 4px 0 14px; font-weight: 500; }
 .plan-features {
   list-style: none; padding: 0; margin: 0 0 16px; text-align: left;
+  flex: 1;
 }
 .plan-features li { font-size: 13px; color: #555; padding: 6px 0; display: flex; align-items: center; gap: 8px; }
 .check { color: #10b981; font-weight: 700; }
@@ -426,6 +427,7 @@ const handleNewline = (code) => {
 .cross { color: #ddd; font-weight: 700; }
 .plan-btn {
   padding: 10px 0; border-radius: 10px; font-size: 14px; font-weight: 600;
+  margin-top: auto;
 }
 .plan-btn.outline { border: 2px solid #ddd; color: #999; }
 .plan-btn.gradient {
