@@ -11,6 +11,13 @@ class User(Model):
     password_hash = fields.CharField(max_length=255)
     is_active = fields.BooleanField(default=True)
     is_superuser = fields.BooleanField(default=False)
+
+    # Auth
+    token_version = fields.IntField(default=0)
+    email_verified = fields.BooleanField(default=False)
+    verification_token = fields.CharField(max_length=64, null=True)
+    last_login = fields.DatetimeField(null=True)
+
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
