@@ -1,0 +1,24 @@
+from tortoise import fields
+from tortoise.models import Model
+
+
+class {{ class_name }}(Model):
+    """{{ class_name }} 模型"""
+
+{% for field in fields %}
+    {{ field.name }} = fields.{{ field.type }}{% if field.params %}({{ field.params }}){% else %}(){% endif %}
+{% endfor %}
+
+{% if reverse_relations %}
+    # 一对多关系
+{% for rel in reverse_relations %}
+    {{ rel.name }}: fields.ReverseRelation["{{ rel.target }}"]
+{% endfor %}
+{% endif %}
+
+    class Meta:
+        table = "{{ table_name }}"
+        schema = "{{ schema }}"
+
+    def __str__(self):
+        return f"{{ class_name }}({self.id})"

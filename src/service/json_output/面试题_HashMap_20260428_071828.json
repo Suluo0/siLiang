@@ -1,0 +1,116 @@
+<think>用户要求我根据输入"HashMap"生成完整的面试题数据，严格遵循之前定义的 generateByTopic skill 的规则。
+
+需要输出的JSON格式包含：
+- topic：主题信息
+- prerequisites：前置知识
+- core_concepts：核心概念
+- derivatives：衍生知识
+- extensions：扩展延伸
+- evaluation_anchors：评估基准
+- similar_questions：相似问题
+- advanced_questions：进阶问题
+- references：参考资源
+
+我需要：
+1. 只输出JSON
+2. JSON必须完整
+3. 字符串内换行使用\n
+4. 代码示例在JSON字符串内
+
+让我为HashMap生成完整的面试题数据：
+
+主题信息：
+- topic: HashMap原理与应用
+- alias: ["HashMap实现", "哈希表"]
+- domain: Java（HashMap是Java中的类，但也涉及通用数据结构知识）
+- category: 数据结构与集合
+- tags: ["高频", "必问", "原理", "实战"]
+- difficulty: 3
+- keywords: ["HashMap", "哈希表", "链表", "红黑树", "扰动函数"]
+- core_summary: HashMap是采用哈希表实现的键值对映射数据结构，通过扰动函数和链表/红黑树解决哈希冲突。
+- core_points: 核心要点
+
+前置知识：
+1. 数据结构基础（数组、链表）
+2. 哈希算法基础
+3. 二叉树基础
+
+核心概念：
+1. HashMap底层数据结构是数组+链表+红黑树
+
+
+2. 当key的hash值冲突时，HashMap通过拉链法处理冲突
+3. 扰动函数通过重新计算hash值来降低碰撞概率
+4. 负载因子默认为0.75，用于判断何时需要扩容
+5. 当链表长度超过8且数组长度达到64时，链表会转换为红黑树以提升查询效率
+
+衍生知识：ConcurrentHashMap、LinkedHashMap、HashTable等数据结构与HashMap之间的关系和应用场景。
+
+扩展知识：HashMap的性能调优策略、JDK 1.8中的优化实现、以及在面试中常见的应用场景和避坑指南。
+
+评估标准：从基础概念的理解、源码级别的掌握程度、到深度理解和使用场景的精通程度。准备一些高频面试题来巩固知识，比如JDK 1.7与1.8的实现差异、线程安全性问题、扩容机制等核心知识点。</think>
+
+```json
+{
+  "topic": {
+    "topic": "HashMap底层原理与面试深度解析",
+    "alias": ["HashMap实现原理", "哈希表原理"],
+    "domain": "Java",
+    "category": "数据结构与集合框架",
+    "tags": ["高频", "必问", "原理", "实战"],
+    "difficulty": 3,
+    "keywords": ["HashMap", "哈希表", "数组", "链表", "红黑树", "扰动函数", "扩容", "负载因子"],
+    "core_summary": "HashMap是基于哈希表的Map接口实现，通过数组+链表/红黑树存储键值对，通过扰动函数和扩容解决哈希冲突。",
+    "core_points": "1. 底层结构：数组+链表（JDK 1.7）、数组+链表+红黑树（JDK 1.8）\n2. 扰动函数：h ^= (h >>> 16) 二次hash减少碰撞\n3. 负载因子：默认0.75，控制扩容时机\n4. 树化条件：链表长度>8且数组长度>=64\n5. 扩容机制：2倍扩容，重排所有元素\n6. 并发问题：JDK 1.7头插法可能导致死循环，JDK 1.8尾插法优化",
+    "detailed_explanation": "HashMap是Java中最常用的键值对存储结构，其核心思想是通过哈希函数将key映射到数组下标，实现O(1)的平均查找效率。当发生哈希冲突时，JDK 1.7使用链表头插法，JDK 1.8改为尾插法并引入红黑树优化长链表查询。扩容时重新计算所有元素位置是耗时操作，应预估容量避免频繁扩容。HashMap非线程安全，并发场景应使用ConcurrentHashMap。",
+    "agent_instructions_a": "从数据结构入手，解释哈希表如何实现O(1)查找，再说明冲突解决机制，最后分析扩容和并发问题。结合源码讲解效果更佳。",
+    "agent_instructions_b": "追问JDK 1.7与1.8的区别、扩容过程、为什么转红黑树、并发问题、容量为什么是2的幂次方。",
+    "agent_instructions_c": "评估要点：数据结构理解、源码熟悉度、并发安全意识、容量预估能力、性能调优理解。",
+    "code_example": "// HashMap put过程简化\npublic V put(K key, V value) {\n    // 扰动函数：降低碰撞\n    int h = hash(key);\n    int index = h & (length - 1); // 数组下标\n    \n    // 遍历链表或红黑树查找\n    for (Node<K,V> e : buckets[index]) {\n        if (e.key.equals(key)) {\n            e.value = value;\n            return oldValue;\n        }\n    }\n    // 新增节点（JDK 1.8尾插法）\n    addNode(h, key, value, index);\n    \n    // 扩容检查\n    if (size > threshold) resize();\n    return null;\n}",
+    "traps": "1. JDK 1.7在并发扩容时头插法可能导致环形链表，造成死循环\n2. 容量必须是2的幂次方，否则h & (length-1)无法正确取模\n3. 空键key的hash固定为0，存储在数组第一个位置\n4. 非线程安全，不能用于多线程共享数据",
+    "bonuses": "1. 了解JDK 1.8引入红黑树的原因（链表长度>8优化）\n2. 知道HashMap与Hashtable的区别（线程安全、null支持、性能）\n3. 理解ConcurrentHashMap的分段锁/CAS机制\n4. 掌握容量预分配避免扩容的性能优化技巧"
+  },
+  "prerequisites": [
+    {"content": "数组和链表的基本数据结构特性", "sort_order": 0},
+    {"content": "哈希算法和哈希函数的基本概念", "sort_order": 1},
+    {"content": "红黑树的基本特性和时间复杂度", "sort_order": 2},
+    {"content": "Java集合框架的基本使用", "sort_order": 3}
+  ],
+  "core_concepts": [
+    {"content": "HashMap底层采用数组+链表（JDK 1.7）或数组+链表+红黑树（JDK 1.8）存储键值对", "sort_order": 0},
+    {"content": "扰动函数hash(key)通过h ^ (h >>> 16)进行二次哈希，减少碰撞概率", "sort_order": 1},
+    {"content": "负载因子0.75控制扩容时机，当元素数量超过capacity*0.75时触发2倍扩容", "sort_order": 2},
+    {"content": "树化条件：链表长度超过8且数组长度达到64时，链表转为红黑树以提升查询性能", "sort_order": 3},
+    {"content": "HashMap非线程安全，并发场景需要使用ConcurrentHashMap或其他同步机制", "sort_order": 4}
+  ],
+  "derivatives": [
+    {"content": "LinkedHashMap：继承HashMap，维护双向链表实现按插入顺序遍历", "sort_order": 0},
+    {"content": "WeakHashMap：键为弱引用，GC时自动回收，防止内存泄漏", "sort_order": 1},
+    {"content": "IdentityHashMap：使用==而非equals比较key，允许重复key", "sort_order": 2}
+  ],
+  "extensions": [
+    {"content": "ConcurrentHashMap：JDK 1.7分段锁，JDK 1.8采用CAS+synchronized实现高效并发", "sort_order": 0},
+    {"content": "HashMap容量预分配：new HashMap<>(expectedSize)避免扩容开销，推荐用于大数据量场景", "sort_order": 1},
+    {"content": "JDK 1.8对HashMap的优化：尾插法避免死循环、红黑树提升长链表查询性能至O(log n)", "sort_order": 2}
+  ],
+  "evaluation_anchors": [
+    {"level": "入门", "content": "能说出HashMap底层是数组+链表结构，知道put和get的基本流程", "sort_order": 0},
+    {"level": "掌握", "content": "理解扰动函数原理、负载因子的作用、扩容机制，清楚JDK 1.7与1.8的区别，了解非线程安全问题", "sort_order": 1},
+    {"level": "精通", "content": "能画出完整的数据结构图，分析红黑树转换条件，理解并发死循环原理，并能根据场景选择合适的Map实现", "sort_order": 2}
+  ],
+  "similar_questions": [
+    {"question": "HashMap和Hashtable有什么区别？", "answer_hint": "线程安全、null支持、 synchornized实现、效率差异", "sort_order": 0},
+    {"question": "HashMap扩容时元素如何重新计算位置？", "answer_hint": "h & (newCapacity-1)，因为容量是2的幂次方，hash低位不变，只需判断高位", "sort_order": 1},
+    {"question": "为什么链表转红黑树的阈值是8？", "answer_hint": "泊松分布概率统计，红黑树占用空间约是链表的2倍，平衡时间和空间", "sort_order": 2}
+  ],
+  "advanced_questions": [
+    {"question": "JDK 1.7中HashMap并发扩容为什么会死循环？请详细描述过程", "answer_hint": "头插法导致链表反转，多线程并发时形成环形链表，get时CPU 100%", "sort_order": 0},
+    {"question": "如果HashMap的key是自定义对象，需要重写哪些方法？为什么？", "answer_hint": "equals和hashCode，满足自反性、对称性、传递性，且相等的对象必须有相同的hashCode", "sort_order": 1}
+  ],
+  "references": [
+    {"title": "JDK HashMap源码分析", "url": "https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html", "description": "Oracle官方HashMap API文档", "sort_order": 0},
+    {"title": "HashMap详解 - 美团技术团队", "url": "https://tech.meituan.net/2016/06/24/java-hashmap.html", "description": "美团技术博客深度解析HashMap原理", "sort_order": 1},
+    {"title": "Java HashMap工作原理 - Baeldung", "url": "https://www.baeldung.com/java-hashmap", "description": "英文详细图解HashMap工作机制", "sort_order": 2}
+  ]
+}
+```

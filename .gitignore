@@ -1,0 +1,201 @@
+
+__marimo__/
+__pycache__/
+__pypackages__/
+.abstra/
+.cache
+.coverage
+.coverage.*
+.dmypy.json
+.DS_Store
+.eggs/
+.env
+.envrc
+.hypothesis/
+.idea/
+.installed.cfg
+.ipynb_checkpoints
+.mypy_cache/
+.nox/
+.pdm-build/
+.pdm-python
+.pixi
+.pybuilder/
+.pypirc
+.pyre/
+.pytest_cache/
+.Python
+.pytype/
+.ropeproject
+.ruff_cache/
+.scrapy
+.spyderproject
+.spyproject
+.streamlit/secrets.toml
+.tox/
+.venv
+.venv/
+.vscode/
+.webassets-cache
+*.aof
+*.cover
+*.egg
+*.egg-info/
+*.key
+*.log
+*.manifest
+*.mo
+*.pem
+*.pid
+*.pot
+*.py.cover
+*.py[cod]
+*.py[codz]
+*.rdb
+*.sage.py
+*.so
+*.spec
+*.swo
+*.swp
+*~
+*$py.class
+/site
+#   Abstra is an AI-powered process automation framework.
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   and can be added to the global gitignore or merged into this file.  For a more nuclear
+#   and can be added to the global gitignore or merged into this file. However, if you prefer, 
+#   be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
+#   before PyInstaller builds the exe, so as to inject date/other infos into it.
+#   commonly ignored for libraries.
+#   For a library or package, you might want to ignore these files since the code is
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   https://pdm-project.org/en/latest/usage/project/#working-with-version-control
+#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
+#   Ignore directories containing user credentials, local state, and settings.
+#   in the .venv directory. It is recommended not to include this directory in version control.
+#   install all needed dependencies.
+#   intended to run in multiple environments; otherwise, check them in:
+#   JetBrains specific template is maintained in a separate JetBrains.gitignore that can
+#   Learn more at https://abstra.io/docs
+#   option (not recommended) you can uncomment the following to ignore the entire idea folder.
+#   pdm recommends including project-wide configuration in pdm.toml, but excluding .pdm-python.
+#   Pixi creates a virtual environment in the .pixi directory, just like venv module creates one
+#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
+#   Similar to Pipfile.lock, it is generally recommended to include pixi.lock in version control.
+#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
+#   Similar to Pipfile.lock, it is generally recommended to include uv.lock in version control.
+#   that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
+#   This is especially recommended for binary packages to ensure reproducibility, and is more
+#   Usually these files are written by a python script from a template
+#   Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore 
+#   you could uncomment the following to ignore the entire vscode folder
+# .idea/
+# .python-version
+# .vscode/
+# Abstra
+# ActiveMQ
+# Byte-compiled / optimized / DLL files
+# C extensions
+# Celery stuff
+# Cython debug symbols
+# Distribution / packaging
+# Django stuff:
+# Docker
+# Environment & Secrets
+# Environments
+# Flask stuff:
+# IDE
+# Installer logs
+# IPython
+# Jupyter Notebook
+# Marimo
+# mkdocs documentation
+# mypy
+# Node (frontend)
+# OS
+# pdm
+# pdm.lock
+# pdm.toml
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+# pipenv
+# Pipfile.lock
+# pixi
+# pixi.lock
+# poetry
+# poetry.lock
+# poetry.toml
+# PyBuilder
+# PyCharm
+# pyenv
+# PyInstaller
+# PyPI configuration file
+# Pyre type checker
+# Python
+# pytype static type analyzer
+# RabbitMQ
+# Redis
+# Rope project settings
+# Ruff stuff:
+# SageMath parsed files
+# Scrapy stuff:
+# Sphinx documentation
+# Spyder project settings
+# Streamlit
+# Temp
+# Temporary file for partial code execution
+# Testing
+# Translations
+# Unit test / coverage reports
+# UV
+# uv.lock
+# Virtual Environment
+# Visual Studio Code
+activemq-data/
+build/
+celerybeat-schedule
+celerybeat.pid
+cover/
+coverage.xml
+cython_debug/
+db.sqlite3
+db.sqlite3-journal
+develop-eggs/
+dist-web/
+dist/
+dmypy.json
+docker-data/
+docs/_build/
+downloads/
+eggs/
+env.bak/
+env/
+ENV/
+htmlcov/
+instance/
+ipython_config.py
+lib/
+lib64/
+local_settings.py
+MANIFEST
+marimo/_lsp/
+marimo/_static/
+mnesia/
+node_modules/
+nosetests.xml
+parts/
+pip-delete-this-directory.txt
+pip-log.txt
+profile_default/
+rabbitmq-data/
+rabbitmq/
+sdist/
+share/python-wheels/
+target/
+temp_dir/
+tempCodeRunnerFile.py
+Thumbs.db
+var/
+venv.bak/
+venv/
+wheels/

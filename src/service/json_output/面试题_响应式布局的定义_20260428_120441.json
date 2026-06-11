@@ -1,0 +1,60 @@
+```json
+{
+  "topic": {
+    "topic": "响应式布局的定义",
+    "alias": ["responsive design", "自适应布局"],
+    "domain": "前端",
+    "category": "CSS布局",
+    "tags": ["高频", "基础"],
+    "difficulty": 2,
+    "keywords": ["响应式", "媒体查询", "viewport", "流式布局", "弹性盒子"],
+    "core_summary": "响应式布局通过CSS技术使网页自适应不同设备屏幕尺寸。",
+    "core_points": "1. 使用CSS媒体查询检测视口宽度\\n2. 流式布局使用相对单位(%, em, rem)\\n3. 弹性盒子(flexbox)实现灵活排列\\n4. 栅格系统提供结构化布局\\n5. 移动优先的响应式策略",
+    "detailed_explanation": "响应式布局是一种让同一网页在不同尺寸的设备上呈现合适样式的布局方式。其核心原理是通过CSS媒体查询(Media Queries)检测设备视口宽度，根据不同宽度区间应用不同的样式规则，配合流式布局和弹性盒模型，实现内容的自适应展示。",
+    "agent_instructions_a": "先从概念入手，说明响应式布局解决的问题，再介绍实现手段。",
+    "agent_instructions_b": "追问viewport设置、媒体查询语法、移动优先策略。",
+    "agent_instructions_c": "评估要点：理解响应式原理、掌握媒体查询、能区分响应式与自适应。",
+    "code_example": "@media screen and (max-width: 768px) {\\n  .container {\\n    width: 100%;\\n    padding: 10px;\\n  }\\n  .sidebar {\\n    display: none;\\n  }\\n}\\n\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
+    "traps": "1. 混淆响应式与自适应的概念\\n2. 忘记设置viewport\\n3. 只用px单位不用相对单位\\n4. 媒体查询断点设置不合理",
+    "bonuses": "1. 提到rem/em相对单位\\n2. 知道flexbox和grid布局\\n3. 了解移动优先策略\\n4. 知道响应式图片处理"
+  },
+  "prerequisites": [
+    {"content": "HTML基础结构", "sort_order": 0},
+    {"content": "CSS盒模型", "sort_order": 1},
+    {"content": "CSS选择器", "sort_order": 2}
+  ],
+  "core_concepts": [
+    {"content": "响应式布局通过媒体查询实现网页自适应不同设备", "sort_order": 0},
+    {"content": "viewport是移动端开发必须设置的meta标签", "sort_order": 1},
+    {"content": "流式布局使用相对单位而非固定px值", "sort_order": 2},
+    {"content": "媒体查询@media规则根据条件应用不同样式", "sort_order": 3}
+  ],
+  "derivatives": [
+    {"content": "移动优先：先为小屏幕编写样式，再为大屏添加媒体查询", "sort_order": 0},
+    {"content": "自适应布局：针对固定几个断点设计不同版本", "sort_order": 1},
+    {"content": "弹性盒子Flexbox：提供更灵活的响应式布局能力", "sort_order": 2}
+  ],
+  "extensions": [
+    {"content": "响应式图片：srcset和sizes属性", "sort_order": 0},
+    {"content": "CSS Grid网格布局", "sort_order": 1},
+    {"content": "rem与em单位的响应式优势", "sort_order": 2}
+  ],
+  "evaluation_anchors": [
+    {"level": "入门", "content": "知道响应式布局概念，能说出媒体查询", "sort_order": 0},
+    {"level": "掌握", "content": "能写出基本的响应式样式，理解viewport设置", "sort_order": 1},
+    {"level": "精通", "content": "掌握移动优先策略，合理设置断点，熟悉flexbox/grid", "sort_order": 2}
+  ],
+  "similar_questions": [
+    {"question": "响应式和自适应的区别是什么？", "answer_hint": "响应式用一套代码适配所有屏幕，自适应针对几个固定尺寸", "sort_order": 0},
+    {"question": "viewport的作用是什么？", "answer_hint": "控制移动端视口宽度和缩放比例", "sort_order": 1}
+  ],
+  "advanced_questions": [
+    {"question": "如何实现响应式图片？请说明srcset和sizes的作用", "answer_hint": "根据设备像素比和视口宽度提供不同分辨率图片", "sort_order": 0},
+    {"question": "移动优先的响应式策略有什么优势？", "answer_hint": "代码更简洁、性能更好、移动端优先加载关键样式", "sort_order": 1}
+  ],
+  "references": [
+    {"title": "MDN响应式设计基础", "url": "https://developer.mozilla.org/zh-CN/docs/Learn/CSS/CSS_layout/Responsive_Design", "description": "MDN官方响应式设计教程", "sort_order": 0},
+    {"title": "使用CSS媒体查询", "url": "https://developer.mozilla.org/zh-CN/docs/Web/CSS/Media_Queries", "description": "媒体查询的完整指南", "sort_order": 1}
+  ]
+}
+```
