@@ -31,7 +31,7 @@ app.add_middleware(
 PUBLIC_PATHS = {"/", "/ping", "/docs", "/openapi.json", "/redoc",
                 "/api/auth/register", "/api/auth/login", "/api/auth/refresh",
                 "/api/auth/captcha", "/api/auth/send-code",
-                "/api/v1/topic/tags"}
+                "/api/v1/topic/tags", "/api/v1/topic/positions"}
 
 
 @app.middleware("http")

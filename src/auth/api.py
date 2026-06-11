@@ -256,6 +256,25 @@ async def change_password(req: ChangePasswordRequest, request: Request):
     return {"message": "密码已修改"}
 
 
+@router.post("/preferences")
+async def update_preferences(request: Request = None):
+    """更新用户偏好"""
+    uid = getattr(request.state, "user_id", None)
+    if not uid:
+        raise HTTPException(status_code=401)
+    body = await request.json()
+    user = await User.filter(id=uid).first()
+    if not user:
+        raise HTTPException(status_code=404)
+    for field in ("target_position", "learning_preference", "experience_level"):
+        if field in body:
+            setattr(user, field, body[field])
+    await user.save()
+    return {"target_position": user.target_position,
+            "learning_preference": user.learning_preference,
+            "experience_level": user.experience_level}
+
+
 # ═══════════════════════════════════════
 #  邮件
 # ═══════════════════════════════════════

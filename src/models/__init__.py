@@ -32,6 +32,12 @@ from .user_quota import UserQuota
 # Captcha 验证码表
 from .captcha import Captcha
 
+# 用户-题目状态
+from .user_topic_status import UserTopicStatus
+
+# 岗位表
+from .job_position import JobPosition
+
 __all__ = [
     # Topic
     "Topic",
@@ -60,4 +66,6 @@ __all__ = [
     # Quota
     "UserQuota",
     "Captcha",
+    "UserTopicStatus",
+    "JobPosition",
 ]
