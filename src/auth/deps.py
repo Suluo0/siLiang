@@ -13,7 +13,7 @@ security = HTTPBearer(auto_error=False)
 # 不需要鉴权的公开路径（only register/login are truly public）
 PUBLIC_PATHS = {
     "/", "/ping", "/docs", "/openapi.json", "/redoc",
-    "/api/auth/register", "/api/auth/login",
+    "/api/auth/register", "/api/auth/login", "/api/auth/refresh",
 }
 
 

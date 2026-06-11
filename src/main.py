@@ -29,13 +29,13 @@ app.add_middleware(
 
 # ── 全局鉴权中间件 (AOP) ──
 PUBLIC_PATHS = {"/", "/ping", "/docs", "/openapi.json", "/redoc",
-                "/api/auth/register", "/api/auth/login",
+                "/api/auth/register", "/api/auth/login", "/api/auth/refresh",
                 "/api/v1/topic/tags"}
 
 
 @app.middleware("http")
 async def global_auth_middleware(request: Request, call_next):
-    path = request.url.path.rstrip("/")
+    path = request.url.path.rstrip("/") or "/"
 
     # 公开路径放行
     if path in PUBLIC_PATHS:
