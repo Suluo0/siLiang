@@ -24,8 +24,9 @@ import PreferencesModal from '@/components/Dashboard/PreferencesModal.vue'
 
 const showPrefsModal = ref(false)
 
-function onStatsLoaded(prefsFilled) {
-  if (prefsFilled) return
+function onStatsLoaded(data) {
+  if (!data || !data.auth) return   // 未登录不弹
+  if (data.pref) return
   if (localStorage.getItem('skip_prefs_modal') === 'true') return
   showPrefsModal.value = true
 }
