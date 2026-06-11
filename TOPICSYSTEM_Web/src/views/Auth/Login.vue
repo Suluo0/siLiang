@@ -143,6 +143,7 @@ async function handleRegister() {
 
 function _saveToken(data, uname, uemail) {
   localStorage.setItem('token', data.access_token)
+  localStorage.setItem('refresh_token', data.refresh_token)
   localStorage.setItem('user', JSON.stringify({ username: uname || '', email: uemail || '' }))
 }
 
