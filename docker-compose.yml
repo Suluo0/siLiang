@@ -1,5 +1,5 @@
 services:
-  # ── PostgreSQL ──
+   # ── PostgreSQL ──
   postgres:
     image: pgvector/pgvector:pg16
     container_name: topicsystem-pg
@@ -10,13 +10,14 @@ services:
     command: >
       bash -c "
         docker-entrypoint.sh postgres &
-        sleep 3 && psql -U postgres -d topic -c 'CREATE SCHEMA IF NOT EXISTS topic;' &&
+        sleep 3 && psql -U postgres -d topic -c 'CREATE SCHEMA IF NOT EXISTS public;' &&
         wait
       "
     ports:
       - "5433:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
+      - ./scripts/init_db_roles.sql:/docker-entrypoint-initdb.d/init_db_roles.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -87,7 +88,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: "postgres://postgres:Xswl1139@postgres:5432/topic"
+      DATABASE_URL: "postgres://topic_app:Top1cApp%232026@postgres:5432/topic"
       MILVUS_HOST: "milvus"
       MILVUS_PORT: "19530"
       TS_DS_APIKEY: "${TS_DS_APIKEY:-}"
