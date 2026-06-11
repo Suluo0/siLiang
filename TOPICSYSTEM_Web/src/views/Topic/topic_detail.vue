@@ -45,14 +45,31 @@
         </ul>
       </section>
 
-      <section class="section" v-if="detail.detailed_explanation">
+      <!-- 主内容 -->
+      <section class="section" v-if="detail.detailed_explanation || isLocked('detailed_explanation')">
         <h2 class="section-title">详细解释</h2>
-        <div class="text" v-html="formatText(detail.detailed_explanation)"></div>
+        <div class="locked-wrap" :class="{ masked: isLocked('detailed_explanation') }">
+          <div class="text" v-html="formatText(detail.detailed_explanation || '')" v-if="detail.detailed_explanation"></div>
+          <div class="mask-overlay" v-if="isLocked('detailed_explanation')">
+            <div class="mask-banner">
+              <el-icon class="mask-icon"><Lock /></el-icon>
+              <span>您的试用次数已耗尽</span>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section class="section" v-if="detail.code_example">
+      <section class="section" v-if="detail.code_example || isLocked('code_example')">
         <h2 class="section-title">代码示例</h2>
-        <pre class="code-block"><code>{{ handleNewline(detail.code_example) }}</code></pre>
+        <div class="locked-wrap" :class="{ masked: isLocked('code_example') }">
+          <pre class="code-block" v-if="detail.code_example"><code>{{ handleNewline(detail.code_example) }}</code></pre>
+          <div class="mask-overlay" v-if="isLocked('code_example')">
+            <div class="mask-banner">
+              <el-icon class="mask-icon"><Lock /></el-icon>
+              <span>您的试用次数已耗尽</span>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="section" v-if="detail.similar_questions?.length">
@@ -73,14 +90,30 @@
         </ul>
       </section>
 
-      <section class="section" v-if="detail.traps">
+      <section class="section" v-if="detail.traps || isLocked('traps')">
         <h2 class="section-title">常见陷阱</h2>
-        <p class="text" v-html="formatText(detail.traps)"></p>
+        <div class="locked-wrap" :class="{ masked: isLocked('traps') }">
+          <p class="text" v-html="formatText(detail.traps || '')" v-if="detail.traps"></p>
+          <div class="mask-overlay" v-if="isLocked('traps')">
+            <div class="mask-banner">
+              <el-icon class="mask-icon"><Lock /></el-icon>
+              <span>您的试用次数已耗尽</span>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section class="section" v-if="detail.bonuses">
+      <section class="section" v-if="detail.bonuses || isLocked('bonuses')">
         <h2 class="section-title">加分项</h2>
-        <p class="text" v-html="formatText(detail.bonuses)"></p>
+        <div class="locked-wrap" :class="{ masked: isLocked('bonuses') }">
+          <p class="text" v-html="formatText(detail.bonuses || '')" v-if="detail.bonuses"></p>
+          <div class="mask-overlay" v-if="isLocked('bonuses')">
+            <div class="mask-banner">
+              <el-icon class="mask-icon"><Lock /></el-icon>
+              <span>您的试用次数已耗尽</span>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="section" v-if="detail.derivatives?.length">
@@ -122,7 +155,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { ArrowLeft } from '@element-plus/icons-vue'
+import { ArrowLeft, Lock } from '@element-plus/icons-vue'
 import { getTopicDetail } from '@/api/topic'
 
 const router = useRouter()
@@ -145,6 +178,10 @@ const fetchDetail = async () => {
 
 const goBack = () => {
   router.push('/topic/library')
+}
+
+const isLocked = (section) => {
+  return detail.value?.locked && detail.value?.locked_sections?.includes(section)
 }
 
 const formatText = (text) => {
@@ -284,4 +321,24 @@ const handleNewline = (code) => {
 .empty-state {
   padding: 60px 0;
 }
+
+/* ── 锁定蒙版 ── */
+.locked-wrap { position: relative; }
+.locked-wrap.masked { max-height: 200px; overflow: hidden; }
+.locked-wrap.masked::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+  background: linear-gradient(transparent, #fff);
+}
+.mask-overlay {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.mask-banner {
+  background: rgba(99, 102, 241, 0.92); color: #fff;
+  padding: 12px 28px; border-radius: 10px; font-size: 15px; font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+}
+.mask-icon { font-size: 20px; }
 </style>

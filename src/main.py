@@ -98,9 +98,10 @@ async def global_auth_middleware(request: Request, call_next):
     # 题目浏览扣减（仅详情页，列表页不扣）
     if request.method == "GET" and path.startswith("/api/v1/topic/") and "/list" not in path and "/tags" not in path:
         if quota.topic_credits <= 0:
-            return JSONResponse(status_code=403, content={"detail": "题目访问次数已用尽"})
-        quota.topic_credits -= 1
-        await quota.save()
+            request.state.quota_exhausted = True  # 标记 → detail 端点截断
+        else:
+            quota.topic_credits -= 1
+            await quota.save()
 
     return await call_next(request)
 

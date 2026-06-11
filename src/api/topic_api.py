@@ -4,7 +4,7 @@ Topic API - HTTP 接口层
 职责：只负责接收请求、参数校验、调用 service、返回响应
 不包含任何业务逻辑
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
 from src.service.topic_service import TopicService
@@ -153,14 +153,16 @@ async def list_tags():
     return result
 
 
-@router.get("/{topic_id}", response_model=DetailResponse)
-async def get_topic_detail(topic_id: str):
-    """获取 Topic 详情（含关联数据）"""
+@router.get("/{topic_id}")
+async def get_topic_detail(topic_id: str, request: Request = None):
+    """获取 Topic 详情（quota=0 时截断敏感字段）"""
     from src.models import Topic
-    
+
+    exhausted = getattr(getattr(request, "state", None), "quota_exhausted", False) if request else False
+
     try:
         topic = await Topic.get(id=topic_id)
-        
+
         data = {
             "id": str(topic.id),
             "topic": topic.topic,
@@ -172,44 +174,67 @@ async def get_topic_detail(topic_id: str):
             "mastery_level": topic.mastery_level,
             "core_summary": topic.core_summary,
             "core_points": topic.core_points,
-            "detailed_explanation": topic.detailed_explanation,
-            "code_example": topic.code_example,
-            "traps": topic.traps,
-            "bonuses": topic.bonuses,
-            "prerequisites": [
-                {"content": p.content, "sort_order": p.sort_order}
-                async for p in topic.prerequisites.all()
-            ],
-            "core_concepts": [
-                {"content": c.content, "sort_order": c.sort_order}
-                async for c in topic.core_concepts.all()
-            ],
-            "derivatives": [
-                {"content": d.content, "sort_order": d.sort_order}
-                async for d in topic.derivatives.all()
-            ],
-            "extensions": [
-                {"content": e.content, "sort_order": e.sort_order}
-                async for e in topic.extensions.all()
-            ],
-            "evaluation_anchors": [
-                {"level": a.level, "content": a.content, "sort_order": a.sort_order}
-                async for a in topic.evaluation_anchors.all()
-            ],
-            "similar_questions": [
-                {"question": q.question, "answer_hint": q.answer_hint, "sort_order": q.sort_order}
-                async for q in topic.similar_questions.all()
-            ],
-            "advanced_questions": [
-                {"question": q.question, "answer_hint": q.answer_hint, "sort_order": q.sort_order}
-                async for q in topic.advanced_questions.all()
-            ],
-            "references": [
-                {"title": r.title, "url": r.url, "description": r.description, "sort_order": r.sort_order}
-                async for r in topic.references.all()
-            ],
+            "detailed_explanation": None,
+            "code_example": None,
+            "traps": None,
+            "bonuses": None,
+            "prerequisites": [],
+            "core_concepts": [],
+            "derivatives": [],
+            "extensions": [],
+            "evaluation_anchors": [],
+            "similar_questions": [],
+            "advanced_questions": [],
+            "references": [],
+            "locked": False,
+            "locked_sections": [],
         }
-        
+
+        if exhausted:
+            data["locked"] = True
+            data["locked_sections"] = ["detailed_explanation", "code_example", "traps", "bonuses"]
+            expl = topic.detailed_explanation or ""
+            data["detailed_explanation"] = expl[:200] if len(expl) > 200 else expl
+        else:
+            data["detailed_explanation"] = topic.detailed_explanation
+            data["code_example"] = topic.code_example
+            data["traps"] = topic.traps
+            data["bonuses"] = topic.bonuses
+
+        # 关联数据（始终返回）
+        data["prerequisites"] = [
+            {"content": p.content, "sort_order": p.sort_order}
+            async for p in topic.prerequisites.all()
+        ]
+        data["core_concepts"] = [
+            {"content": c.content, "sort_order": c.sort_order}
+            async for c in topic.core_concepts.all()
+        ]
+        data["derivatives"] = [
+            {"content": d.content, "sort_order": d.sort_order}
+            async for d in topic.derivatives.all()
+        ]
+        data["extensions"] = [
+            {"content": e.content, "sort_order": e.sort_order}
+            async for e in topic.extensions.all()
+        ]
+        data["evaluation_anchors"] = [
+            {"level": a.level, "content": a.content, "sort_order": a.sort_order}
+            async for a in topic.evaluation_anchors.all()
+        ]
+        data["similar_questions"] = [
+            {"question": q.question, "answer_hint": q.answer_hint, "sort_order": q.sort_order}
+            async for q in topic.similar_questions.all()
+        ]
+        data["advanced_questions"] = [
+            {"question": q.question, "answer_hint": q.answer_hint, "sort_order": q.sort_order}
+            async for q in topic.advanced_questions.all()
+        ]
+        data["references"] = [
+            {"title": r.title, "url": r.url, "description": r.description, "sort_order": r.sort_order}
+            async for r in topic.references.all()
+        ]
+
         return data
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"Topic 不存在: {str(e)}")
