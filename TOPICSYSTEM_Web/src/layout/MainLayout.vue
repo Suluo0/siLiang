@@ -3,7 +3,7 @@
     <!-- 顶边栏 -->
     <header class="header">
       <div class="header-left">
-        <h1 class="logo" @click="goHome">拓扑客</h1>
+        <h1 class="logo" @click="goHome">思量</h1>
         <nav class="nav-menu">
           <a href="#" class="nav-item" @click.prevent="goToHome">主页</a>
           <a href="#" class="nav-item" @click.prevent="goToLibrary">题库</a>

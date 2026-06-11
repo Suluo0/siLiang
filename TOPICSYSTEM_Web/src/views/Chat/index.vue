@@ -20,7 +20,7 @@
               </svg>
             </div>
             <h1 class="welcome-title">
-              <span class="gradient-text">拓扑客</span>
+              <span class="gradient-text">思量</span>
             </h1>
             <p class="welcome-desc">告诉我你想学习什么，我来为你构建知识图谱</p>
           </div>
