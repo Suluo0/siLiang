@@ -162,6 +162,9 @@ async def login(req: LoginRequest):
     if not user.is_active:
         raise HTTPException(status_code=403, detail="账户已被禁用")
 
+    # 新设备登录 → token_version + 1 → 旧设备 token 失效
+    user.token_version += 1
+    await user.save()
     return await _login_user(user)
 
 
