@@ -5,7 +5,7 @@
         <component :is="stat.icon" />
       </div>
       <div class="stat-info">
-        <div class="stat-value">{{ stat.value }}</div>
+        <div class="stat-value" :class="{ dimmed: stat.dimmed }">{{ stat.display }}</div>
         <div class="stat-label">{{ stat.label }}</div>
       </div>
     </div>
@@ -18,22 +18,32 @@ import { Collection, CircleCheck, CircleClose, Timer } from '@element-plus/icons
 import request from '@/api/request'
 
 const emit = defineEmits(['stats-loaded'])
+const authenticated = ref(false)
 
 const stats = ref({ total_topics: 0, mastered: 0, learning: 0, today_target: 0, preferences_filled: false })
 
-const cards = computed(() => [
-  { icon: Collection,  value: stats.value.total_topics, label: '题目数量', bgColor: 'rgba(64, 158, 255, 0.1)' },
-  { icon: CircleCheck, value: stats.value.mastered,     label: '已掌握',  bgColor: 'rgba(103, 194, 58, 0.1)' },
-  { icon: CircleClose, value: stats.value.total_topics - stats.value.mastered, label: '未掌握',  bgColor: 'rgba(245, 108, 108, 0.1)' },
-  { icon: Timer,       value: stats.value.today_target,  label: '今日目标', bgColor: 'rgba(230, 162, 60, 0.1)' },
-])
+const cards = computed(() => {
+  const unauth = !authenticated.value
+  return [
+    { icon: Collection,  display: unauth ? '登录后查看' : stats.value.total_topics,
+      label: '题目数量', bgColor: 'rgba(64, 158, 255, 0.1)', dimmed: unauth },
+    { icon: CircleCheck, display: unauth ? '登录后查看' : stats.value.mastered,
+      label: '已掌握', bgColor: 'rgba(103, 194, 58, 0.1)', dimmed: unauth },
+    { icon: CircleClose, display: unauth ? '登录后查看' : stats.value.total_topics - stats.value.mastered,
+      label: '未掌握', bgColor: 'rgba(245, 108, 108, 0.1)', dimmed: unauth },
+    { icon: Timer,       display: unauth ? '登录后查看' : stats.value.today_target,
+      label: '今日目标', bgColor: 'rgba(230, 162, 60, 0.1)', dimmed: unauth },
+  ]
+})
 
 onMounted(async () => {
   try {
     const res = await request.get('/v1/topic/dashboard/stats')
     stats.value = res
+    authenticated.value = res.authenticated !== false
     emit('stats-loaded', res.preferences_filled)
   } catch {
+    authenticated.value = false
     emit('stats-loaded', false)
   }
 })
@@ -54,5 +64,6 @@ onMounted(async () => {
   display: flex; align-items: center; justify-content: center; font-size: 26px; color: #555;
 }
 .stat-value { font-size: 28px; font-weight: 700; color: #1a1a2e; }
+.stat-value.dimmed { font-size: 14px; font-weight: 500; color: #bbb; }
 .stat-label { font-size: 13px; color: #999; margin-top: 2px; }
 </style>

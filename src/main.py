@@ -44,7 +44,9 @@ async def global_auth_middleware(request: Request, call_next):
     # 从 Authorization header 提取 token
     auth = request.headers.get("Authorization", "")
     if not auth.startswith("Bearer "):
-        return JSONResponse(status_code=401, content={"detail": "未提供认证令牌"})
+        # 未登录 → 标记为配额耗尽，放行（内容截断）
+        request.state.quota_exhausted = True
+        return await call_next(request)
 
     token = auth[7:]  # "Bearer " 之后的部分
 
