@@ -2,11 +2,11 @@
   <section class="hero-section">
     <div class="hero-content">
       <h1 class="hero-title">
-        <span class="gradient-text">拓扑客</span>
+        <span class="gradient-text">思量</span>
         <br />现在开始吧，打算学点什么？
       </h1>
       <p class="hero-subtitle">
-        探索主题之间的关联，构建你的专属知识网络
+        付思量，自难忘
       </p>
       <div class="hero-actions">
         <button class="btn-primary" @click="handleStart">

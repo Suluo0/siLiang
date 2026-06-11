@@ -1,7 +1,7 @@
 <template>
   <div class="login-page">
     <div class="login-card">
-      <h1 class="brand">TopicSystem</h1>
+      <h1 class="brand">思量</h1>
 
       <!-- ═══ 登录 ═══ -->
       <template v-if="!showRegister">

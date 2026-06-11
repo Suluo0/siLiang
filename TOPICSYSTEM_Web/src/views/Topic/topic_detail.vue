@@ -138,8 +138,8 @@
     <el-dialog v-model="showUpgrade" title="" width="720px" :close-on-click-modal="false" class="upgrade-dialog">
       <div class="upgrade-hero">
         <div class="hero-badge">限时特惠</div>
-        <h2 class="hero-title">解锁完整题库</h2>
-        <p class="hero-sub">选择适合你的方案，提升面试备战效率</p>
+        <h2 class="hero-title">思量</h2>
+        <p class="hero-sub">付思量，自难忘</p>
       </div>
 
       <div class="plan-grid">
