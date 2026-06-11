@@ -49,6 +49,13 @@
           <el-form-item label="邮箱验证码">
             <el-input v-model="regForm.emailCode" placeholder="6位验证码" maxlength="6" />
           </el-form-item>
+          <el-form-item>
+            <el-checkbox v-model="agreedToTerms" size="small">
+              我已阅读并同意
+              <router-link to="/terms" target="_blank">《用户协议》</router-link>和
+              <router-link to="/privacy" target="_blank">《隐私协议》</router-link>
+            </el-checkbox>
+          </el-form-item>
           <el-button type="primary" :loading="regLoading" :disabled="!canRegister" class="submit-btn" @click="handleRegister">注 册</el-button>
           <el-button text class="toggle-link" @click="showRegister = false">已有账号？去登录</el-button>
         </el-form>
@@ -70,6 +77,7 @@ const showRegister = ref(false)
 const loginLoading = ref(false)
 const regLoading = ref(false)
 const sendingCode = ref(false)
+const agreedToTerms = ref(false)
 const captchaId = ref('')
 const captchaText = ref('')
 
@@ -82,7 +90,8 @@ const canSendCode = computed(() => emailValid.value && captchaValid.value)
 const canRegister = computed(() =>
   regForm.username.length >= 6 && /^[a-zA-Z]/.test(regForm.username) &&
   regForm.password.length >= 8 && /[a-zA-Z]/.test(regForm.password) && /\d/.test(regForm.password) &&
-  captchaValid.value && emailValid.value && regForm.emailCode.length === 6
+  captchaValid.value && emailValid.value && regForm.emailCode.length === 6 &&
+  agreedToTerms.value
 )
 
 async function refreshCaptcha() {

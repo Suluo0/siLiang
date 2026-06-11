@@ -71,6 +71,18 @@ const routes = [
         name: 'Chat',
         component: () => import('../views/Chat/index.vue'),
         meta: { title: '对话' }
+      },
+      {
+        path: '/privacy',
+        name: 'Privacy',
+        component: () => import('../views/Legal/Privacy.vue'),
+        meta: { title: '隐私协议' }
+      },
+      {
+        path: '/terms',
+        name: 'Terms',
+        component: () => import('../views/Legal/Terms.vue'),
+        meta: { title: '用户协议' }
       }
     ]
   }
