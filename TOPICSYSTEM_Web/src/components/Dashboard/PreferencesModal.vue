@@ -41,7 +41,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import axios from 'axios'
+import request from '@/api/request'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['done'])
@@ -60,14 +60,14 @@ const form = ref({
 
 onMounted(async () => {
   try {
-    const res = await axios.get('/api/v1/topic/positions')
-    positions.value = res.data.items || []
+    const res = await request.get('/v1/topic/positions')
+    positions.value = res.items || []
   } catch {}
 })
 
 // sync prop with local visible
 import { watch } from 'vue'
-watch(() => props.show, (v) => { visible.value = v })
+watch(() => props.show, (v) => { visible.value = v }, { immediate: true })
 watch(visible, (v) => { if (!v) emit('done') })
 
 function skipLater() {
@@ -83,13 +83,12 @@ function skipForever() {
 async function save() {
   saving.value = true
   try {
-    const token = localStorage.getItem('token') || ''
-    await axios.post('/api/auth/preferences', {
+    await request.post('/auth/preferences', {
       target_position: form.value.target_position,
       learning_preference: (form.value.learning_preference || []).join(','),
       experience_level: form.value.experience_level,
       today_target: form.value.today_target
-    }, { headers: { Authorization: `Bearer ${token}` } })
+    })
     ElMessage.success('偏好已保存')
     visible.value = false
   } catch (e) {
