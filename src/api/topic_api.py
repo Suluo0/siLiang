@@ -84,15 +84,22 @@ def get_service() -> TopicService:
 async def list_topics(
     keyword: str = "", tag: str = "", limit: int = 20, offset: int = 0
 ):
-    """查询 Topic 列表，支持 tag 筛选"""
+    """查询 Topic 列表，支持 tag 筛选。高频查询缓存 30 秒。"""
     from src.models import Topic
+    from src.api.cache import cache
+    
+    # 无 keyword 无 tag 时走缓存
+    if not keyword and not tag:
+        key = f"topic_list_{limit}_{offset}"
+        cached = cache.get(key)
+        if cached:
+            return cached
     
     query = Topic.all()
     if keyword:
         query = query.filter(topic__icontains=keyword)
 
     if tag:
-        # Tag 在 Python 层过滤——拉 800 条再筛
         topics = await query.order_by("-created_at").limit(800).all()
         items = _build_items(topics, tag)
         total = len(items)
@@ -101,7 +108,10 @@ async def list_topics(
         topics = await query.order_by("-created_at").offset(offset).limit(limit)
         items = _build_items(topics, tag="")
     
-    return ListResponse(total=total, items=items)
+    result = ListResponse(total=total, items=items)
+    if not keyword and not tag:
+        cache.set(key, result.model_dump(), ttl=30)
+    return result
 
 
 def _build_items(topics, tag: str = "") -> list[dict]:
@@ -126,14 +136,21 @@ def _build_items(topics, tag: str = "") -> list[dict]:
 
 @router.get("/tags")
 async def list_tags():
-    """返回所有唯一的标签"""
+    """返回所有唯一的标签（缓存 5 分钟）"""
+    from src.api.cache import cache
+    cached = cache.get("topic_tags")
+    if cached:
+        return cached
+
     from src.models import Topic
     topics = await Topic.all().limit(2000)
     tag_set = set()
     for t in topics:
         tags = t.tags if isinstance(t.tags, list) else []
         tag_set.update(tags)
-    return {"tags": sorted(tag_set)}
+    result = {"tags": sorted(tag_set)}
+    cache.set("topic_tags", result, ttl=300)
+    return result
 
 
 @router.get("/{topic_id}", response_model=DetailResponse)
