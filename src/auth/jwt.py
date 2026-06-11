@@ -8,7 +8,7 @@ from jose import jwt, JWTError
 
 SECRET_KEY = "topicsystem-jwt-secret-change-in-production-2026"
 ALGORITHM = "HS256"
-ACCESS_EXPIRE_MINUTES = 60
+ACCESS_EXPIRE_MINUTES = 10080  # 7 days
 REFRESH_EXPIRE_DAYS = 7
 
 
