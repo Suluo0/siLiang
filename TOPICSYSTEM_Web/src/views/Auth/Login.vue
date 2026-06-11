@@ -29,10 +29,10 @@
         <p class="subtitle">注册账号</p>
         <el-form :model="regForm" label-position="top">
           <el-form-item label="用户名">
-            <el-input v-model="regForm.username" placeholder="用户名（至少2位）" />
+            <el-input v-model="regForm.username" placeholder="用户名（6位以上，字母开头）" />
           </el-form-item>
           <el-form-item label="密码">
-            <el-input v-model="regForm.password" type="password" placeholder="至少6位" show-password />
+            <el-input v-model="regForm.password" type="password" placeholder="8位以上，字母+数字" show-password />
           </el-form-item>
           <el-form-item label="验证码">
             <div class="captcha-row">
@@ -80,7 +80,8 @@ const emailValid = computed(() => /^[\w\.-]+@[\w\.-]+\.\w+$/.test(regForm.email)
 const captchaValid = computed(() => regForm.captcha.length === 4)
 const canSendCode = computed(() => emailValid.value && captchaValid.value)
 const canRegister = computed(() =>
-  regForm.username.length >= 2 && regForm.password.length >= 6 &&
+  regForm.username.length >= 6 && /^[a-zA-Z]/.test(regForm.username) &&
+  regForm.password.length >= 8 && /[a-zA-Z]/.test(regForm.password) && /\d/.test(regForm.password) &&
   captchaValid.value && emailValid.value && regForm.emailCode.length === 6
 )
 
