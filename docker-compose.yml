@@ -100,6 +100,18 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # ── Vue 前端 (Nginx) ──
+  web:
+    build:
+      context: ./TOPICSYSTEM_Web
+      dockerfile: Dockerfile
+    container_name: topicsystem-web
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    restart: unless-stopped
+
 volumes:
   pg_data:
   etcd_data:
