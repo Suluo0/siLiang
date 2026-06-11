@@ -47,6 +47,7 @@ async def save_to_postgres(topic_data: dict) -> dict:
             review_count=topic_info.get("review_count", 0),
             keywords=topic_info.get("keywords"),
             core_summary=topic_info.get("core_summary"),
+            one_liner=topic_info.get("one_liner"),
             core_points=topic_info.get("core_points"),
             detailed_explanation=topic_info.get("detailed_explanation"),
             code_example=topic_info.get("code_example"),
