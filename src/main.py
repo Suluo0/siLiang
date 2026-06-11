@@ -8,6 +8,7 @@ from src.api.topic_api_v2 import router as topic_v2_router
 from src.api.topic_api_v3 import router as topic_v3_router
 from src.api.healthcheck import router as healthcheck_router
 from src.controller.menuController import router as menu_router
+from src.auth.api import router as auth_router
 from src.agentv3.capabilities.register import register_all
 from src.agentv3.registry import CapabilityRegistry
 
@@ -28,6 +29,7 @@ app.include_router(topic_v1_router)
 app.include_router(topic_v2_router)
 app.include_router(topic_v3_router)
 app.include_router(healthcheck_router)
+app.include_router(auth_router)  # 鉴权
 app.include_router(menu_router)
 
 
