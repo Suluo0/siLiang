@@ -90,7 +90,7 @@ services:
       DATABASE_URL: "postgres://postgres:Xswl1139@postgres:5432/topic"
       MILVUS_HOST: "milvus"
       MILVUS_PORT: "19530"
-      API_SECRET: "${API_SECRET:-}"
+      TS_DS_APIKEY: "${TS_DS_APIKEY:-}"
       API_ADDRESS: "${API_ADDRESS:-https://api.deepseek.com/v1}"
       API_MODEL: "${API_MODEL:-deepseek-chat}"
     depends_on:

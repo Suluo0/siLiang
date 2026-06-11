@@ -21,7 +21,7 @@ class LLMClient:
     _instance: Optional["LLMClient"] = None
 
     def __init__(self):
-        self.api_key = os.getenv("API_SECRET", settings.LLM_API_KEY)
+        self.api_key = os.getenv("TS_DS_APIKEY", settings.LLM_API_KEY)
         self.base_url = os.getenv("API_ADDRESS", settings.LLM_API_BASE)
         self.model_name = os.getenv("API_MODEL", settings.LLM_MODEL)
 

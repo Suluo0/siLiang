@@ -26,7 +26,7 @@ class LLMConfig:
     
     # 默认配置（从环境变量读取）
     DEFAULT_MODEL = os.getenv("API_MODEL", "gpt-4-turbo")
-    DEFAULT_API_KEY = os.getenv("API_SECRET") or os.getenv("API_SCRECT")
+    DEFAULT_API_KEY = os.getenv("TS_DS_APIKEY") or os.getenv("API_SECRET")
     DEFAULT_BASE_URL = os.getenv("API_ADDRESS")
     
     # 预定义模型配置
