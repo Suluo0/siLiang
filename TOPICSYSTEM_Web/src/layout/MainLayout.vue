@@ -45,9 +45,13 @@
             <span class="username">{{ displayName }}</span>
           </span>
           <template #dropdown>
-            <el-dropdown-menu>
+            <el-dropdown-menu v-if="isLoggedIn">
               <el-dropdown-item @click="goUserCenter">用户中心</el-dropdown-item>
               <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
+            </el-dropdown-menu>
+            <el-dropdown-menu v-else>
+              <el-dropdown-item @click="goLogin">登录</el-dropdown-item>
+              <el-dropdown-item @click="goLogin">注册</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -78,6 +82,8 @@ const displayName = computed(() => {
     return u.username || u.email || '访客'
   } catch { return '访客' }
 })
+
+const isLoggedIn = computed(() => !!localStorage.getItem('token'))
 
 const toggleSearch = () => {
   isSearchExpanded.value = !isSearchExpanded.value
@@ -122,6 +128,10 @@ const showComing = (name) => {
 
 const goUserCenter = () => {
   router.push('/user-center')
+}
+
+const goLogin = () => {
+  router.push('/login')
 }
 </script>
 
@@ -253,10 +263,24 @@ const goUserCenter = () => {
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  outline: none;
+}
+
+.user-info:hover .username {
+  color: #a5b4fc;
 }
 
 .username {
   color: #606266;
+  transition: color 0.2s;
+}
+
+/* 去掉 element-plus 下拉框的默认蓝色 focus 框 */
+.main-layout :deep(.el-dropdown) {
+  outline: none !important;
+}
+.main-layout :deep(.el-tooltip__trigger:focus-visible) {
+  outline: none !important;
 }
 
 @media (max-width: 1024px) {
