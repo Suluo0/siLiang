@@ -11,7 +11,7 @@
 
     <!-- Tag 筛选栏 -->
     <div class="tag-strip">
-      <el-tag v-for="t in feedTags" :key="t" size="small"
+      <el-tag v-for="t in dedupedTags" :key="t" size="small"
         :type="activeTag === t ? '' : 'info'"
         :effect="activeTag === t ? 'dark' : 'plain'"
         class="ftag" @click="toggleTag(t)">{{ t }}</el-tag>
@@ -49,16 +49,32 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search } from '@element-plus/icons-vue'
-import { getTopicList } from '@/api/topic'
+import { getTopicList, getTopicTags } from '@/api/topic'
 
 const router = useRouter()
 const keyword = ref('')
 const activeTag = ref('')
 const loading = ref(false)
 const totalTopics = ref(0)
+const feedTags = ref([])
 
-const feedTags = ['核心能力', '并发', '锁', 'JVM', 'MySQL', 'Redis', 'Spring', '分布式',
-  '消息队列', '缓存', '框架', '中间件', '架构', '数据结构', '算法', '后端', '事务']
+// 从 API 加载标签
+onMounted(async () => {
+  try {
+    const res = await getTopicTags()
+    feedTags.value = res.tags || []
+  } catch { /* 静默降级 */ }
+  fetchAll()
+})
+
+// Tag 去重合并
+const dedupedTags = computed(() => {
+  const priority = ['核心能力', '并发', '锁', 'JVM', 'MySQL', 'Redis', 'Spring', '分布式',
+    '消息队列', '缓存', '框架', '中间件', '架构', '数据结构', '算法', '后端', '事务']
+  const seen = new Set(priority)
+  const rest = (feedTags.value || []).filter(t => !seen.has(t))
+  return [...priority.filter(t => feedTags.value.includes(t)), ...rest]
+})
 
 const columns = reactive([
   { key: 'core',  label: '核心能力', color: '#6366f1', items: [] },
@@ -112,8 +128,6 @@ function toggleTag(tag) {
 }
 function clearTag() { activeTag.value = ''; fetchAll() }
 function goDetail(id) { router.push(`/topic/detail/${id}`) }
-
-onMounted(() => fetchAll())
 </script>
 
 <style scoped>
