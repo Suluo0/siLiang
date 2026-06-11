@@ -195,7 +195,6 @@ async def register(req: RegisterRequest):
     user = await User.create(
         id=str(uuid.uuid4()), username=req.username, email=req.email,
         password_hash=hash_password(req.password), token_version=0,
-        is_superuser=True, email_verified=True,
     )
 
     from src.models.user_quota import UserQuota
