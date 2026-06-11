@@ -1,44 +1,68 @@
 """
-Auth API — 注册 / 登录 / 续期 / 个人信息 / 改密
+Auth API — 注册 / 登录 / 续期 / 改密 / CAPTCHA / 邮箱验证
 """
-import uuid
+import uuid, random, re
 from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, field_validator
 
 from src.auth.jwt import create_tokens, decode_token
 from src.auth.hash import hash_password, verify_password
 from src.auth.deps import get_current_active_user
 from src.models.user import User
+from src.models.captcha import Captcha
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
-# ── Request / Response Models ──
+# ── Request / Response ──
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+    captcha_id: str
+    captcha_answer: str
+
 
 class RegisterRequest(BaseModel):
     username: str
     email: str
     password: str
+    captcha_id: str
+    captcha_answer: str
+    email_code: str
 
     @field_validator("password")
     @classmethod
-    def password_strength(cls, v: str) -> str:
-        if len(v) < 6:
-            raise ValueError("密码至少 6 位")
+    def pw(cls, v: str) -> str:
+        if len(v) < 6: raise ValueError("密码至少 6 位")
         return v
 
     @field_validator("username")
     @classmethod
-    def username_valid(cls, v: str) -> str:
-        if len(v.strip()) < 2:
-            raise ValueError("用户名至少 2 个字符")
+    def uname(cls, v: str) -> str:
+        if len(v.strip()) < 2: raise ValueError("用户名至少 2 个字符")
+        return v.strip()
+
+    @field_validator("email")
+    @classmethod
+    def em(cls, v: str) -> str:
+        if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", v.strip()):
+            raise ValueError("邮箱格式不正确")
         return v.strip()
 
 
-class LoginRequest(BaseModel):
+class SendCodeRequest(BaseModel):
     email: str
-    password: str
+    captcha_id: str
+    captcha_answer: str
+
+    @field_validator("email")
+    @classmethod
+    def em(cls, v: str) -> str:
+        if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", v.strip()):
+            raise ValueError("邮箱格式不正确")
+        return v.strip()
 
 
 class RefreshRequest(BaseModel):
@@ -51,14 +75,9 @@ class ChangePasswordRequest(BaseModel):
 
     @field_validator("new_password")
     @classmethod
-    def password_strength(cls, v: str) -> str:
-        if len(v) < 6:
-            raise ValueError("新密码至少 6 位")
+    def pw(cls, v: str) -> str:
+        if len(v) < 6: raise ValueError("新密码至少 6 位")
         return v
-
-
-class VerifyEmailRequest(BaseModel):
-    code: str
 
 
 class TokenResponse(BaseModel):
@@ -80,127 +99,133 @@ class UserResponse(BaseModel):
     agent_credits: int = 0
 
 
-# ── Endpoints ──
+# ── 工具 ──
 
-@router.post("/register", response_model=TokenResponse)
-async def register(req: RegisterRequest):
-    """注册——直接签发 token + 邮件验证码"""
-    existing = await User.filter(email=req.email).first()
-    if existing:
-        raise HTTPException(status_code=409, detail="邮箱已注册")
+async def _verify_captcha(captcha_id: str, answer: str) -> Captcha:
+    c = await Captcha.filter(id=captcha_id).first()
+    if not c:
+        raise HTTPException(status_code=400, detail="验证码不存在")
+    if c.used:
+        raise HTTPException(status_code=400, detail="验证码已被使用")
+    if c.is_expired():
+        raise HTTPException(status_code=400, detail="验证码已过期")
+    if c.code != answer.strip():
+        raise HTTPException(status_code=400, detail="验证码错误")
+    c.used = True
+    await c.save()
+    return c
 
-    existing_name = await User.filter(username=req.username).first()
-    if existing_name:
-        raise HTTPException(status_code=409, detail="用户名已被使用")
 
-    import random
-    code = f"{random.randint(100000, 999999)}"
-
-    user = await User.create(
-        id=str(uuid.uuid4()),
-        username=req.username,
-        email=req.email,
-        password_hash=hash_password(req.password),
-        token_version=0,
-        is_superuser=True,        # 注册即为管理员
-        verification_token=code,  # 6 位验证码
-        email_verified=False,
-    )
-
-    # 创建配额
-    from src.models.user_quota import UserQuota
-    await UserQuota.create(id=str(uuid.uuid4()), user=user,
-                           topic_credits=20, agent_credits=5)
-
-    # 发送验证邮件（如果有 SMTP 配置）
-    await _send_verification_email(req.email, code)
-
+async def _login_user(user: User) -> TokenResponse:
+    user.last_login = datetime.now(timezone.utc)
+    await user.save()
     tokens = create_tokens(str(user.id), user.token_version)
     return TokenResponse(**tokens)
 
 
-async def _send_verification_email(email: str, code: str):
-    """发送邮箱验证码。SMTP 未配置时打印到控制台。"""
-    import os
-    smtp_user = os.getenv("SMTP_USER", "")
-    smtp_pass = os.getenv("SMTP_PASS", "")
+# ═══════════════════════════════════════
+#  CAPTCHA — 4 位数字
+# ═══════════════════════════════════════
 
-    if smtp_user and smtp_pass:
-        try:
-            import smtplib
-            from email.mime.text import MIMEText
-            msg = MIMEText(f"您的 TopicSystem 验证码是: {code}，10 分钟内有效。", "plain", "utf-8")
-            msg["Subject"] = "TopicSystem 邮箱验证"
-            msg["From"] = smtp_user
-            msg["To"] = email
-            with smtplib.SMTP_SSL("smtp.qq.com", 465) as s:
-                s.login(smtp_user, smtp_pass)
-                s.sendmail(smtp_user, [email], msg.as_string())
-        except Exception as e:
-            print(f"[SMTP] 发送失败: {e}，验证码: {code}")
-    else:
-        print(f"[VERIFY] 验证码: {code} → {email}")
+@router.get("/captcha")
+async def get_captcha():
+    code = f"{random.randint(0, 9999):04d}"
+    c = await Captcha.create(id=str(uuid.uuid4()), code=code)
+    return {"captcha_id": str(c.id), "captcha_text": code}
 
 
-@router.post("/verify-email")
-async def verify_email(req: VerifyEmailRequest, user: User = Depends(get_current_active_user)):
-    """验证邮箱"""
-    if user.email_verified:
-        return {"message": "邮箱已验证"}
-    if user.verification_token != req.code:
-        raise HTTPException(status_code=400, detail="验证码错误")
-    user.email_verified = True
-    user.verification_token = None
-    await user.save()
-    return {"message": "邮箱验证成功"}
-
+# ═══════════════════════════════════════
+#  登录 — 用户名 + 密码 + CAPTCHA
+# ═══════════════════════════════════════
 
 @router.post("/login", response_model=TokenResponse)
 async def login(req: LoginRequest):
-    """登录——邮箱 + 密码 → JWT token pair"""
-    user = await User.filter(email=req.email).first()
-    if not user or not verify_password(req.password, user.password_hash):
-        raise HTTPException(status_code=401, detail="邮箱或密码错误")
+    await _verify_captcha(req.captcha_id, req.captcha_answer)
 
+    user = await User.filter(username=req.username).first()
+    if not user or not verify_password(req.password, user.password_hash):
+        raise HTTPException(status_code=401, detail="用户名或密码错误")
     if not user.is_active:
         raise HTTPException(status_code=403, detail="账户已被禁用")
 
-    user.last_login = datetime.now(timezone.utc)
-    await user.save()
+    return await _login_user(user)
 
-    tokens = create_tokens(str(user.id), user.token_version)
-    return TokenResponse(**tokens)
 
+# ═══════════════════════════════════════
+#  发送邮箱验证码
+# ═══════════════════════════════════════
+
+@router.post("/send-code")
+async def send_verification_code(req: SendCodeRequest):
+    await _verify_captcha(req.captcha_id, req.captcha_answer)
+
+    code = f"{random.randint(100000, 999999)}"
+    # 存入 Captcha 表，等注册时校验
+    await Captcha.create(id=str(uuid.uuid4()), code=code)
+
+    await _send_email(req.email, code)
+    return {"message": "验证码已发送，5 分钟内有效"}
+
+
+# ═══════════════════════════════════════
+#  注册 — CAPTCHA + 邮箱验证码
+# ═══════════════════════════════════════
+
+@router.post("/register", response_model=TokenResponse)
+async def register(req: RegisterRequest):
+    # 1. 图形验证码
+    await _verify_captcha(req.captcha_id, req.captcha_answer)
+
+    # 2. 邮箱验证码（从 Captcha 表查最近未使用的）
+    email_c = await Captcha.filter(code=req.email_code, used=False).order_by("-created_at").first()
+    if not email_c:
+        raise HTTPException(status_code=400, detail="邮箱验证码错误")
+    if email_c.is_expired():
+        raise HTTPException(status_code=400, detail="邮箱验证码已过期")
+    email_c.used = True
+    await email_c.save()
+
+    # 3. 去重
+    if await User.filter(email=req.email).exists():
+        raise HTTPException(status_code=409, detail="邮箱已注册")
+    if await User.filter(username=req.username).exists():
+        raise HTTPException(status_code=409, detail="用户名已被使用")
+
+    # 4. 创建
+    user = await User.create(
+        id=str(uuid.uuid4()), username=req.username, email=req.email,
+        password_hash=hash_password(req.password), token_version=0,
+        is_superuser=True, email_verified=True,
+    )
+
+    from src.models.user_quota import UserQuota
+    await UserQuota.create(id=str(uuid.uuid4()), user=user,
+                           topic_credits=20, agent_credits=5)
+    return await _login_user(user)
+
+
+# ═══════════════════════════════════════
+#  Refresh / Me / ChangePassword
+# ═══════════════════════════════════════
 
 @router.post("/refresh", response_model=TokenResponse)
 async def refresh_token(req: RefreshRequest):
-    """用 refresh_token 换新的 access_token"""
     payload = decode_token(req.refresh_token)
     if not payload or payload.get("type") != "refresh":
         raise HTTPException(status_code=401, detail="无效的 refresh token")
-
     user = await User.filter(id=payload["sub"], is_active=True).first()
-    if not user:
-        raise HTTPException(status_code=401, detail="用户不存在或已禁用")
-
-    if user.token_version != payload.get("ver", 0):
-        raise HTTPException(status_code=401, detail="Token 版本不匹配")
-
-    tokens = create_tokens(str(user.id), user.token_version)
-    return TokenResponse(**tokens)
+    if not user or user.token_version != payload.get("ver", 0):
+        raise HTTPException(status_code=401, detail="Token 已失效")
+    return await _login_user(user)
 
 
 @router.get("/me", response_model=UserResponse)
 async def get_me(user: User = Depends(get_current_active_user)):
-    """获取当前用户信息 + 配额"""
     from src.models.user_quota import UserQuota
     quota = await UserQuota.filter(user=user).first()
     return UserResponse(
-        id=str(user.id),
-        username=user.username,
-        email=user.email,
-        is_active=user.is_active,
-        is_admin=user.is_superuser,
+        id=str(user.id), username=user.username, email=user.email,
+        is_active=user.is_active, is_admin=user.is_superuser,
         email_verified=user.email_verified,
         created_at=user.created_at.isoformat() if user.created_at else None,
         topic_credits=quota.topic_credits if quota else 0,
@@ -211,12 +236,30 @@ async def get_me(user: User = Depends(get_current_active_user)):
 @router.post("/change-password")
 async def change_password(req: ChangePasswordRequest,
                           user: User = Depends(get_current_active_user)):
-    """修改密码——旧密码验证 → 更新 hash + token_version（所有旧 token 失效）"""
     if not verify_password(req.old_password, user.password_hash):
         raise HTTPException(status_code=400, detail="旧密码错误")
-
     user.password_hash = hash_password(req.new_password)
     user.token_version += 1
     await user.save()
+    return {"message": "密码已修改"}
 
-    return {"message": "密码已修改，所有旧 token 已失效"}
+
+# ═══════════════════════════════════════
+#  邮件
+# ═══════════════════════════════════════
+
+async def _send_email(to: str, code: str):
+    import os, smtplib
+    from email.mime.text import MIMEText
+    smtp_user = os.getenv("SMTP_USER", "")
+    smtp_pass = os.getenv("SMTP_PASS", "")
+    if smtp_user and smtp_pass:
+        try:
+            msg = MIMEText(f"您的 TopicSystem 验证码: {code}，5 分钟有效。", "plain", "utf-8")
+            msg["Subject"] = "TopicSystem 邮箱验证"
+            msg["From"] = smtp_user; msg["To"] = to
+            with smtplib.SMTP_SSL("smtp.qq.com", 465) as s:
+                s.login(smtp_user, smtp_pass); s.sendmail(smtp_user, [to], msg.as_string())
+        except Exception as e:
+            print(f"[SMTP] {e}")
+    print(f"[CODE] {code} → {to}")
