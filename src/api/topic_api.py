@@ -153,6 +153,60 @@ async def list_tags():
     return result
 
 
+@router.post("/{topic_id}/status")
+async def set_topic_status(topic_id: str, request: Request = None):
+    """标记题目掌握状态: POST {status: mastered|learning}"""
+    from src.models import Topic
+    from src.models.user_topic_status import UserTopicStatus
+    uid = getattr(getattr(request, "state", None), "user_id", None) if request else None
+    if not uid:
+        raise HTTPException(status_code=401)
+
+    body = await request.json() if request else {}
+    status = body.get("status", "learning")
+    if status not in ("mastered", "learning"):
+        raise HTTPException(status_code=400, detail="状态仅支持 mastered / learning")
+
+    topic = await Topic.get_or_none(id=topic_id)
+    if not topic:
+        raise HTTPException(status_code=404)
+
+    uts, _ = await UserTopicStatus.update_or_create(
+        user_id=uid, topic_id=topic_id,
+        defaults={"status": status}
+    )
+    return {"status": uts.status, "topic_id": topic_id}
+
+
+@router.get("/dashboard/stats")
+async def get_dashboard_stats(request: Request = None):
+    """Dashboard 统计数据"""
+    from src.models import Topic
+    from src.models.user_topic_status import UserTopicStatus
+    uid = getattr(getattr(request, "state", None), "user_id", None) if request else None
+    total = await Topic.all().count()
+    responded = 0
+    if uid:
+        mastered = await UserTopicStatus.filter(user_id=uid, status="mastered").count()
+        learning = await UserTopicStatus.filter(user_id=uid, status="learning").count()
+    else:
+        mastered = 0; learning = 0
+    return {
+        "total_topics": total,
+        "mastered": mastered,
+        "learning": learning,
+        "today_target": 5,
+    }
+
+
+@router.get("/positions")
+async def get_positions():
+    """返回所有可选岗位"""
+    from src.models.job_position import JobPosition
+    positions = await JobPosition.all().order_by("sort_order")
+    return {"items": [{"id": p.id, "name": p.name, "category": p.category} for p in positions]}
+
+
 @router.get("/{topic_id}")
 async def get_topic_detail(topic_id: str, request: Request = None):
     """获取 Topic 详情（quota=0 时截断敏感字段）"""

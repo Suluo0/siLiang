@@ -18,13 +18,17 @@ class User(Model):
     verification_token = fields.CharField(max_length=64, null=True)
     last_login = fields.DatetimeField(null=True)
 
+    # 会员 / 偏好
+    membership_level = fields.CharField(max_length=20, default="free")
+    target_position = fields.CharField(max_length=100, null=True)
+    learning_preference = fields.CharField(max_length=50, null=True)
+    experience_level = fields.CharField(max_length=20, null=True)
+
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
-    # 一对一关系
     profile: fields.OneToOneRelation["UserProfile"]
-    # 一对多关系
-    topic_progress: fields.ReverseRelation["UserTopicProgress"]
+    topic_statuses: fields.ReverseRelation["UserTopicStatus"]
 
     class Meta:
         table = "user"
