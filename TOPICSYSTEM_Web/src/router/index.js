@@ -81,11 +81,11 @@ const router = createRouter({
   routes
 })
 
-// 路由守卫 — 未登录跳到 /login
+// 路由守卫 — 仅登录页面对已登录用户跳回主页
 router.beforeEach((to) => {
   const token = localStorage.getItem('token')
-  if (!token && to.path !== '/login') {
-    return '/login'
+  if (to.path === '/login' && token) {
+    return '/dashboard'
   }
 })
 

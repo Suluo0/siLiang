@@ -164,11 +164,12 @@ async def get_dashboard_stats(request: Request = None):
     else:
         mastered = 0; learning = 0
     return {
-        "total_topics": total,
+        "total_topics": total if uid else 0,
         "mastered": mastered,
         "learning": learning,
         "today_target": today_target,
         "preferences_filled": preferences_filled,
+        "authenticated": bool(uid),
     }
 
 
