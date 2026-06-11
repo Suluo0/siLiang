@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: siliang-pg
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Xswl1139
+      POSTGRES_DB: topic
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: siliang-app
+    network_mode: "host"
+    environment:
+      DATABASE_URL: "postgres://postgres:Xswl1139@127.0.0.1:5432/topic"
+      MILVUS_HOST: "127.0.0.1"
+      MILVUS_PORT: "19530"
+      TS_DS_APIKEY: "sk-ec0dd3c17c1242669efe956e71508de9"
+      API_ADDRESS: "https://api.deepseek.com/v1"
+      API_MODEL: "deepseek-chat"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pg_data:
