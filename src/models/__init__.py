@@ -29,6 +29,9 @@ from .outbox import Outbox
 # Quota 配额表
 from .user_quota import UserQuota
 
+# Captcha 验证码表
+from .captcha import Captcha
+
 __all__ = [
     # Topic
     "Topic",
@@ -56,4 +59,5 @@ __all__ = [
     "Outbox",
     # Quota
     "UserQuota",
+    "Captcha",
 ]
