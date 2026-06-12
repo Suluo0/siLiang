@@ -6,8 +6,7 @@
 import asyncio, json, sys, os, time
 sys.path.insert(0, "/app")
 
-from tortoise import Tortoise
-DB_URL = "postgres://postgres:Xswl1139@postgres:5432/topic"
+from src.config.database import db_lifespan
 
 CHECKPOINT = "/app/scripts/.backfill_checkpoint.json"
 BATCH = 200
@@ -46,8 +45,8 @@ def save_checkpoint(s):
 
 
 async def main():
-    await Tortoise.init(db_url=DB_URL, modules={"models": ["src.models"]})
-    from src.agentv3.capabilities.register import register_all
+    async with db_lifespan():
+        from src.agentv3.capabilities.register import register_all
     register_all()
     from src.agentv3.capabilities.generate import generate_topic
     from src.models.topic import Topic
@@ -69,7 +68,6 @@ async def main():
 
     if not todo:
         print(f"All {len(all_topics)} topics complete")
-        await Tortoise.close_connections()
         return
 
     print(f"Backfill: {len(todo)} topics missing data (total: {len(all_topics)})")
@@ -125,7 +123,6 @@ async def main():
     await asyncio.gather(*tasks, return_exceptions=True)
 
     print(f"\nDone in {(time.time()-start)/60:.1f}min: {stats['ok']} ok, {stats['fail']} fail")
-    await Tortoise.close_connections()
 
 
 if __name__ == "__main__":

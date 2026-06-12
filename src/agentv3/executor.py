@@ -1,5 +1,6 @@
 """
 ToolExecutor —— 每个 Capability 调用的运行时保护 + 落库追踪
+trace_id / caller 由 contextvars 自动获取，无需外部传入。
 """
 from __future__ import annotations
 import asyncio, time, uuid
@@ -8,6 +9,7 @@ from src.agentv3.capability import Capability
 from src.agentv3.protocols import ToolResult
 from src.agentv3.token_budget import TokenBudget
 from src.agentv3.circuit_breaker import CircuitBreaker, CircuitBreakerError
+from src.utils.context import current_trace_id, current_caller
 
 
 def _sanitize(data, max_length: int = 500, max_items: int = 5):
@@ -47,13 +49,13 @@ class ToolExecutor:
     def __init__(
         self,
         cap: Capability,
-        trace_id: str = "",
         budget: TokenBudget | None = None,
         breaker: CircuitBreaker | None = None,
         timeout_ms: int | None = None,
     ):
         self.cap = cap
-        self.trace_id = trace_id
+        self.trace_id = current_trace_id.get()
+        self.caller = current_caller.get()
         self.budget = budget
         self.breaker = breaker
         self.timeout_ms = timeout_ms or self.DEFAULT_TIMEOUT_MS
@@ -99,7 +101,7 @@ class ToolExecutor:
             self.breaker.record_success()
 
         duration = int((time.monotonic() - t_start) * 1000)
-        input_summary = str(kwargs).get("user_input", str(list(kwargs.values())[:1])) if kwargs else ""
+        input_summary = kwargs.get("user_input", str(list(kwargs.values())[:1])) if kwargs else ""
         await _log_call(self.trace_id, self.cap.id, "success", duration,
                         input_summary=str(kwargs)[:300], output_summary=str(result)[:500])
 

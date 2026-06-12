@@ -44,6 +44,9 @@ class Capability:
     estimated_latency_ms: int = 100
     fallback: str | None = None
 
+    resource_group: str = "default"
+    breaker_threshold: int | None = None
+
     def format_for_prompt(self) -> str:
         """一行描述，类似 opencode skill 的 metadata"""
         cost = f"({self.estimated_cost}, {self.estimated_latency_ms}ms)"

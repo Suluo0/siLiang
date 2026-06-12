@@ -3,12 +3,11 @@ Auth API — 注册 / 登录 / 续期 / 改密 / CAPTCHA / 邮箱验证
 """
 import uuid, random, re
 from datetime import datetime, timezone
-from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, field_validator
 
 from src.auth.jwt import create_tokens, decode_token
 from src.auth.hash import hash_password, verify_password
-from src.auth.deps import get_current_active_user
 from src.models.user import User
 from src.models.captcha import Captcha
 
@@ -306,17 +305,6 @@ async def update_preferences(request: Request = None):
 # ═══════════════════════════════════════
 
 async def _send_email(to: str, code: str):
-    import os, smtplib
-    from email.mime.text import MIMEText
-    smtp_user = os.getenv("SMTP_USER", "")
-    smtp_pass = os.getenv("SMTP_PASS", "")
-    if smtp_user and smtp_pass:
-        try:
-            msg = MIMEText(f"您的 TopicSystem 验证码: {code}，5 分钟有效。", "plain", "utf-8")
-            msg["Subject"] = "TopicSystem 邮箱验证"
-            msg["From"] = smtp_user; msg["To"] = to
-            with smtplib.SMTP_SSL("smtp.qq.com", 465) as s:
-                s.login(smtp_user, smtp_pass); s.sendmail(smtp_user, [to], msg.as_string())
-        except Exception as e:
-            print(f"[SMTP] {e}")
+    from src.utils.mail import send
+    send(to, "TopicSystem 邮箱验证", f"您的 TopicSystem 验证码: {code}，5 分钟有效。")
     print(f"[CODE] {code} → {to}")

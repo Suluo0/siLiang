@@ -1,0 +1,52 @@
+{
+  "topic": {
+    "topic": "HashMap底层实现",
+    "alias": ["HashMap原理", "HashMap数据结构"],
+    "domain": "编程基础",
+    "tech_domain": "后端开发",
+    "category": "Java",
+    "tags": ["Java集合", "哈希表", "红黑树"],
+    "difficulty": 3,
+    "keywords": ["HashMap", "哈希表", "红黑树", "哈希冲突", "链表"],
+    "one_liner": "HashMap是Java中基于哈希表实现的Map，通过键的哈希值快速定位数据，是面试中考察数据结构与工程权衡的经典话题。",
+    "core_summary": "HashMap采用数组+链表+红黑树实现，利用哈希函数映射键值对，处理冲突时链表转红黑树优化性能。",
+    "core_points": [
+      "数组+链表+红黑树的数据结构",
+      "哈希函数与索引计算",
+      "扩容机制与负载因子",
+      "红黑树化的阈值与退化"
+    ],
+    "detailed_explanation": "HashMap底层由数组（Node<K,V>[] table）组成...JDK8的改进包括：尾插法避免死循环、红黑树优化、扰动函数简化。",
+    "code_example": "// 哈希值计算 + putVal核心逻辑...",
+    "traps": "1. 误以为HashMap直接使用hashCode()作为索引...4. 混淆JDK7与JDK8的区别",
+    "bonuses": "1. 能解释为什么选择红黑树而不是平衡二叉树...4. 讨论自定义对象作为key时需重写hashCode和equals"
+  },
+  "knowledge_points": [
+    {"name": "哈希表", "type": "prerequisite", "importance": 5, "description": "哈希表是一种通过哈希函数将键映射到存储位置的数据结构，支持快速查找、插入和删除。HashMap基于哈希表实现。"},
+    {"name": "哈希冲突", "type": "core_concept", "importance": 5, "description": "不同的键通过哈希函数得到相同的索引称为哈希冲突。HashMap使用链地址法（链表+红黑树）解决冲突。"},
+    {"name": "红黑树", "type": "core_concept", "importance": 4, "description": "红黑树是一种自平衡二叉查找树，保证操作时间复杂度O(logn)。HashMap在链表过长时将其转换为红黑树以提高性能。"},
+    {"name": "ConcurrentHashMap", "type": "derivative", "importance": 3, "description": "ConcurrentHashMap是线程安全的HashMap，采用分段锁或CAS+synchronized实现并发安全，是HashMap的并发版本。"},
+    {"name": "扩容机制", "type": "extension", "importance": 4, "description": "HashMap在元素数量超过阈值时进行扩容，容量翻倍并重新哈希所有元素，是影响性能的关键操作。"},
+    {"name": "扰动函数", "type": "extension", "importance": 3, "description": "扰动函数将hashCode的高位与低位混合，以减少哈希冲突。JDK8中采用h ^ (h >>> 16)简化实现。"}
+  ],
+  "evaluation_anchors": [
+    {"level": "entry", "question": "HashMap的基本数据结构是什么？", "expected_answer": "数组+链表/红黑树，利用哈希函数确定存储位置，冲突时使用链表或红黑树。"},
+    {"level": "master", "question": "HashMap在JDK8中如何解决哈希冲突？为什么引入红黑树？", "expected_answer": "链地址法，链表长度超过8且数组长度大于64时转为红黑树，提高查找效率从O(n)到O(logn)。"},
+    {"level": "expert", "question": "HashMap的扩容机制是怎样的？扩容时如何保证数据正确迁移？", "expected_answer": "当size>threshold时扩容2倍...高并发下需使用ConcurrentHashMap。"}
+  ],
+  "similar_questions": [
+    {"question": "Hashtable和HashMap的区别", "hint": "线程安全、null键值、迭代器、性能等方面对比"},
+    {"question": "ConcurrentHashMap实现原理", "hint": "分段锁、CAS、synchronized等机制"},
+    {"question": "HashMap在JDK7和JDK8中的区别", "hint": "头插法vs尾插法、红黑树、扰动函数等"}
+  ],
+  "advanced_questions": [
+    {"question": "HashMap的哈希函数为什么使用异或和移位？", "hint": "目的是让高位参与索引计算，减少冲突"},
+    {"question": "为什么HashMap的容量是2的幂次方？", "hint": "位运算替代取模，提高性能；扩容时元素位置要么不变要么偏移2的幂次"},
+    {"question": "HashMap在并发场景下为什么会出现死循环？", "hint": "JDK7头插法导致循环链表，JDK8已修复但仍有数据丢失风险"}
+  ],
+  "references": [
+    {"title": "HashMap官方文档", "url": "https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html", "description": "Java 8 HashMap API文档"},
+    {"title": "HashMap源码分析", "url": "https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/HashMap.java", "description": "OpenJDK HashMap源码"}
+  ],
+  "_tokens_used": 3000
+}

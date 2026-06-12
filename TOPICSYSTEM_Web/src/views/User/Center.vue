@@ -94,7 +94,7 @@ onMounted(async () => {
     prefs.learning_preference = (me.learning_preference || '').split(',').filter(Boolean)
     prefs.experience_level = me.experience_level || ''
     prefs.today_target = me.today_target || 0
-    const pos = await request.get('/v1/topic/positions')
+    const pos = await request.get('/topic/positions')
     positions.value = pos.items || []
   } catch {}
 })

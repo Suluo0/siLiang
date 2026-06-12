@@ -1,5 +1,7 @@
 # Topic 模块模型
 from .topic import Topic
+from .knowledge_dict import KnowledgeDict
+from .knowledge_alias import KnowledgeAlias
 from .topic_prerequisite import TopicPrerequisite
 from .topic_core_concept import TopicCoreConcept
 from .topic_derivative import TopicDerivative
@@ -38,9 +40,17 @@ from .user_topic_status import UserTopicStatus
 # 岗位表
 from .job_position import JobPosition
 
+# Interview 模块模型
+from .interview_persona import InterviewPersona
+from .interview_room import InterviewRoom
+from .interview_round import InterviewRound
+from .interview_summary import InterviewSummary
+
 __all__ = [
     # Topic
     "Topic",
+    "KnowledgeDict",
+    "KnowledgeAlias",
     "TopicPrerequisite",
     "TopicCoreConcept",
     "TopicDerivative",
@@ -68,4 +78,9 @@ __all__ = [
     "Captcha",
     "UserTopicStatus",
     "JobPosition",
+    # Interview
+    "InterviewPersona",
+    "InterviewRoom",
+    "InterviewRound",
+    "InterviewSummary",
 ]

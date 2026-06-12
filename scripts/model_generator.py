@@ -13,6 +13,9 @@ import sys
 import asyncio
 import argparse
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from src.config.settings import settings
 from typing import Optional
 
 # 添加项目根目录到 path
@@ -324,7 +327,7 @@ async def generate_from_table_list(
 def main():
     parser = argparse.ArgumentParser(description="根据表名生成 Tortoise ORM 模型")
     parser.add_argument("tables", nargs="+", help="表名列表")
-    parser.add_argument("--db-url", default=os.getenv("DATABASE_URL"), help="数据库连接 URL")
+    parser.add_argument("--db-url", default=settings.DATABASE_URL, help="数据库连接 URL")
     parser.add_argument("--schema", default="topic", help="数据库 schema")
     parser.add_argument("--module", default="topic", help="模块名（如 topic, user）")
     parser.add_argument("--output", default="src", help="输出目录")

@@ -4,6 +4,7 @@ Milvus 向量检索 + 关键词检索
 """
 from src.tools.milvus_client import MilvusClient
 from src.tools.embedding import EmbeddingEncoder
+from src.utils import parse_keywords
 
 
 async def search_knowledge(concept: str, keywords: list[str], top_k: int = 10) -> dict:
@@ -44,15 +45,9 @@ async def search_knowledge(concept: str, keywords: list[str], top_k: int = 10) -
             "topic_id": tid,
             "core_concept": src.get("core_concept", ""),
             "domain": src.get("domain", ""),
-            "keywords": _parse_keywords(src.get("keywords", "")),
+            "keywords": parse_keywords(src.get("keywords", "")),
             "dense_cosine": d.get("score") if d else None,
             "rrf_score": rrf,
         })
 
     return {"candidates": candidates, "count": len(candidates), "source": "milvus"}
-
-
-def _parse_keywords(raw: str) -> list[str]:
-    if not raw:
-        return []
-    return [kw.strip() for kw in raw.replace("，", ",").split(",") if kw.strip()]

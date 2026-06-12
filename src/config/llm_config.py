@@ -1,17 +1,14 @@
 """
-LLM 配置管理
-统一管理各个模型的配置
+LLM 配置管理 — 单一 LLM 配置来源
+
+所有 LLM 相关配置统一从此处读取，禁止在其他模块中直接 os.getenv()。
 """
 import os
-from typing import Optional, Dict
+from typing import Optional
 from pydantic import BaseModel, Field
-from dotenv import load_dotenv
-
-load_dotenv()
 
 
 class ModelConfig(BaseModel):
-    """模型配置"""
     name: str = Field(description="模型名称")
     temperature: float = Field(default=0.2, description="采样随机性")
     max_tokens: int = Field(default=2048, description="最大输出 token 数")
@@ -22,83 +19,51 @@ class ModelConfig(BaseModel):
 
 
 class LLMConfig:
-    """LLM 配置管理类"""
-    
-    # 默认配置（从环境变量读取）
-    DEFAULT_MODEL = os.getenv("API_MODEL", "gpt-4-turbo")
-    DEFAULT_API_KEY = os.getenv("TS_DS_APIKEY") or os.getenv("API_SECRET")
-    DEFAULT_BASE_URL = os.getenv("API_ADDRESS")
-    
-    # 预定义模型配置
-    MODELS: Dict[str, ModelConfig] = {
+    """LLM 全局配置 — 所有消费者只从这里取"""
+
+    API_KEY: str = os.getenv("TS_DS_APIKEY", "")
+    BASE_URL: str = os.getenv("API_ADDRESS", "https://api.deepseek.com/v1")
+    MODEL_NAME: str = os.getenv("API_MODEL", "deepseek-chat")
+
+    _models: dict[str, ModelConfig] = {
+        "deepseek-chat": ModelConfig(
+            name="deepseek-chat", temperature=0.7, max_tokens=4096,
+            timeout=120, max_retries=3),
         "MiniMax-M2.7": ModelConfig(
-            name="MiniMax-M2.7",
-            temperature=0.7,
-            max_tokens=4096,
-            timeout=120,
-            max_retries=3,
-            api_key=DEFAULT_API_KEY,
-            base_url=DEFAULT_BASE_URL,
-        ),
+            name="MiniMax-M2.7", temperature=0.7, max_tokens=4096,
+            timeout=120, max_retries=3),
         "gpt-4-turbo": ModelConfig(
-            name="gpt-4-turbo",
-            temperature=0.2,
-            max_tokens=2048,
-            timeout=30,
-            max_retries=2,
-        ),
+            name="gpt-4-turbo", temperature=0.2, max_tokens=2048,
+            timeout=30, max_retries=2),
         "gpt-4o": ModelConfig(
-            name="gpt-4o",
-            temperature=0.2,
-            max_tokens=4096,
-            timeout=30,
-            max_retries=2,
-        ),
-        "gpt-3.5-turbo": ModelConfig(
-            name="gpt-3.5-turbo",
-            temperature=0.3,
-            max_tokens=2048,
-            timeout=30,
-            max_retries=2,
-        ),
+            name="gpt-4o", temperature=0.2, max_tokens=4096,
+            timeout=30, max_retries=2),
     }
-    
+
     @classmethod
     def get_model_config(cls, model_name: Optional[str] = None) -> ModelConfig:
-        """获取模型配置"""
-        if model_name is None:
-            model_name = cls.DEFAULT_MODEL
-        
-        if model_name in cls.MODELS:
-            config = cls.MODELS[model_name].model_copy(deep=True)
-            if config.api_key is None:
-                config.api_key = cls.DEFAULT_API_KEY
-            if config.base_url is None:
-                config.base_url = cls.DEFAULT_BASE_URL
-            return config
-        
-        return ModelConfig(
-            name=model_name,
-            api_key=cls.DEFAULT_API_KEY,
-            base_url=cls.DEFAULT_BASE_URL,
-        )
-    
+        name = model_name or cls.MODEL_NAME
+        if name in cls._models:
+            cfg = cls._models[name].model_copy(deep=True)
+            if cfg.api_key is None:
+                cfg.api_key = cls.API_KEY
+            if cfg.base_url is None:
+                cfg.base_url = cls.BASE_URL
+            return cfg
+        return ModelConfig(name=name, api_key=cls.API_KEY, base_url=cls.BASE_URL)
+
     @classmethod
-    def register_model(cls, model_config: ModelConfig) -> None:
-        """注册新模型"""
-        cls.MODELS[model_config.name] = model_config
-    
+    def register_model(cls, config: ModelConfig) -> None:
+        cls._models[config.name] = config
+
     @classmethod
-    def list_models(cls) -> list:
-        """列出所有可用模型"""
-        return list(cls.MODELS.keys())
+    def list_models(cls) -> list[str]:
+        return list(cls._models.keys())
 
 
 def get_model_config(model_name: Optional[str] = None) -> ModelConfig:
-    """获取模型配置的便捷函数"""
     return LLMConfig.get_model_config(model_name)
 
 
-def list_available_models() -> list:
-    """列出所有可用模型"""
+def list_available_models() -> list[str]:
     return LLMConfig.list_models()

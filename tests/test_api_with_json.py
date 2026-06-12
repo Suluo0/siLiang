@@ -10,6 +10,7 @@ import os
 
 # 设置路径
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.config.settings import settings
 
 from src.service.topic_service import TopicService
 from src.service.semantic_trans import semantic_convert
@@ -89,26 +90,15 @@ async def test_semantic_and_save():
 
 async def main():
     """主函数"""
-    # 初始化数据库
-    from tortoise import Tortoise
-    from dotenv import load_dotenv
+    from src.config.database import db_lifespan
     
-    load_dotenv('.env')
-    
-    await Tortoise.init(
-        db_url=os.getenv('DATABASE_URL'),
-        modules={'models': ['src.models']}
-    )
-    
-    # 清理测试数据
-    from src.models.topic import Topic
-    await Topic.filter(topic='HashMap底层原理与面试深度解析').delete()
-    
-    # 执行测试
-    success = await test_semantic_and_save()
-    
-    # 关闭连接
-    await Tortoise.close_connections()
+    async with db_lifespan():
+        # 清理测试数据
+        from src.models.topic import Topic
+        await Topic.filter(topic='HashMap底层原理与面试深度解析').delete()
+        
+        # 执行测试
+        success = await test_semantic_and_save()
     
     return success
 

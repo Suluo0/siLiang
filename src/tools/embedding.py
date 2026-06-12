@@ -1,9 +1,11 @@
 """
-Embedding 编码器封装 (可选)
-bge-large-zh-v1.5 首次下载需 ~1GB，下载失败时优雅降级
+Embedding 编码器 —— 硅基流动 BGE v1.5 API
+无需本地模型，不依赖 PyTorch
 """
+import os
 import numpy as np
 from typing import Optional
+import httpx
 from src.config.settings import settings
 
 
@@ -12,9 +14,10 @@ class EmbeddingEncoder:
 
     def __init__(self):
         self.model_name = settings.EMBEDDING_MODEL
-        self.device = settings.EMBEDDING_DEVICE
-        self._model = None
+        self.api_url = settings.EMBEDDING_API_URL
+        self.api_key = settings.EMBEDDING_API_KEY
         self._failed = False
+        self._available: Optional[bool] = None
 
     @classmethod
     def get_instance(cls) -> "EmbeddingEncoder":
@@ -24,34 +27,49 @@ class EmbeddingEncoder:
 
     @classmethod
     def reset(cls):
-        """重置单例，强制重新加载模型"""
         cls._instance = None
 
     @property
     def available(self) -> bool:
-        """是否可用"""
         if self._failed:
             return False
-        try:
-            self._lazy_load()
-            return True
-        except Exception:
+        if self._available is not None:
+            return self._available
+        if not self.api_key:
             self._failed = True
+            self._available = False
             return False
-
-    def _lazy_load(self):
-        if self._model is not None:
-            return
-        from sentence_transformers import SentenceTransformer
-        self._model = SentenceTransformer(self.model_name, device=self.device)
+        self._available = True
+        return True
 
     def encode(self, text: str) -> np.ndarray:
         """将文本编码为向量，失败返回零向量"""
-        if not self.available:
+        if not self.available or not text:
             return np.zeros(self.dim, dtype=np.float32)
         try:
-            embedding = self._model.encode(text, normalize_embeddings=True)
-            return np.array(embedding, dtype=np.float32)
+            resp = httpx.post(
+                self.api_url,
+                json={
+                    "model": self.model_name,
+                    "input": text,
+                    "encoding_format": "float",
+                },
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                },
+                timeout=30,
+            )
+            if resp.status_code != 200:
+                return np.zeros(self.dim, dtype=np.float32)
+            data = resp.json()
+            embedding = data["data"][0]["embedding"]
+            vec = np.array(embedding, dtype=np.float32)
+            # L2 归一化
+            norm = np.linalg.norm(vec)
+            if norm > 0:
+                vec = vec / norm
+            return vec
         except Exception:
             return np.zeros(self.dim, dtype=np.float32)
 

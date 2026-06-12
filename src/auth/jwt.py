@@ -3,10 +3,18 @@ JWT Token 管理 —— 签发 / 验证 / 过期
 Access Token: 15min, 放在 Authorization header
 Refresh Token: 7d, 用于续期
 """
+import os
 from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 
-SECRET_KEY = "topicsystem-jwt-secret-change-in-production-2026"
+SECRET_KEY = os.getenv("JWT_SECRET")
+if not SECRET_KEY:
+    import secrets
+    import warnings
+    SECRET_KEY = secrets.token_urlsafe(32)
+    warnings.warn("JWT_SECRET not set in environment, using a temporary random key. "
+                  "Set JWT_SECRET in .env for production!")
+
 ALGORITHM = "HS256"
 ACCESS_EXPIRE_MINUTES = 10080  # 7 days
 REFRESH_EXPIRE_DAYS = 7

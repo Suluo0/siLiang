@@ -38,7 +38,7 @@ const cards = computed(() => {
 
 onMounted(async () => {
   try {
-    const res = await request.get('/v1/topic/dashboard/stats')
+    const res = await request.get('/topic/dashboard/stats')
     stats.value = res
     authenticated.value = res.authenticated !== false
     emit('stats-loaded', { pref: res.preferences_filled, auth: authenticated.value })

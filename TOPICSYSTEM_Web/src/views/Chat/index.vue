@@ -190,7 +190,7 @@ const sendMessage = async () => {
   try {
     // 使用 v3 Agent API
     const token = localStorage.getItem('token') || ''
-    const response = await fetch('/api/v3/topic/generate', {
+    const response = await fetch('/api/topic/generate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

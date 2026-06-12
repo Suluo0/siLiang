@@ -4,7 +4,7 @@ services:
     container_name: siliang-pg
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Xswl1139
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
       POSTGRES_DB: topic
     ports:
       - "5432:5432"
@@ -15,21 +15,88 @@ services:
       interval: 5s
       retries: 5
 
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.5
+    container_name: siliang-etcd
+    network_mode: "host"
+    environment:
+      ETCD_AUTO_COMPACTION_MODE: revision
+      ETCD_AUTO_COMPACTION_RETENTION: "1000"
+      ETCD_QUOTA_BACKEND_BYTES: "4294967296"
+      ETCD_SNAPSHOT_COUNT: "50000"
+    command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
+    volumes:
+      - etcd_data:/etcd
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health"]
+      interval: 10s
+      retries: 5
+
+  minio:
+    image: minio/minio:RELEASE.2023-03-20T20-16-18Z
+    container_name: siliang-minio
+    network_mode: "host"
+    environment:
+      MINIO_ROOT_USER: "${MINIO_ROOT_USER:-minioadmin}"
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD:-minioadmin}"
+    command: minio server /minio_data --console-address ":9001"
+    volumes:
+      - minio_data:/minio_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      retries: 5
+
+  milvus:
+    image: milvusdb/milvus:v2.4.0
+    container_name: siliang-milvus
+    network_mode: "host"
+    command: ["milvus", "run", "standalone"]
+    environment:
+      ETCD_ENDPOINTS: 127.0.0.1:2379
+      MINIO_ADDRESS: 127.0.0.1:9000
+      MINIO_ACCESS_KEY_ID: "${MINIO_ACCESS_KEY_ID:-minioadmin}"
+      MINIO_SECRET_ACCESS_KEY: "${MINIO_SECRET_ACCESS_KEY:-minioadmin}"
+    volumes:
+      - milvus_data:/var/lib/milvus
+    depends_on:
+      etcd:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
   app:
     build: .
     container_name: siliang-app
     network_mode: "host"
     environment:
-      DATABASE_URL: "postgres://postgres:Xswl1139@127.0.0.1:5432/topic"
+      JWT_SECRET: "${JWT_SECRET}"
+      DATABASE_URL: "${DATABASE_URL}"
       MILVUS_HOST: "127.0.0.1"
       MILVUS_PORT: "19530"
-      TS_DS_APIKEY: "sk-ec0dd3c17c1242669efe956e71508de9"
-      API_ADDRESS: "https://api.deepseek.com/v1"
-      API_MODEL: "deepseek-chat"
+      TS_DS_APIKEY: "${TS_DS_APIKEY}"
+      API_ADDRESS: "${API_ADDRESS:-https://api.deepseek.com/v1}"
+      API_MODEL: "${API_MODEL:-deepseek-chat}"
+      EMBEDDING_API_KEY: "${EMBEDDING_API_KEY:-}"
+      EMBEDDING_API_URL: "${EMBEDDING_API_URL:-https://api.siliconflow.cn/v1/embeddings}"
+      EMBEDDING_MODEL: "${EMBEDDING_MODEL:-BAAI/bge-large-zh-v1.5}"
+      SMTP_USER: "${SMTP_USER:-}"
+      SMTP_PASS: "${SMTP_PASS:-}"
     depends_on:
       postgres:
+        condition: service_healthy
+      milvus:
         condition: service_healthy
     restart: unless-stopped
 
 volumes:
   pg_data:
+  etcd_data:
+  minio_data:
+  milvus_data:

@@ -1,66 +1,66 @@
 """
-Topic API - HTTP 接口层
-
-职责：只负责接收请求、参数校验、调用 service、返回响应
-不包含任何业务逻辑
+Topic API — 面试题 CRUD + Agent 生成
 """
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
-router = APIRouter(prefix="/api/v1/topic", tags=["topic"])
 
+# ═══════════════════════════════════════════
+# Models
+# ═══════════════════════════════════════════
 
 class ListResponse(BaseModel):
-    """Topic 列表响应"""
     total: int
     items: list[dict]
 
 
-class DetailResponse(BaseModel):
-    """Topic 详情响应"""
-    id: str
-    topic: str
-    alias: list[str] | None = None
-    domain: str
-    category: str | None = None
-    tags: list[str] | None = None
-    difficulty: int
-    mastery_level: int
-    core_summary: str | None = None
-    core_points: str | None = None
-    detailed_explanation: str | None = None
-    code_example: str | None = None
-    traps: str | None = None
-    bonuses: str | None = None
-    prerequisites: list[dict] = []
-    core_concepts: list[dict] = []
-    derivatives: list[dict] = []
-    extensions: list[dict] = []
-    evaluation_anchors: list[dict] = []
-    similar_questions: list[dict] = []
-    advanced_questions: list[dict] = []
-    references: list[dict] = []
+class GenerateRequest(BaseModel):
+    user_input: str
+
+    @field_validator("user_input")
+    @classmethod
+    def validate_input(cls, v: str) -> str:
+        stripped = v.strip()
+        if len(stripped) < 2:
+            raise ValueError("输入过短，请提供更具体的技术概念")
+        if len(stripped) > 500:
+            raise ValueError("输入过长，请精简到 500 字符以内")
+        if stripped.isdigit() or all(not c.isalnum() for c in stripped):
+            raise ValueError("请输入有效的技术概念，而非数字或符号")
+        return stripped
 
 
-# 路由
-router = APIRouter(prefix="/api/v1/topic", tags=["topic"])
+class GenerateResponse(BaseModel):
+    success: bool
+    source: str | None = None
+    topic_id: str | None = None
+    topic_name: str | None = None
+    domain: str | None = None
+    confidence: float | None = None
+    trace_id: str | None = None
+    message: str | None = None
 
-# Service 实例（延迟初始化）
+
+router = APIRouter(prefix="/api/topic", tags=["topic"])
+
+
+# ═══════════════════════════════════════════
+# CRUD — 查询
+# ═══════════════════════════════════════════
+
 @router.get("/list", response_model=ListResponse)
 async def list_topics(
     keyword: str = "", tag: str = "", limit: int = 20, offset: int = 0
 ):
-    """查询 Topic 列表，支持 tag 筛选。高频查询缓存 30 秒。"""
     from src.models import Topic
-    from src.api.cache import cache
-    
-    # 无 keyword 无 tag 时走缓存
+    from src.common.cache import cache
+
     if not keyword and not tag:
         key = f"topic_list_{limit}_{offset}"
         cached = cache.get(key)
         if cached:
             return cached
-    
+
     query = Topic.all()
     if keyword:
         query = query.filter(topic__icontains=keyword)
@@ -73,7 +73,7 @@ async def list_topics(
         total = await query.count()
         topics = await query.order_by("-created_at").offset(offset).limit(limit)
         items = _build_items(topics, tag="")
-    
+
     result = ListResponse(total=total, items=items)
     if not keyword and not tag:
         cache.set(key, result.model_dump(), ttl=30)
@@ -88,22 +88,17 @@ def _build_items(topics, tag: str = "") -> list[dict]:
         if tag and tag not in tags and tag not in kws:
             continue
         items.append({
-            "id": str(t.id),
-            "topic": t.topic,
-            "domain": t.domain,
-            "category": t.category,
-            "difficulty": t.difficulty,
+            "id": str(t.id), "topic": t.topic, "domain": t.domain,
+            "category": t.category, "difficulty": t.difficulty,
             "mastery_level": t.mastery_level,
-            "tags": tags,
-            "keywords": kws,
+            "tags": tags, "keywords": kws,
         })
     return items
 
 
 @router.get("/tags")
 async def list_tags():
-    """返回所有唯一的标签（缓存 5 分钟）"""
-    from src.api.cache import cache
+    from src.common.cache import cache
     cached = cache.get("topic_tags")
     if cached:
         return cached
@@ -119,63 +114,8 @@ async def list_tags():
     return result
 
 
-@router.post("/{topic_id}/status")
-async def set_topic_status(topic_id: str, request: Request = None):
-    """标记题目掌握状态: POST {status: mastered|learning}"""
-    from src.models import Topic
-    from src.models.user_topic_status import UserTopicStatus
-    uid = getattr(getattr(request, "state", None), "user_id", None) if request else None
-    if not uid:
-        raise HTTPException(status_code=401)
-
-    body = await request.json() if request else {}
-    status = body.get("status", "learning")
-    if status not in ("mastered", "learning"):
-        raise HTTPException(status_code=400, detail="状态仅支持 mastered / learning")
-
-    topic = await Topic.get_or_none(id=topic_id)
-    if not topic:
-        raise HTTPException(status_code=404)
-
-    uts, _ = await UserTopicStatus.update_or_create(
-        user_id=uid, topic_id=topic_id,
-        defaults={"status": status}
-    )
-    return {"status": uts.status, "topic_id": topic_id}
-
-
-@router.get("/dashboard/stats")
-async def get_dashboard_stats(request: Request = None):
-    """Dashboard 统计数据"""
-    from src.models import Topic
-    from src.models.user_topic_status import UserTopicStatus
-    uid = getattr(getattr(request, "state", None), "user_id", None) if request else None
-    total = await Topic.all().count()
-    today_target = 0
-    preferences_filled = False
-    if uid:
-        from src.models.user import User
-        user = await User.filter(id=uid).first()
-        if user:
-            today_target = user.today_target or 0
-            preferences_filled = user.preferences_filled
-        mastered = await UserTopicStatus.filter(user_id=uid, status="mastered").count()
-        learning = await UserTopicStatus.filter(user_id=uid, status="learning").count()
-    else:
-        mastered = 0; learning = 0
-    return {
-        "total_topics": total if uid else 0,
-        "mastered": mastered,
-        "learning": learning,
-        "today_target": today_target,
-        "preferences_filled": preferences_filled,
-        "authenticated": bool(uid),
-    }
-
-
 @router.get("/positions")
 async def get_positions():
-    """返回所有可选岗位"""
     from src.models.job_position import JobPosition
     positions = await JobPosition.all().order_by("sort_order")
     return {"items": [{"id": p.id, "name": p.name, "category": p.category} for p in positions]}
@@ -183,7 +123,6 @@ async def get_positions():
 
 @router.get("/{topic_id}")
 async def get_topic_detail(topic_id: str, request: Request = None):
-    """获取 Topic 详情（quota=0 时截断敏感字段）"""
     from src.models import Topic
 
     exhausted = getattr(getattr(request, "state", None), "quota_exhausted", False) if request else False
@@ -192,30 +131,19 @@ async def get_topic_detail(topic_id: str, request: Request = None):
         topic = await Topic.get(id=topic_id)
 
         data = {
-            "id": str(topic.id),
-            "topic": topic.topic,
-            "alias": topic.alias,
-            "domain": topic.domain,
-            "category": topic.category,
-            "tags": topic.tags,
-            "difficulty": topic.difficulty,
+            "id": str(topic.id), "topic": topic.topic, "alias": topic.alias,
+            "domain": topic.domain, "tech_domain": topic.tech_domain,
+            "category": topic.category, "keywords": topic.keywords,
+            "tags": topic.tags, "difficulty": topic.difficulty,
             "mastery_level": topic.mastery_level,
-            "core_summary": topic.core_summary,
-            "core_points": topic.core_points,
-            "detailed_explanation": None,
-            "code_example": None,
-            "traps": None,
-            "bonuses": None,
-            "prerequisites": [],
-            "core_concepts": [],
-            "derivatives": [],
-            "extensions": [],
-            "evaluation_anchors": [],
-            "similar_questions": [],
-            "advanced_questions": [],
-            "references": [],
-            "locked": False,
-            "locked_sections": [],
+            "one_liner": topic.one_liner,
+            "core_summary": topic.core_summary, "core_points": topic.core_points,
+            "detailed_explanation": None, "code_example": None,
+            "traps": None, "bonuses": None,
+            "prerequisites": [], "core_concepts": [], "derivatives": [],
+            "extensions": [], "evaluation_anchors": [],
+            "similar_questions": [], "advanced_questions": [], "references": [],
+            "locked": False, "locked_sections": [],
         }
 
         if exhausted:
@@ -229,25 +157,25 @@ async def get_topic_detail(topic_id: str, request: Request = None):
             data["traps"] = topic.traps
             data["bonuses"] = topic.bonuses
 
-        # 关联数据（始终返回）
+        # 关联数据 — join 表真实内容在 knowledge.name / evaluation.question
         data["prerequisites"] = [
-            {"content": p.content, "sort_order": p.sort_order}
-            async for p in topic.prerequisites.all()
+            {"content": (await p.knowledge).name if p.knowledge_id else "", "sort_order": p.sort_order}
+            async for p in topic.prerequisites.all().prefetch_related("knowledge")
         ]
         data["core_concepts"] = [
-            {"content": c.content, "sort_order": c.sort_order}
-            async for c in topic.core_concepts.all()
+            {"content": (await c.knowledge).name if c.knowledge_id else "", "sort_order": c.sort_order}
+            async for c in topic.core_concepts.all().prefetch_related("knowledge")
         ]
         data["derivatives"] = [
-            {"content": d.content, "sort_order": d.sort_order}
-            async for d in topic.derivatives.all()
+            {"content": (await d.knowledge).name if d.knowledge_id else "", "sort_order": d.sort_order}
+            async for d in topic.derivatives.all().prefetch_related("knowledge")
         ]
         data["extensions"] = [
-            {"content": e.content, "sort_order": e.sort_order}
-            async for e in topic.extensions.all()
+            {"content": (await e.knowledge).name if e.knowledge_id else "", "sort_order": e.sort_order}
+            async for e in topic.extensions.all().prefetch_related("knowledge")
         ]
         data["evaluation_anchors"] = [
-            {"level": a.level, "content": a.content, "sort_order": a.sort_order}
+            {"level": a.level, "content": a.question, "sort_order": a.sort_order}
             async for a in topic.evaluation_anchors.all()
         ]
         data["similar_questions"] = [
@@ -268,3 +196,81 @@ async def get_topic_detail(topic_id: str, request: Request = None):
         raise HTTPException(status_code=404, detail=f"Topic 不存在: {str(e)}")
 
 
+# ═══════════════════════════════════════════
+# CRUD — 写入
+# ═══════════════════════════════════════════
+
+@router.post("/{topic_id}/status")
+async def set_topic_status(topic_id: str, request: Request = None):
+    from src.models import Topic
+    from src.models.user_topic_status import UserTopicStatus
+    uid = getattr(getattr(request, "state", None), "user_id", None) if request else None
+    if not uid:
+        raise HTTPException(status_code=401)
+
+    body = await request.json() if request else {}
+    status = body.get("status", "learning")
+    if status not in ("mastered", "learning"):
+        raise HTTPException(status_code=400, detail="状态仅支持 mastered / learning")
+
+    topic = await Topic.get_or_none(id=topic_id)
+    if not topic:
+        raise HTTPException(status_code=404)
+
+    uts, _ = await UserTopicStatus.update_or_create(
+        user_id=uid, topic_id=topic_id, defaults={"status": status}
+    )
+    return {"status": uts.status, "topic_id": topic_id}
+
+
+@router.get("/dashboard/stats")
+async def get_dashboard_stats(request: Request = None):
+    from src.models import Topic
+    from src.models.user_topic_status import UserTopicStatus
+    uid = getattr(getattr(request, "state", None), "user_id", None) if request else None
+    total = await Topic.all().count()
+    today_target = 0
+    preferences_filled = False
+    if uid:
+        from src.models.user import User
+        user = await User.filter(id=uid).first()
+        if user:
+            today_target = user.today_target or 0
+            preferences_filled = user.preferences_filled
+        mastered = await UserTopicStatus.filter(user_id=uid, status="mastered").count()
+        learning = await UserTopicStatus.filter(user_id=uid, status="learning").count()
+    else:
+        mastered = 0; learning = 0
+    return {
+        "total_topics": total if uid else 0,
+        "mastered": mastered, "learning": learning,
+        "today_target": today_target, "preferences_filled": preferences_filled,
+        "authenticated": bool(uid),
+    }
+
+
+# ═══════════════════════════════════════════
+# Agent 生成
+# ═══════════════════════════════════════════
+
+@router.post("/generate", response_model=GenerateResponse)
+async def generate_topic_via_agent(req: GenerateRequest):
+    from src.agentv3.master import MasterSession
+
+    try:
+        master = MasterSession()
+        master.grant_slave("save_to_postgres", "save_to_milvus")
+        result = await master.handle(req.user_input)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Agent 执行失败: {e}")
+
+    return GenerateResponse(
+        success=result.get("success", False),
+        source=result.get("source"),
+        topic_id=result.get("topic_id"),
+        topic_name=result.get("topic_name"),
+        domain=result.get("domain"),
+        confidence=result.get("confidence"),
+        trace_id=result.get("trace_id"),
+        message=result.get("message"),
+    )

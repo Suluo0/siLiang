@@ -8,7 +8,7 @@
           <a href="#" class="nav-item" @click.prevent="goToHome">主页</a>
           <a href="#" class="nav-item" @click.prevent="goToLibrary">题库</a>
           <a href="#" class="nav-item" @click.prevent="showComing('面经')">面经</a>
-          <a href="#" class="nav-item" @click.prevent="showComing('模拟面试')">模拟面试</a>
+          <a href="#" class="nav-item" @click.prevent="router.push('/interview')">模拟面试</a>
           <a href="#" class="nav-item" @click.prevent="showComing('交流社区')">交流社区</a>
         </nav>
       </div>

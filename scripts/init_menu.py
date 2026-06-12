@@ -2,12 +2,12 @@
 初始化菜单数据
 """
 import asyncio
-import os
-from dotenv import load_dotenv
+from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from src.config.database import db_lifespan
 from tortoise import Tortoise
 from src.models import Menu
-
-load_dotenv()
 
 MENU_DATA = [
     # 一级菜单
@@ -33,28 +33,22 @@ MENU_DATA = [
 
 async def init_menus():
     """初始化菜单数据"""
-    db_url = os.getenv("DATABASE_URL")
-    await Tortoise.init(
-        db_url=db_url,
-        modules={"models": ["src.models"]},
-    )
-    await Tortoise.generate_schemas()
-    
-    # 清空现有菜单
-    await Menu.all().delete()
-    
-    # 插入新菜单
-    for menu_data in MENU_DATA:
-        await Menu.create(**menu_data)
-    
-    print("菜单数据初始化完成！")
-    
-    # 验证
-    menus = await Menu.all()
-    for m in menus:
-        print(f"  - {m.name}: {m.path}")
-    
-    await Tortoise.close_connections()
+    async with db_lifespan():
+        await Tortoise.generate_schemas()
+        
+        # 清空现有菜单
+        await Menu.all().delete()
+        
+        # 插入新菜单
+        for menu_data in MENU_DATA:
+            await Menu.create(**menu_data)
+        
+        print("菜单数据初始化完成！")
+        
+        # 验证
+        menus = await Menu.all()
+        for m in menus:
+            print(f"  - {m.name}: {m.path}")
 
 
 if __name__ == "__main__":

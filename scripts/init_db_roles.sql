@@ -1,5 +1,6 @@
 -- 数据库角色权限初始化
 -- 三角色: topic_admin (DDL), topic_app (读写), topic_read (只读)
+-- ⚠️ 生产环境务必更换以下三个密码为强随机密码 ⚠️
 
 DO $$
 BEGIN

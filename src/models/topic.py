@@ -11,6 +11,7 @@ class Topic(Model):
     topic = fields.CharField(max_length=255)
     alias = CompatibleJSONField(null=True)
     domain = fields.CharField(max_length=100)
+    tech_domain = fields.CharField(max_length=100, null=True)
     category = fields.CharField(max_length=100, null=True)
     tags = CompatibleJSONField(null=True)
     difficulty = fields.IntField(default=1)
@@ -34,6 +35,8 @@ class Topic(Model):
     # 向量字段（用于语义相似度搜索）
     embedding_vector = fields.TextField(null=True)
     
+    status = fields.CharField(max_length=32, default="ACTIVE")
+
     last_reviewed = fields.DatetimeField(null=True)
     next_review = fields.DatetimeField(null=True)
 

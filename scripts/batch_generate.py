@@ -8,21 +8,16 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from tortoise import Tortoise
-from dotenv import load_dotenv
-
-# ── 加载 .env ──
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+from src.config.database import init_db, close_db
 
 SEED_FILE = Path(__file__).resolve().parent / "seed_topics.json"
 CHECKPOINT_FILE = Path(__file__).resolve().parent / ".batch_checkpoint.json"
-DB_URL = os.getenv("DATABASE_URL", "postgres://postgres:Xswl1139@localhost:5432/topic")
 BATCH_SIZES = [1, 5, None]  # Phase 2: 1题 / Phase 3: 5题 / Phase 4: 全量
 
 
 async def init_system():
     """初始化 Tortoise ORM + 注册能力"""
-    await Tortoise.init(db_url=DB_URL, modules={"models": ["src.models"]})
+    await init_db()
     from src.agentv3.capabilities.register import register_all
     register_all()
 
@@ -178,7 +173,7 @@ async def main():
     final = await Topic.all().count()
     print(f"\n{'='*60}")
     print(f"全部完成: PG 中共 {final} 道题")
-    await Tortoise.close_connections()
+    await close_db()
 
 
 if __name__ == "__main__":

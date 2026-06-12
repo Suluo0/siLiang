@@ -73,6 +73,12 @@ const routes = [
         meta: { title: '对话' }
       },
       {
+        path: '/interview',
+        name: 'Interview',
+        component: () => import('../views/Interview/index.vue'),
+        meta: { title: '模拟面试' }
+      },
+      {
         path: '/privacy',
         name: 'Privacy',
         component: () => import('../views/Legal/Privacy.vue'),

@@ -1,11 +1,22 @@
 """
-CapabilityRegistry —— 全局能力注册表
+CapabilityRegistry —— 全局能力注册表 + 统一切面执行入口
 启动时注册，freeze 后不可变。
 """
 from __future__ import annotations
-from typing import Callable
 from src.agentv3.capability import Capability
 from src.agentv3.permissions import Permission
+from src.agentv3.executor import ToolExecutor
+from src.agentv3.protocols import ToolResult
+from src.agentv3.circuit_breaker import CircuitBreaker
+from src.utils.context import current_budget
+
+
+class CapabilityExecutionError(Exception):
+    """能力执行失败异常"""
+    def __init__(self, cap_id: str, error: str):
+        self.cap_id = cap_id
+        self.error = error
+        super().__init__(f"[{cap_id}] {error}")
 
 
 class CapabilityRegistry:
@@ -13,6 +24,7 @@ class CapabilityRegistry:
 
     _registry: dict[str, Capability] = {}
     _frozen: bool = False
+    _breaker_map: dict[str, CircuitBreaker] = {}
 
     # ── 注册 ──
 
@@ -61,3 +73,43 @@ class CapabilityRegistry:
     @classmethod
     def is_empty(cls) -> bool:
         return len(cls._registry) == 0
+
+    # ── 统一切面执行 ──
+
+    @classmethod
+    def _get_breaker(cls, cap: Capability) -> CircuitBreaker | None:
+        group = cap.resource_group
+        if group in cls._breaker_map:
+            return cls._breaker_map[group]
+        threshold = cap.breaker_threshold or 5
+        cls._breaker_map[group] = CircuitBreaker(failure_threshold=threshold)
+        return cls._breaker_map[group]
+
+    @classmethod
+    async def execute(cls, cap_id: str, **kwargs) -> ToolResult:
+        """
+        系统唯一的全功能切面入口。
+        无论谁调用，超时、熔断、日志、耗时、异常分类全线生效。
+
+        ReAct Agent 使用此入口，始终返回 ToolResult。
+        """
+        cap = cls.get(cap_id)
+        budget = current_budget.get()
+        breaker = cls._get_breaker(cap)
+        executor = ToolExecutor(cap, budget=budget, breaker=breaker)
+        return await executor.execute({}, **kwargs)
+
+    @classmethod
+    async def call(cls, cap_id: str, **kwargs):
+        """
+        确定流流程的便利入口。
+        内部走 execute() 同一切面，但：
+        - 成功：返回 result.data（裸数据）
+        - 失败：raise CapabilityExecutionError
+
+        InterviewSession / Slave / API 等确定流程使用此入口。
+        """
+        result = await cls.execute(cap_id, **kwargs)
+        if not result.success:
+            raise CapabilityExecutionError(cap_id, result.error or "未知错误")
+        return result.data

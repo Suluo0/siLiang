@@ -5,6 +5,7 @@ Embedding 余弦 + LLM 语义判定
 import json
 from src.tools.embedding import EmbeddingEncoder
 from src.tools.llm_client import LLMClient
+from src.utils import cosine
 
 
 NL_MATCH_PROMPT = """你是一个面试题匹配判定器。
@@ -29,7 +30,7 @@ async def verify_match(
     # Score A: 向量余弦
     query_vec = encoder.encode(query_concept)
     cand_vec = encoder.encode(candidate_concept)
-    score_a = _cosine(query_vec, cand_vec)
+    score_a = cosine(query_vec, cand_vec)
 
     if score_a < 0.75:
         return {
@@ -52,8 +53,3 @@ async def verify_match(
         "passed": score_b >= 0.70,
         "reasoning": parsed.get("reasoning", ""),
     }
-
-
-def _cosine(a, b):
-    import numpy as np
-    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))

@@ -7,6 +7,7 @@ from typing import Optional, AsyncIterator
 import httpx
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
+from src.config.llm_config import LLMConfig
 
 
 def _clean_proxy_env():
@@ -18,9 +19,9 @@ class LLMClient:
     _instance: Optional["LLMClient"] = None
 
     def __init__(self):
-        self.api_key = os.getenv("TS_DS_APIKEY", "")
-        self.base_url = os.getenv("API_ADDRESS", "https://api.deepseek.com/v1")
-        self.model_name = os.getenv("API_MODEL", "deepseek-chat")
+        self.api_key = LLMConfig.API_KEY
+        self.base_url = LLMConfig.BASE_URL
+        self.model_name = LLMConfig.MODEL_NAME
 
     @classmethod
     def get_instance(cls) -> "LLMClient":

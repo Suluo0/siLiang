@@ -4,7 +4,7 @@ MasterSession —— Agent 决策主体
 参考 opencode 模式：tool 定义在 Capability 内部，Agent 通过模型原生 tool calling 选择。
 """
 from __future__ import annotations
-import uuid, json
+import uuid, json, logging
 import httpx
 from langgraph.prebuilt import create_react_agent
 from langchain_core.language_models import BaseChatModel
@@ -12,16 +12,18 @@ from langchain_core.tools import StructuredTool
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, ToolMessage
 from langgraph.graph.state import CompiledStateGraph
 
-from src.tools.llm_client import LLMClient, _clean_proxy_env
+from src.tools.llm_client import _clean_proxy_env
+from src.config.llm_config import LLMConfig
 from src.agentv3.capability import Capability
 from src.agentv3.registry import CapabilityRegistry
-from src.agentv3.executor import ToolExecutor
 from src.agentv3.protocols import ToolResult, SlaveResult
 from src.agentv3.session import AgentSession, AgentGuardError
 from src.agentv3.token_budget import TokenBudget
-from src.agentv3.circuit_breaker import CircuitBreaker
 from src.agentv3.prompt_builder import PromptBuilder
 from src.agentv3.slave import SlaveSession
+from src.utils.context import current_trace_id, current_caller, current_budget
+
+logger = logging.getLogger(__name__)
 
 
 class MasterSession:
@@ -31,12 +33,10 @@ class MasterSession:
         token_budget_total: int = 4000,
         max_iterations: int = 10,
         max_total_time_ms: int = 60_000,
-        circuit_breaker_threshold: int = 5,
     ):
         self.token_budget_total = token_budget_total
         self.max_iterations = max_iterations
         self.max_total_time_ms = max_total_time_ms
-        self.circuit_breaker = CircuitBreaker(failure_threshold=circuit_breaker_threshold)
         self._slave_grants: list[Capability] = []
 
     def grant_slave(self, *capability_ids: str):
@@ -44,71 +44,78 @@ class MasterSession:
 
     async def handle(self, user_input: str) -> dict:
         trace_id = str(uuid.uuid4())
-        session = AgentSession(
-            trace_id=trace_id, user_input=user_input,
-            token_budget=TokenBudget(self.token_budget_total),
-            max_iterations=self.max_iterations,
-            max_total_time_ms=self.max_total_time_ms,
-        )
-
-        read_caps = CapabilityRegistry.filter(scope="read")
-        if not read_caps:
-            return self._error_response(trace_id, "无可用读能力")
-
-        system_prompt = PromptBuilder.build(read_caps, session.token_budget)
-        langchain_tools = self._build_tools(read_caps, session, trace_id)
-        base_llm = self._build_llm()
-
-        # ── 创建 Agent 追踪记录 ──
-        await self._trace_start(trace_id, user_input)
+        token = current_trace_id.set(trace_id)
+        caller_token = current_caller.set("react_agent")
 
         try:
-            agent: CompiledStateGraph = create_react_agent(base_llm, langchain_tools)
-            result = await agent.ainvoke({
-                "messages": [
-                    SystemMessage(content=system_prompt),
-                    HumanMessage(content=user_input),
-                ]
-            })
-            parsed = await self._parse_output(result, trace_id, session)
-            await self._trace_end(trace_id, parsed, session)
-            return parsed
-        except AgentGuardError as e:
-            await self._trace_end(trace_id, self._best_effort(session, str(e)), session)
-            return self._best_effort(session, str(e))
-        except Exception as e:
-            await self._trace_end(trace_id, self._error_response(trace_id, str(e)), session)
-            return self._error_response(trace_id, str(e))
+            session = AgentSession(
+                trace_id=trace_id, user_input=user_input,
+                token_budget=TokenBudget(self.token_budget_total),
+                max_iterations=self.max_iterations,
+                max_total_time_ms=self.max_total_time_ms,
+            )
+            current_budget.set(session.token_budget)
+
+            read_caps = CapabilityRegistry.filter(scope="read")
+            if not read_caps:
+                return self._error_response(trace_id, "无可用读能力")
+
+            system_prompt = PromptBuilder.build(read_caps, session.token_budget)
+            langchain_tools = self._build_tools(read_caps)
+            base_llm = self._build_llm()
+
+            await self._trace_start(trace_id, user_input)
+
+            try:
+                agent: CompiledStateGraph = create_react_agent(base_llm, langchain_tools)
+                result = await agent.ainvoke({
+                    "messages": [
+                        SystemMessage(content=system_prompt),
+                        HumanMessage(content=user_input),
+                    ]
+                })
+                parsed = await self._parse_output(result, trace_id, session)
+                await self._trace_end(trace_id, parsed, session)
+                return parsed
+            except AgentGuardError as e:
+                await self._trace_end(trace_id, self._best_effort(session, str(e)), session)
+                return self._best_effort(session, str(e))
+            except Exception as e:
+                logger.error(f"Agent 执行异常: {e}", exc_info=True)
+                await self._trace_end(trace_id, self._error_response(trace_id, str(e)), session)
+                return self._error_response(trace_id, str(e))
+        finally:
+            current_trace_id.reset(token)
+            current_caller.reset(caller_token)
+            current_budget.set(None)
 
     # ═══════════════════════════════════════════
     # tool 构建 —— 一行循环，Capability 自举
     # ═══════════════════════════════════════════
 
-    def _build_tools(self, caps: list[Capability], session: AgentSession, trace_id: str) -> list[StructuredTool]:
+    def _build_tools(self, caps: list[Capability]) -> list[StructuredTool]:
         tools = []
         for cap in caps:
             if cap.args_schema is None:
                 continue
 
-            def _wrapper(c: Capability):
+            def _wrapper(cap_id: str):
                 async def fn(**kwargs):
-                    exec_ = ToolExecutor(c, trace_id=trace_id, budget=session.token_budget, breaker=self.circuit_breaker)
-                    result: ToolResult = await exec_.execute({}, **kwargs)
+                    result: ToolResult = await CapabilityRegistry.execute(cap_id, **kwargs)
                     return json.dumps(result.data, ensure_ascii=False) if result.success \
                         else json.dumps({"error": result.error}, ensure_ascii=False)
                 return fn
 
-            tools.append(cap.to_langchain_tool(_wrapper(cap)))
+            tools.append(cap.to_langchain_tool(_wrapper(cap.id)))
         return tools
 
     def _build_llm(self) -> BaseChatModel:
         from langchain_openai import ChatOpenAI
         _clean_proxy_env()
-        client = LLMClient.get_instance()
         transport = httpx.AsyncHTTPTransport(retries=0)
         return ChatOpenAI(
-            model=client.model_name, temperature=0.1,
-            api_key=client.api_key, base_url=client.base_url,
+            model=LLMConfig.MODEL_NAME, temperature=0.1,
+            api_key=LLMConfig.API_KEY, base_url=LLMConfig.BASE_URL,
             http_async_client=httpx.AsyncClient(transport=transport, trust_env=False),
             http_socket_options=(),
         )
@@ -155,13 +162,28 @@ class MasterSession:
         for msg in messages:
             if isinstance(msg, ToolMessage):
                 try:
-                    data = json.loads(msg.content) if isinstance(msg.content, str) else msg.content
-                    results[msg.name] = data
-                except json.JSONDecodeError:
+                    content = msg.content
+                    if isinstance(content, str):
+                        data = json.loads(content)
+                        # json.loads 可能返回 dict 或 string（如 "hello"→"hello"）
+                        if isinstance(data, str):
+                            data = json.loads(data)  # 再解一次
+                        results[msg.name] = data
+                    else:
+                        results[msg.name] = content
+                except (json.JSONDecodeError, TypeError):
                     results[msg.name] = msg.content
         return results
 
-    async def _handle_generated(self, gen: dict, tools: dict, trace_id: str, calls: list) -> dict:
+    async def _handle_generated(self, gen, tools: dict, trace_id: str, calls: list) -> dict:
+        if isinstance(gen, str):
+            try:
+                gen = json.loads(gen)
+            except json.JSONDecodeError:
+                return self._error_response(trace_id, f"generate_topic 返回无效 JSON")
+        if not isinstance(gen, dict):
+            return self._error_response(trace_id, f"generate_topic 返回类型错误: {type(gen)}")
+
         topic_info = gen.get("topic", {})
         norm = tools.get("normalize_input", {})
         if isinstance(norm, str):

@@ -8,51 +8,68 @@
     </div>
 
     <div class="content" v-if="detail">
+      <!-- ═══ 头部 ═══ -->
       <header class="header">
         <h1 class="title">{{ detail.topic }}</h1>
+        <div class="aliases" v-if="detail.alias?.length">
+          <el-tag v-for="a in detail.alias" :key="a" size="small" type="info" class="alias-tag">{{ a }}</el-tag>
+        </div>
         <div class="meta">
-          <el-tag type="info">{{ detail.domain }}</el-tag>
+          <el-tag>{{ detail.domain }}</el-tag>
+          <el-tag v-if="detail.tech_domain" type="success">{{ detail.tech_domain }}</el-tag>
           <el-tag v-if="detail.category">{{ detail.category }}</el-tag>
-          <span class="difficulty">难度 {{ detail.difficulty }}</span>
+          <span class="difficulty">
+            <span v-for="n in 5" :key="n" class="star" :class="{ active: n <= detail.difficulty }">★</span>
+          </span>
+        </div>
+        <div class="keywords" v-if="detail.keywords?.length">
+          <el-tag v-for="k in detail.keywords" :key="k" size="small" effect="plain" class="kw-tag">{{ k }}</el-tag>
         </div>
       </header>
 
+      <!-- ═══ 一句话概述 ═══ -->
+      <section class="section" v-if="detail.one_liner">
+        <h2 class="section-title">一句话概述</h2>
+        <p class="text" v-html="formatText(detail.one_liner)"></p>
+      </section>
+
+      <!-- ═══ 核心概述 ═══ -->
       <section class="section" v-if="detail.core_summary">
         <h2 class="section-title">核心概述</h2>
         <p class="text" v-html="formatText(detail.core_summary)"></p>
       </section>
 
+      <!-- ═══ 核心要点 ═══ -->
       <section class="section" v-if="detail.core_points">
         <h2 class="section-title">核心要点</h2>
         <div class="text" v-html="formatText(detail.core_points)"></div>
       </section>
 
+      <!-- ═══ 前置知识 ═══ -->
       <section class="section" v-if="detail.prerequisites?.length">
         <h2 class="section-title">前置知识</h2>
         <ul class="list">
-          <li v-for="(item, index) in detail.prerequisites" :key="index">
-            {{ item.content }}
-          </li>
+          <li v-for="(item, index) in detail.prerequisites" :key="index">{{ item.content }}</li>
         </ul>
       </section>
 
+      <!-- ═══ 核心概念 ═══ -->
       <section class="section" v-if="detail.core_concepts?.length">
         <h2 class="section-title">核心概念</h2>
         <ul class="list">
-          <li v-for="(item, index) in detail.core_concepts" :key="index">
-            {{ item.content }}
-          </li>
+          <li v-for="(item, index) in detail.core_concepts" :key="index">{{ item.content }}</li>
         </ul>
       </section>
 
-      <!-- 主内容 -->
+      <!-- ═══ 详细解释 ═══ -->
       <section class="section" v-if="detail.detailed_explanation || isLocked('detailed_explanation')">
         <h2 class="section-title">详细解释</h2>
         <div class="locked-wrap" :class="{ masked: isLocked('detailed_explanation') }">
-          <div class="text" v-html="formatText(detail.detailed_explanation || '')" v-if="detail.detailed_explanation"></div>
+          <div class="text" v-if="detail.detailed_explanation" v-html="formatText(detail.detailed_explanation)"></div>
         </div>
       </section>
 
+      <!-- ═══ 代码示例 ═══ -->
       <section class="section" v-if="detail.code_example || isLocked('code_example')">
         <h2 class="section-title">代码示例</h2>
         <div class="locked-wrap" :class="{ masked: isLocked('code_example') }">
@@ -60,56 +77,66 @@
         </div>
       </section>
 
-      <section class="section" v-if="detail.similar_questions?.length">
-        <h2 class="section-title">相似题目</h2>
-        <ul class="list">
-          <li v-for="(item, index) in detail.similar_questions" :key="index">
-            {{ item.question }}
-          </li>
-        </ul>
-      </section>
-
-      <section class="section" v-if="detail.advanced_questions?.length">
-        <h2 class="section-title">进阶题目</h2>
-        <ul class="list">
-          <li v-for="(item, index) in detail.advanced_questions" :key="index">
-            {{ item.question }}
-          </li>
-        </ul>
-      </section>
-
+      <!-- ═══ 常见陷阱 ═══ -->
       <section class="section" v-if="detail.traps || isLocked('traps')">
         <h2 class="section-title">常见陷阱</h2>
         <div class="locked-wrap" :class="{ masked: isLocked('traps') }">
-          <p class="text" v-html="formatText(detail.traps || '')" v-if="detail.traps"></p>
+          <p class="text" v-if="detail.traps" v-html="formatText(detail.traps)"></p>
         </div>
       </section>
 
+      <!-- ═══ 加分项 ═══ -->
       <section class="section" v-if="detail.bonuses || isLocked('bonuses')">
         <h2 class="section-title">加分项</h2>
         <div class="locked-wrap" :class="{ masked: isLocked('bonuses') }">
-          <p class="text" v-html="formatText(detail.bonuses || '')" v-if="detail.bonuses"></p>
+          <p class="text" v-if="detail.bonuses" v-html="formatText(detail.bonuses)"></p>
         </div>
       </section>
 
+      <!-- ═══ 评估锚点 ═══ -->
+      <section class="section" v-if="detail.evaluation_anchors?.length">
+        <h2 class="section-title">评估题目</h2>
+        <div class="anchor-list">
+          <div v-for="(item, index) in detail.evaluation_anchors" :key="index" class="anchor-card">
+            <el-tag size="small" :type="anchorType(item.level)">{{ anchorLevel(item.level) }}</el-tag>
+            <p class="anchor-question">{{ item.content }}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 相似题目 ═══ -->
+      <section class="section" v-if="detail.similar_questions?.length">
+        <h2 class="section-title">相似题目</h2>
+        <ul class="list">
+          <li v-for="(item, index) in detail.similar_questions" :key="index">{{ item.question }}</li>
+        </ul>
+      </section>
+
+      <!-- ═══ 进阶题目 ═══ -->
+      <section class="section" v-if="detail.advanced_questions?.length">
+        <h2 class="section-title">进阶题目</h2>
+        <ul class="list">
+          <li v-for="(item, index) in detail.advanced_questions" :key="index">{{ item.question }}</li>
+        </ul>
+      </section>
+
+      <!-- ═══ 衍生知识 ═══ -->
       <section class="section" v-if="detail.derivatives?.length">
         <h2 class="section-title">衍生知识</h2>
         <ul class="list">
-          <li v-for="(item, index) in detail.derivatives" :key="index">
-            {{ item.content }}
-          </li>
+          <li v-for="(item, index) in detail.derivatives" :key="index">{{ item.content }}</li>
         </ul>
       </section>
 
+      <!-- ═══ 扩展内容 ═══ -->
       <section class="section" v-if="detail.extensions?.length">
         <h2 class="section-title">扩展内容</h2>
         <ul class="list">
-          <li v-for="(item, index) in detail.extensions" :key="index">
-            {{ item.content }}
-          </li>
+          <li v-for="(item, index) in detail.extensions" :key="index">{{ item.content }}</li>
         </ul>
       </section>
 
+      <!-- ═══ 参考资料 ═══ -->
       <section class="section" v-if="detail.references?.length">
         <h2 class="section-title">参考资料</h2>
         <ul class="references">
@@ -121,7 +148,7 @@
         </ul>
       </section>
 
-      <!-- 统一锁 Banner -->
+      <!-- ═══ 统一锁 Banner ═══ -->
       <div class="lock-bar" v-if="detail.locked">
         <div class="lock-banner" @click="showUpgrade = true">
           <el-icon><Lock /></el-icon>
@@ -143,7 +170,6 @@
       </div>
 
       <div class="plan-grid">
-        <!-- 免费版 -->
         <div class="plan-card free">
           <div class="plan-head">免费版</div>
           <div class="plan-price">¥0<span>/月</span></div>
@@ -159,7 +185,6 @@
           <div class="plan-btn outline">当前方案</div>
         </div>
 
-        <!-- 高级版 -->
         <div class="plan-card premium">
           <div class="plan-ribbon">🔥 推荐</div>
           <div class="plan-head">高级会员</div>
@@ -210,9 +235,7 @@ const fetchDetail = async () => {
   }
 }
 
-const goBack = () => {
-  router.push('/topic/library')
-}
+const goBack = () => router.push('/topic/library')
 
 const isLocked = (section) => {
   return detail.value?.locked && detail.value?.locked_sections?.includes(section)
@@ -223,221 +246,113 @@ const formatText = (text) => {
   return text.replace(/\n/g, '<br>')
 }
 
-onMounted(() => {
-  fetchDetail()
-})
-
 const handleNewline = (code) => {
   if (!code) return ''
-  // 将字符串字面量 "\n" 替换为真正的换行符
-  // 注意：这里需要匹配 "\\n"
   return code.replace(/\\n/g, '\n')
 }
+
+const anchorType = (level) => {
+  if (level === 'entry') return 'info'
+  if (level === 'master') return 'warning'
+  if (level === 'expert') return 'danger'
+  return ''
+}
+
+const anchorLevel = (level) => {
+  if (level === 'entry') return '入门'
+  if (level === 'master') return '掌握'
+  if (level === 'expert') return '专家'
+  return level
+}
+
+onMounted(() => fetchDetail())
 </script>
 
 <style scoped>
-.topic-detail {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 40px 20px;
-}
+.topic-detail { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+.back-btn { margin-bottom: 24px; }
+.content { background: #fff; border-radius: 12px; padding: 32px; }
+.header { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid #f1f2f3; }
+.title { font-size: 28px; font-weight: 600; color: #1a1a1a; margin: 0 0 12px 0; }
+.aliases { margin-bottom: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
+.alias-tag { font-size: 12px; }
+.meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.difficulty { font-size: 16px; color: #f59e0b; margin-left: 4px; }
+.star { color: #e0e0e0; }
+.star.active { color: #f59e0b; }
+.keywords { display: flex; gap: 6px; flex-wrap: wrap; }
+.kw-tag { font-size: 11px; }
 
-.back-btn {
-  margin-bottom: 24px;
-}
+.section { margin-bottom: 32px; }
+.section-title { font-size: 18px; font-weight: 600; color: #1a1a1a; margin: 0 0 16px 0; }
+.text { font-size: 15px; line-height: 1.8; color: #4a4a4a; white-space: pre-wrap; }
 
-.content {
-  background: #fff;
-  border-radius: 12px;
-  padding: 32px;
-}
+.list { margin: 0; padding-left: 24px; }
+.list li { font-size: 15px; line-height: 1.8; color: #4a4a4a; margin-bottom: 8px; }
 
-.header {
-  margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid #f1f2f3;
-}
+.code-block { background: #1e1e1e; border-radius: 8px; padding: 20px 24px; margin: 0; overflow: auto; max-height: 600px; }
+.code-block code { font-family: 'Monaco', 'Menlo', 'Consolas', monospace; font-size: 13px; line-height: 1.6; color: #d4d4d4; display: block; white-space: pre; text-align: left; }
 
-.title {
-  font-size: 28px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0 0 16px 0;
-}
+.references { margin: 0; padding-left: 24px; }
+.references li { margin-bottom: 12px; }
+.references a { color: #0070f3; text-decoration: none; }
+.references a:hover { text-decoration: underline; }
+.ref-desc { font-size: 13px; color: #8a8a8a; margin: 4px 0 0 0; }
 
-.meta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+.empty-state { padding: 60px 0; }
 
-.difficulty {
-  font-size: 14px;
-  color: #8a8a8a;
-}
-
-.section {
-  margin-bottom: 32px;
-}
-
-.section-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0 0 16px 0;
-}
-
-.text {
-  font-size: 15px;
-  line-height: 1.8;
-  color: #4a4a4a;
-  white-space: pre-wrap;
-}
-
-.list {
-  margin: 0;
-  padding-left: 24px;
-}
-
-.list li {
-  font-size: 15px;
-  line-height: 1.8;
-  color: #4a4a4a;
-  margin-bottom: 8px;
-}
-
-.code-block {
-  background: #1e1e1e;
-  border-radius: 8px;
-  padding: 20px 24px;
-  margin: 0;
-  overflow: auto; /* 保持滚动条 */
-  max-height: 600px;
-  /* 移除这里的 white-space: pre; */
-}
-
-.code-block code {
-  font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-  font-size: 13px;
-  line-height: 1.6;
-  color: #d4d4d4;
-  
-  /* 添加以下属性 */
-  display: block;        /* 强制作为块级元素，占据完整宽度 */
-  white-space: pre;      /* 核心：严格保留换行符 */
-  text-align: left;      /* 防止意外的居中 */
-}
-
-.references {
-  margin: 0;
-  padding-left: 24px;
-}
-
-.references li {
-  margin-bottom: 12px;
-}
-
-.references a {
-  color: #0070f3;
-  text-decoration: none;
-}
-
-.references a:hover {
-  text-decoration: underline;
-}
-
-.ref-desc {
-  font-size: 13px;
-  color: #8a8a8a;
-  margin: 4px 0 0 0;
-}
-
-.empty-state {
-  padding: 60px 0;
-}
+/* ── 评估锚点 ── */
+.anchor-list { display: flex; flex-direction: column; gap: 12px; }
+.anchor-card { background: #fafafa; border-radius: 8px; padding: 14px 18px; display: flex; align-items: flex-start; gap: 12px; }
+.anchor-question { font-size: 14px; color: #4a4a4a; margin: 0; line-height: 1.6; flex: 1; }
 
 /* ── 锁定蒙版 ── */
 .locked-wrap { position: relative; }
 .locked-wrap.masked { max-height: 200px; overflow: hidden; }
 .locked-wrap.masked::after {
   content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
-  background: linear-gradient(transparent, #fff);
-  z-index: 1;
+  background: linear-gradient(transparent, #fff); z-index: 1;
 }
-.lock-bar {
-  padding: 32px 0 16px;
-  display: flex; justify-content: center;
-}
+.lock-bar { padding: 32px 0 16px; display: flex; justify-content: center; }
 .lock-banner {
   background: rgba(99, 102, 241, 0.92); color: #fff;
   padding: 10px 28px; border-radius: 10px; font-size: 14px; font-weight: 600;
   display: flex; align-items: center; gap: 8px;
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
-  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3); cursor: pointer;
 }
 .lock-banner:hover { background: rgba(99, 102, 241, 1); }
 
-/* ── 会员升级 Modal ── */
+/* ── Modal ── */
 .upgrade-dialog :deep(.el-dialog__header) { display: none; }
 .upgrade-dialog :deep(.el-dialog__body) { padding: 0; }
-
 .upgrade-hero {
   text-align: center; padding: 32px 24px 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff; border-radius: 12px 12px 0 0; margin: -1px;
 }
-.hero-badge {
-  display: inline-block; background: rgba(255,255,255,.2); color: #fff;
-  font-size: 12px; padding: 3px 14px; border-radius: 20px; margin-bottom: 12px;
-}
+.hero-badge { display: inline-block; background: rgba(255,255,255,.2); color: #fff; font-size: 12px; padding: 3px 14px; border-radius: 20px; margin-bottom: 12px; }
 .hero-title { font-size: 24px; font-weight: 800; margin: 0 0 6px; }
 .hero-sub { font-size: 14px; opacity: .85; margin: 0; }
-
-.plan-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-  padding: 24px 32px 16px;
-}
-.plan-card {
-  border-radius: 14px; padding: 24px 20px 20px; position: relative;
-  border: 2px solid #e8e8e8; text-align: center;
-  display: flex; flex-direction: column;
-}
-.plan-card.premium {
-  border-color: #667eea; background: #fafaff;
-  box-shadow: 0 8px 30px rgba(102,126,234,.15);
-}
-.plan-ribbon {
-  position: absolute; top: -12px; right: 16px;
-  background: linear-gradient(135deg, #f59e0b, #f97316); color: #fff;
-  font-size: 12px; font-weight: 700; padding: 4px 14px; border-radius: 8px;
-}
+.plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 24px 32px 16px; }
+.plan-card { border-radius: 14px; padding: 24px 20px 20px; position: relative; border: 2px solid #e8e8e8; text-align: center; display: flex; flex-direction: column; }
+.plan-card.premium { border-color: #667eea; background: #fafaff; box-shadow: 0 8px 30px rgba(102,126,234,.15); }
+.plan-ribbon { position: absolute; top: -12px; right: 16px; background: linear-gradient(135deg, #f59e0b, #f97316); color: #fff; font-size: 12px; font-weight: 700; padding: 4px 14px; border-radius: 8px; }
 .plan-head { font-size: 16px; font-weight: 700; color: #333; margin-bottom: 8px; }
 .plan-price { font-size: 36px; font-weight: 800; color: #1a1a2e; }
 .plan-price span { font-size: 14px; font-weight: 400; color: #999; }
 .premium .plan-price { color: #667eea; }
 .plan-saving { font-size: 12px; color: #f59e0b; margin: 4px 0 14px; font-weight: 500; }
-.plan-features {
-  list-style: none; padding: 0; margin: 0 0 16px; text-align: left;
-  flex: 1;
-}
+.plan-features { list-style: none; padding: 0; margin: 0 0 16px; text-align: left; flex: 1; }
 .plan-features li { font-size: 13px; color: #555; padding: 6px 0; display: flex; align-items: center; gap: 8px; }
 .check { color: #10b981; font-weight: 700; }
 .check.muted { color: #ccc; }
 .check.glow { color: #667eea; text-shadow: 0 0 6px rgba(102,126,234,.3); }
-.cross { color: #ddd; font-weight: 700; }
 .dash { color: #ccc; }
-.plan-btn {
-  padding: 10px 0; border-radius: 10px; font-size: 14px; font-weight: 600;
-  margin-top: auto;
-}
+.plan-btn { padding: 10px 0; border-radius: 10px; font-size: 14px; font-weight: 600; margin-top: auto; }
 .plan-btn.outline { border: 2px solid #ddd; color: #999; }
-.plan-btn.gradient {
-  background: linear-gradient(135deg, #667eea, #764ba2); color: #fff;
-  box-shadow: 0 4px 14px rgba(102,126,234,.4); cursor: pointer;
-}
+.plan-btn.gradient { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; box-shadow: 0 4px 14px rgba(102,126,234,.4); cursor: pointer; }
 .plan-btn.gradient:hover { opacity: .9; }
 .upgrade-footer { text-align: center; padding: 0 0 20px; }
-
 .lock-banner { cursor: pointer; transition: all .2s; }
 .lock-banner:hover { transform: translateY(-1px); }
 </style>

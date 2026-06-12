@@ -60,7 +60,7 @@ const form = ref({
 
 onMounted(async () => {
   try {
-    const res = await request.get('/v1/topic/positions')
+    const res = await request.get('/topic/positions')
     positions.value = res.items || []
   } catch {}
 })

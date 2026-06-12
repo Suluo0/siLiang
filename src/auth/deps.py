@@ -10,10 +10,13 @@ from src.models.user import User
 
 security = HTTPBearer(auto_error=False)
 
-# 不需要鉴权的公开路径（only register/login are truly public）
+# 不需要鉴权的公开路径（单一来源，main.py 也引用此列表）
 PUBLIC_PATHS = {
     "/", "/ping", "/docs", "/openapi.json", "/redoc",
     "/api/auth/register", "/api/auth/login", "/api/auth/refresh",
+    "/api/auth/captcha", "/api/auth/send-code",
+    "/api/topic/tags", "/api/topic/positions",
+    "/terms", "/privacy",
 }
 
 

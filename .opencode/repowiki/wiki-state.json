@@ -1,0 +1,171 @@
+{
+  "meta": {
+    "version": "1.0",
+    "lastGenerationTime": "2026-06-12T00:06:53Z",
+    "commit": "168f526",
+    "branch": "main",
+    "totalDocuments": 15,
+    "generationType": "full"
+  },
+  "modules": [
+    {
+      "id": "topic-generation",
+      "name": "面试题生成模块",
+      "files": [
+        "src/agentv3/", "src/agent/", "src/api/topic_api.py", "src/api/topic_api_v3.py",
+        "src/models/topic.py", "src/models/topic_prerequisite.py", "src/models/topic_core_concept.py",
+        "src/models/topic_derivative.py", "src/models/topic_extension.py", "src/models/topic_evaluation_anchor.py",
+        "src/models/topic_similar_question.py", "src/models/topic_advanced_question.py", "src/models/topic_reference.py",
+        "src/models/topic_review_log.py", "src/tools/", "src/skills/", "src/service/"
+      ],
+      "dependsOn": ["user-auth"],
+      "dependedBy": []
+    },
+    {
+      "id": "user-auth",
+      "name": "用户与认证模块",
+      "files": [
+        "src/auth/", "src/models/user.py", "src/models/user_profile.py", "src/models/user_quota.py",
+        "src/models/user_topic_progress.py", "src/models/user_topic_status.py", "src/models/user_level.py",
+        "src/models/captcha.py", "src/models/job_position.py", "src/models/menu.py",
+        "src/common/", "src/controller/"
+      ],
+      "dependsOn": [],
+      "dependedBy": ["topic-generation"]
+    },
+    {
+      "id": "frontend",
+      "name": "前端应用",
+      "files": ["TOPICSYSTEM_Web/src/"],
+      "dependsOn": ["topic-generation", "user-auth"],
+      "dependedBy": []
+    },
+    {
+      "id": "shared",
+      "name": "共享基础设施",
+      "files": ["src/config/", "src/tracing/", "src/workers/", "src/core/"],
+      "dependsOn": [],
+      "dependedBy": ["topic-generation", "user-auth"]
+    }
+  ],
+  "documents": [
+    {
+      "id": "01-project-overview",
+      "file": "01-project-overview.md",
+      "modules": ["topic-generation", "user-auth", "frontend", "shared"],
+      "hash": "5d0e1c2a3f4b5061708970666e7a8b3c"
+    },
+    {
+      "id": "02-architecture",
+      "file": "02-architecture.md",
+      "modules": ["topic-generation", "user-auth", "shared"],
+      "hash": "a1b2c3d4e5f6071829304a5b6c7d8e9f"
+    },
+    {
+      "id": "03-directory-structure",
+      "file": "03-directory-structure.md",
+      "modules": ["topic-generation", "user-auth", "frontend", "shared"],
+      "hash": "b2c3d4e5f6a70819203b4c5d6e7f8a9b"
+    },
+    {
+      "id": "04-tech-stack",
+      "file": "04-tech-stack.md",
+      "modules": ["shared"],
+      "hash": "c3d4e5f6a7b809102a3c4d5e6f7a8b9c"
+    },
+    {
+      "id": "05-dev-setup",
+      "file": "05-dev-setup.md",
+      "modules": ["shared"],
+      "hash": "d4e5f6a7b8c9102a3b4c5d6e7f8a9bca"
+    },
+    {
+      "id": "06-core-modules",
+      "file": "06-core-modules.md",
+      "modules": ["topic-generation", "user-auth", "frontend"],
+      "hash": "e5f6a7b8c9d0a0b1c2d3e4f5a6b7c8d9e"
+    },
+    {
+      "id": "07-api-reference",
+      "file": "07-api-reference.md",
+      "modules": ["topic-generation", "user-auth"],
+      "hash": "f6a7b8c9d0e1b2c3d4e5f6a7b8c9d0e1f"
+    },
+    {
+      "id": "08-data-flow",
+      "file": "08-data-flow.md",
+      "modules": ["topic-generation"],
+      "hash": "a7b8c9d0e1f2c3d4e5f6a7b8c9d0e1f2a"
+    },
+    {
+      "id": "09-configuration",
+      "file": "09-configuration.md",
+      "modules": ["shared"],
+      "hash": "b8c9d0e1f2a3d4e5f6a7b8c9d0e1f2a3b"
+    },
+    {
+      "id": "10-testing",
+      "file": "10-testing.md",
+      "modules": ["topic-generation", "user-auth", "frontend"],
+      "hash": "c9d0e1f2a3b4e5f6a7b8c9d0e1f2a3b4c"
+    },
+    {
+      "id": "11-coding-conventions",
+      "file": "11-coding-conventions.md",
+      "modules": ["topic-generation", "user-auth", "frontend", "shared"],
+      "hash": "d0e1f2a3b4c5e6f7a8b9c0d1e2f3a4b5c"
+    },
+    {
+      "id": "12-error-handling",
+      "file": "12-error-handling.md",
+      "modules": ["topic-generation", "shared"],
+      "hash": "e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c"
+    },
+    {
+      "id": "13-authentication",
+      "file": "13-authentication.md",
+      "modules": ["user-auth"],
+      "hash": "f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d"
+    },
+    {
+      "id": "14-database",
+      "file": "14-database.md",
+      "modules": ["topic-generation", "user-auth", "shared"],
+      "hash": "a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e"
+    },
+    {
+      "id": "15-deployment",
+      "file": "15-deployment.md",
+      "modules": ["shared"],
+      "hash": "b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f"
+    }
+  ],
+  "fileHashes": {
+    "src/agentv3/capability.py": "fc1b80d6a827b1c48a6fa0ed0555ab00",
+    "src/agentv3/registry.py": "6384195c8c46b66cd14fc1deb6ee8d32",
+    "src/agentv3/master.py": "d65fe89944a8c27575ddd4d3a52d26fb",
+    "src/agentv3/slave.py": "515bb5fb42e5972545611b578ab81a48",
+    "src/agentv3/executor.py": "d576b845cdd86853005f5aae5a380177",
+    "src/agentv3/session.py": "3345b0530c3f71c988b9b1871be4cb80",
+    "src/agentv3/prompt_builder.py": "2c67d2e0e190effad6ac764c4187b8dd",
+    "src/agentv3/circuit_breaker.py": "a9ccf02227b129d0f2387dfff4e7ecfe",
+    "src/agentv3/token_budget.py": "1c3d6e5fb1bf566970cc05e63ae832a7",
+    "src/agentv3/protocols.py": "45009cf79358a9defea781206365364b",
+    "src/agentv3/permissions.py": "321862adfc6f7668f06176ce24c5d1c6",
+    "src/agentv3/slave_registry.py": "5191de2eefd4fc7170cb139426b484b8",
+    "src/agentv3/capabilities/register.py": "634855f8e473d81c24b91c507dee33d2",
+    "src/agentv3/capabilities/write.py": "9347f341068f188d3025c95d9e5be813",
+    "src/agentv3/capabilities/generate.py": "c124e44f9d5704a3e5a03dff7028d79f",
+    "src/api/topic_api.py": "eaafec70b9b719c494df1f20cb5c70b8",
+    "src/api/topic_api_v3.py": "a45de39d324ebc3baa62dbad6d105d6d",
+    "src/auth/jwt.py": "c33085b2036e76ec2f261a116b950ed6",
+    "src/auth/api.py": "032e122cbd1758335c5589714839fedf",
+    "src/models/topic.py": "ffa4ed018a2de0a5bf6d8b3509e87aa8",
+    "src/models/user.py": "c8c2480d05c8404465961767c85851da",
+    "src/config/settings.py": "4f8b114dd1ab93051d7617974d050dd1",
+    "src/tools/llm_client.py": "87a4e11a05656aceb244fc770601fec0",
+    "src/tools/embedding.py": "0ba8ed40f7faa2e62908080a662336b8",
+    "src/tools/milvus_client.py": "bb018f218c7cf3c44bea2af38c82e2ae",
+    "src/main.py": "84887eec3167e80e504cf613377404df"
+  }
+}
