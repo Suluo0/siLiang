@@ -1,124 +1,203 @@
-# TopicSystem 项目进度总结
+# TopicSystem 项目总结与后续计划
 
-> 更新: 2026-06-12
-
----
-
-## ✅ 已完成
-
-### 安全 (P0)
-- [x] JWT SECRET 环境变量化（本地+服务器均已迁移）
-- [x] DB 密码模板已标记生产必换警告
-- [x] API Key 已验证未被提交到 Git
-- [x] `.env` 已加入 `.gitignore`
-
-### 基础设施 (P1)
-- [x] Milvus 部署（etcd + minio + milvus standalone，host 网络模式）
-- [x] 硅基流动 BGE v1.5 API 替代本地模型（零 PyTorch 依赖，零本地显存）
-- [x] Embedding API 密钥环境变量化（`EMBEDDING_API_KEY`）
-- [x] Milvus 三 collection：`topic_embeddings` / `knowledge_embeddings` / `table_schemas`
-- [x] Milvus 连接持久化修复（`_ensure_connection` 替代临时连接）
-- [x] HNSW 索引生命周期正确（先插数据再建索引，不再 `drop_collection`）
-
-### DB Schema 重构
-- [x] 4 关联表从 `content` 升级为 `knowledge_id(FK) + importance`
-- [x] 新建 `knowledge_dict`（知识点词典，name UNIQUE 自动去重）
-- [x] 新建 `knowledge_alias`（同义知识点映射，如 "MVCC"→"多版本并发控制"）
-- [x] `topic_evaluation_anchor` 从 `content` 拆为 `question` + `expected_answer`
-- [x] `topic` 主表加 `tech_domain` 字段
-- [x] write.py 修复 importlib 动态导入 bug（改为直接 import，8 表全空问题修复）
-
-### Skill 体系
-- [x] gen_skill 拆分为 `gen_topic_content.md` + `gen_topic_topology.md`
-- [x] topology skill 引入 2 组 fewshot 示例 + 严格 type 决策树
-- [x] generate.py 改为两阶段 LLM 调用（内容→拓扑）
-- [x] 新建 `query_skill.md`（NL→SQL，含 7 组 fewshot）
-- [x] 新建 `validate_topic.md`（求职者+面试官双维度质量审计）
-- [x] schema_manager 动态表结构检索（Milvus table_schemas collection）
-
-### Capability
-- [x] 新增 `query_database` capability（NL→SQL→安全校验→asyncpg 执行）
-- [x] SQL 安全校验：只允许 SELECT，禁止 DDL/DML，自动 LIMIT，禁多语句
-- [x] 知识点去重三层：精确匹配 → alias 查询 → BGE 语义 + LLM 确认
-
-### 部署 & 测试
-- [x] 全链路 10 题端到端测试通过（3 领域：后端/数据库/消息队列）
-- [x] API 级测试（`POST /api/v3/topic/generate`，30 行脚本零业务逻辑）
-- [x] 知识图谱双向验证：HashMap→红黑树→并发→锁的逻辑推导链成立
-- [x] executor.py `str(kwargs).get()` bug 修复
-- [x] 知识点去重单元测通过（MVCC→多版本并发控制 alias 写入验证）
+> 生成时间：2026-06-16 | 测试：130/130 PASSED | 线上：926 道题目
 
 ---
 
-## ❌ 未完成
+## 一、已完成事项
 
-### 数据
-- [ ] 1064 题数据迁移（backfill_relations.py）
-- [ ] knowledge_embeddings flush 异步化（当前未 flush，跨轮去重需等数据落盘）
-- [ ] 向量数据全量入库（测试仅 10 条）
+### 1.1 架构重构
 
-### 前端
-- [ ] 模拟面试页面（"敬请期待"占位）
-- [ ] 题库：点击标记"已掌握/未掌握"按钮
-- [ ] 题库：按用户水平/偏好排序
-- [ ] 用户中心：简历上传
-- [ ] Chat 页面：消息历史 + streaming 输出
+| 事项 | 状态 |
+|------|------|
+| AOP 切面统一切面入口：`CapabilityRegistry.execute()/call()` 提供超时/熔断/日志/耗时全线保护 | ✅ |
+| 中间件拆分：`main.py` 142L→67L，auth/quota 独立为 `middleware/` 模块 | ✅ |
+| LLM 配置归一：`llm_config.py` 为单一来源，`LLMClient`/`master.py` 统一走 Registry | ✅ |
+| PUBLIC_PATHS 收敛到 `auth/deps.py` 单源 | ✅ |
+| `controller/`→`api/`，`cache.py`→`common/`，`database_db.py`→`aerich_config.py` | ✅ |
+| `src/utils/` 提取重复函数（cosine/parse_keywords/clean_json/load_skill） | ✅ |
+| ContextVar 上下文传递：`current_trace_id`/`current_caller`/`current_budget` | ✅ |
+| ToolExecutor 自动从 ContextVar 读 trace_id，不再外部传入 | ✅ |
+| TokenBudget + CircuitBreaker 按 `resource_group` 分组熔断 | ✅ |
 
-### 架构
-- [ ] Phase 3 解耦（PUBLIC_PATHS 硬编码、N+1 查询、sync LLM）
-- [ ] tracer.py → OpenTelemetry/LangFuse 导出（AgentTrace/PromptCallLog 已落 PG，但未接外部平台）
-- [ ] RabbitMQ 组件已完成但未接入（`src/common/rabbitmq.py` 无人引用）
-- [ ] HTTPS/SSL（无域名）
+### 1.2 死代码清理
 
-### CI/CD
-- [ ] GitHub Actions 自动化部署
-- [ ] deploy.sh 完善（aerich 迁移在容器内有已知问题）
-- [ ] Dockerfile 重建流程（当前依赖 docker cp 手工热更文件）
+| 删除项 | 行数 |
+|--------|------|
+| `src/agent/` v1 agent 管道（8 文件） | ~682L |
+| `src/api/topic_api_v2.py` | 52L |
+| `src/api/topic_api_v3.py` | 58L |
+| `skill/` 根目录旧技能模板 | ~200L |
+| `testPluin/` 目录 | 138L |
+| `src/skills/gen_skill.md` | 120L |
+| `topic_api.py` 冗余 router + DetailResponse | 24L |
+| `api/__init__.py` unused re-exports | 4L |
+| `auth/api.py` unused imports | 2L |
+| `milvus_client.py` 不可达重复代码 | 7L |
+| 路由前缀 `/v1`→`/api` 统一 | 全链路 |
 
----
+### 1.3 模拟面试子系统
 
-## 💡 优化建议
+| 能力 | 文件 |
+|------|------|
+| 4 个数据模型 | `interview_persona/room/round/summary.py` |
+| 五维评分引擎（LLM） | `capabilities/score_answer.py` |
+| 上下文提取 + 聚合 | `capabilities/extract_context.py` |
+| 路由决策（derivative/extension/prerequisite） | `interview/router.py` |
+| 追问生成 3 种 | `capabilities/generate_followup.py` + `skills/followup_*.md` |
+| 10 套面试官人设 | `skills/persona/*.md` |
+| PersonaManager 加载/编译/缓存 | `interview/persona.py` |
+| InterviewSession 状态机 | `interview/session.py` |
+| resume/JD/match 3 个 Capability | `capabilities/analyze_*.py` |
+| MQ 事件发布 | `capabilities/publish_event.py` |
+| Interview API（start/answer/summary/personas） | `api/interview_api.py` |
+| 前端 Interview 三阶段页面 | `views/Interview/index.vue` |
 
-### 性能
-| # | 建议 | 原因 |
-|---|------|------|
-| 1 | `generate_schemas=True` → aerich 迁移 | Tortoise 的 generate_schemas 不处理已有表的字段变更，本地/服务器 schema 漂移 |
-| 2 | 开发环境挂载 volumes | 避免每次 docker cp → restart 丢失文件，改一行代码秒生效 |
-| 3 | Milvus 搜索阈值 rrf_score 加下限过滤 | 当前 10 条向量时噪声查询也返回 5 条结果 |
-| 4 | gen_topic_content 的字段长度约束收紧 | one_liner/core_summary/detailed_explanation 偶超字数，prompt 可加强约束 |
+### 1.4 掌握度评测系统（无 LLM）
 
-### 代码
-| # | 建议 | 原因 |
-|---|------|------|
-| 5 | 清理 `src/agent/` 残留 v2 代码 | 已从 main.py 移除，文件还在 |
-| 6 | 清理 `src/skills/gen_skill.md`（旧版） | 已被 gen_topic_content + gen_topic_topology 替代 |
-| 7 | 清理 `tests/full_pipeline_test.py` | 已被 30 行 api_test.py 替代，那个脚本嵌了太多业务逻辑 |
-| 8 | `query_skill.md` 文件保留但实际未被 `query_db.py` 引用 | query_db.py 内嵌了 `_BASE_SKILL` 常量 |
+| 能力 | 文件 |
+|------|------|
+| MasteryAttempt 记录表 | `models/mastery_attempt.py` |
+| UserTopicStatus 扩展 3 字段 | `models/user_topic_status.py` |
+| 五维无 LLM 评分引擎 | `capabilities/mastery_check.py` |
+| API：`POST /{topic_id}/mastery-check` | `api/topic_api.py` |
+| 测试：24 个用例 | `tests/test_mastery.py` |
 
-### 测试
-| # | 建议 | 原因 |
-|---|------|------|
-| 9 | PostgreSQL 数据清理用 SQL DELETE，不动 Milvus collection | 避免每轮测试重建 HNSW 索引（节约 3s） |
-| 10 | 本地 DB 同步服务器 schema | 本地 PG 仍缺 `one_liner` 等字段，本地测试无法运行 |
-| 11 | 单测覆盖率 | 当前只有知识点去重 + API 调用两个单测，generate/normalize/search 等能力无覆盖 |
+### 1.5 去重系统
 
-### 安全
-| # | 建议 | 原因 |
-|---|------|------|
-| 12 | promt 中的 `hint` → `answer_hint` 已改 skill，但 gen_topic_content.md 示例 JSON 的 key 仍需核实 | 防止字段名不匹配导致写入静默失败 |
-| 13 | `_BASE_SKILL` 在 query_db.py 中硬编码了 DB schema | 与 schema_manager 的 Milvus 检索逻辑重复，应统一 |
-
-### 关键 API 端点
-
-| 端点 | 鉴权 | 说明 |
+| 层级 | 方法 | 阈值 |
 |------|------|------|
-| `POST /api/v3/topic/generate` | 需要 | Agent Loop 生成 |
-| `GET /api/v1/topic/list` | 公开 | 题库列表 |
-| `GET /api/v1/topic/tags` | 公开 | 标签列表 |
-| `GET /api/v1/topic/positions` | 公开 | 岗位列表 |
-| `POST /api/auth/register` | 公开 | 注册 |
-| `POST /api/auth/login` | 公开 | 登录 |
-| `GET /api/auth/me` | 需要 | 当前用户 |
-| `POST /api/auth/preferences` | 需要 | 更新偏好 |
-| `GET /api/v1/topic/dashboard/stats` | 公开 | Dashboard 统计 |
-| `GET /api/v1/topic/{id}` | 公开 | 题目详情（未登录截断） |
+| L1 | PG 精确 name 匹配 | exact |
+| L2 | Milvus 余弦检索 | ≥0.75 阻断 |
+| L3 | Agent 双分数校验（余弦+LLM） | 0.55~0.75 触发 |
+| L4 | Agent 回退 | 余弦≥0.65 阻断 |
+| L5 | 名称语义（子串/共享词≥70%） | expand 阶段 |
+| L6 | 后缀归一（去"——源码分析"等） | expand 阶段 |
+| L7 | 内容去重（one_liner 编码查 Milvus） | ≥0.75 跳过 |
+
+### 1.6 自迭代知识覆盖引擎
+
+| 能力 | 文件 |
+|------|------|
+| 知识地图（19 领域 × 411 知识点） | `scripts/knowledge_map.json` |
+| 覆盖率分析 | `scripts/iterative_coverage.py` |
+| 缺口优先级排序 | 重要性 × (1-领域覆盖率) |
+| 双循环：外循环选种子 + 内循环发散生成 | 同上 |
+| 去重分析工具 | `scripts/dedup_analyzer.py` |
+
+### 1.7 测试体系
+
+| 文件 | 测试数 | 覆盖 |
+|------|--------|------|
+| `test_auth_api.py` | 11 | 注册/登录/refresh/公开路径 |
+| `test_auth_middleware.py` | 6 | JWT校验/截断/PUBLIC_PATHS |
+| `test_quota.py` | 4 | 配额扣减/403/列表不消耗 |
+| `test_interview.py` | 34 | 路由/评分/Persona/Session/Model/Capability |
+| `test_interview_api.py` | 6 | 人设列表/start/answer/summary |
+| `test_cache.py` | 9 | TTLCache get/set/TTL/LRU/JSON |
+| `test_dedup.py` | 8 | L1~L7 七层防呆阈值 |
+| `test_infra.py` | 10 | TokenBudget + CircuitBreaker |
+| `test_json_truncation.py` | 5 | 200字符硬切割+JSON闭合 |
+| `test_model_crud.py` | 12 | 7个未测试Model CRUD |
+| `test_mastery.py` | 24 | LCS/编辑距离/模糊匹配/API/Model |
+| **总计** | **130** | **100% PASSED** |
+
+### 1.8 前端优化
+
+| 事项 | 状态 |
+|------|------|
+| 题库详情页重构：补充 one_liner/tech_domain/keywords/evaluation_anchors 展示 | ✅ |
+| 题库列表页 Tag 过滤：去除 LFU/LRU 等纯大写短缩写 | ✅ |
+| Interview 面试三步页面入口开放 | ✅ |
+| 路由前缀 `/v1`→统一 | ✅ |
+| 模拟面试页从 "Coming Soon" 到已开放 | ✅ |
+
+### 1.9 鉴权与安全
+
+| 事项 | 状态 |
+|------|------|
+| 未登录访客截断（all content fields → locked） | ✅ |
+| 200字符硬切割 + JSON 补全闭合 | ✅ |
+| quota_exhausted 标记恢复（拆分 middleware 时的遗漏 bug） | ✅ |
+| PUBLIC_PATHS 收敛到单源 | ✅ |
+| 服务器 .env 密钥外部化 | ✅ |
+
+---
+
+## 二、待完成事项
+
+### 2.1 高优先级（P0）
+
+| # | 事项 | 说明 |
+|---|------|------|
+| 1 | **题库冲刺 1000** | 当前 926 道，差 74 道。`direct_gen.py` 仍在跑 |
+| 2 | **Jenkins CI/CD 恢复** | 服务器无 Jenkins 在跑。需部署 Jenkins 或改用 GitHub Actions |
+| 3 | **Aerich 迁移流水线化** | 当前手动 ALTER TABLE，需切换到 `aerich migrate && aerich upgrade` |
+| 4 | **Outbox Worker 上线** | `src/workers/outbox_worker.py` 已写但未运行。Milvus 写入失败数据会丢失 |
+
+### 2.2 中优先级（P1）
+
+| # | 事项 | 说明 |
+|---|------|------|
+| 5 | **RabbitMQ 接入** | `src/common/rabbitmq.py` 已完善但未接入业务流程 |
+| 6 | **MQ Consumer 面试异步处理** | `publish_interview_event` 已有发布端，Consumer 未跑 |
+| 7 | **OpenTelemetry/Langfuse 链路追踪** | `src/tracing/` 空目录，依赖已装，配置已有，缺 0 行实现 |
+| 8 | **前端面试页全链路测试** | 现在只有后端 API 测试，前端到后端全链路未跑 |
+| 9 | **上线掌握度前端 UI** | mastery-check API 已上线，前端答题+结果展示页未做 |
+| 10 | **面试真人设接入** | 10 套 Persona 作为属性模板写着，但 InterviewSession 没实际使用它们 |
+
+### 2.3 低优先级（P2）
+
+| # | 事项 | 说明 |
+|---|------|------|
+| 11 | **Rate Limiting 中间件** | 登录/注册无暴力破解保护 |
+| 12 | **健康检查强化** | `/ping` 不验证 DB/Milvus/LLM 连通性 |
+| 13 | **11 个 standalone 脚本转 pytest** | 不可 CI，`test_agentv3.py` 等用 `if __name__` 模式 |
+| 14 | **GitHub Actions CI** | pyproject.toml 已配置但无 `.github/workflows/test.yml` |
+| 15 | **性能测试 locust** | 无压测脚本 |
+| 16 | **Redis 会话存储** | `interview_api.py` 用内存 dict 存 session，重启即丢失 |
+| 17 | **`sql/admin` 端点** | 无后台管理界面 |
+
+### 2.4 技术债（P3）
+
+| # | 事项 | 说明 |
+|---|------|------|
+| 18 | **单例改依赖注入** | LLMClient/MilvusClient/EmbeddingEncoder 三处全局单例 |
+| 19 | **`generate_schemas=True` 移除** | 与 aerich 冲突，需在 Docker CMD 改为 aerich migrate |
+| 20 | **前端 dist 构建自动化** | 当前手动 `scp dist/*` 到 Nginx |
+| 21 | **Pydantic V2 ConfigDict 迁移** | `menu_api.py` 等仍用 class-based Config |
+| 22 | **Milvus ORM API → MilvusClient 迁移** | PyMilvus 3.1 将移除旧 ORM API |
+
+---
+
+## 三、服务器当前状态
+
+```
+siliang-app        Up 2h      ← FastAPI + LangGraph
+siliang-milvus     Up 5d      ← 向量检索
+siliang-pg         Up 5d      ← PostgreSQL 16
+siliang-etcd       Up 5d      ← Milvus 元数据
+siliang-minio      Up 5d      ← Milvus 对象存储
+
+DB 题目: 926 道  覆盖率: 86.4%
+测试: 130/130 PASSED
+API: /ping /api/topic/* /api/interview/* /api/auth/* 全部在线
+```
+
+## 四、快速启动
+
+```bash
+# 本地开发
+uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+cd TOPICSYSTEM_Web && npx vite --host 0.0.0.0 --port 5173
+
+# 测试
+pytest tests/ -v -m "not slow"
+
+# 服务器部署
+rsync -avz . root@115.190.161.132:/opt/siLiang/
+ssh root@115.190.161.132 "docker restart siliang-app"
+
+# 题库生成
+ssh root@115.190.161.132 "docker exec -w /app siliang-app python3 scripts/iterative_coverage.py"
+```
