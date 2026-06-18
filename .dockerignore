@@ -1,21 +1,73 @@
+# ── Python ──
 .venv/
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
 .pytest_cache/
+.ruff_cache/
 .coverage
+.coverage.*
 htmlcov/
 .tox/
+*.egg-info/
+
+# ── Git / IDE ──
 .git/
 .gitignore
-.env
-*.log
-temp_dir/
-docker-data/
-node_modules/
-dist-web/
+.gitattributes
 .idea/
 .vscode/
 *.swp
 *.swo
 .DS_Store
+
+# ── Secrets / Env ──
+.env
+.env.test
+.env.local
+.envrc
+
+# ── Tests / 文档 / 元数据（运行时不需要） ──
+tests/
+docs/
+htmlcov/
+DESIGN.md
+README.md
+README_API.md
+TODO*.md
+LICENSE
+
+# ── 工具 / 子模块（不进 app 镜像） ──
+TOPICSYSTEM_Web/
+relay-server/
+.opencode/
+.github/
+.pre-commit-config.yaml
+Makefile
+Jenkinsfile
+
+# ── scripts 子集：只保留 deploy.sh / entrypoint.sh ──
+scripts/manual_tests/
+scripts/seed_topics*.json
+scripts/knowledge_map.json
+scripts/.batch_checkpoint.json
+scripts/__pycache__/
+scripts/dedup_analyzer.py
+scripts/expand_topics.py
+scripts/iterative_coverage.py
+scripts/long_run_gen.py
+scripts/batch_generate.py
+scripts/generate_java_fullstack.py
+scripts/backfill_relations.py
+scripts/model_generator.py
+scripts/init_menu.py
+
+# ── 临时 ──
+*.log
+temp_dir/
+docker-data/
+node_modules/
+dist-web/
+test_output/
+resource/

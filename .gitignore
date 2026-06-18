@@ -10,6 +10,8 @@ __pypackages__/
 .DS_Store
 .eggs/
 .env
+.env.test
+.env.local
 .envrc
 .hypothesis/
 .idea/
@@ -199,3 +201,8 @@ var/
 venv.bak/
 venv/
 wheels/
+
+# 不属于本仓库
+relay-server/
+.opencode/pilot-*
+.opencode/repowiki/
