@@ -83,7 +83,7 @@ async def start_interview(req: StartRequest, request: Request):
         current_trace_id.reset(token)
         current_caller.reset(caller_token)
 
-    first_domain = gap.get("gap_areas", [None])[0] or jd_result.get("domains", ["通用"])[0]
+    first_domain = (gap.get("gap_areas", [None]) or [None])[0] or (jd_result.get("domains", [None]) or [None])[0] or "通用"
     first_topic = {
         "question_text": f"请介绍一下你在 {first_domain} 方面的经验？",
         "question_type": "initial",

@@ -118,6 +118,7 @@ const goToHome = () => {
 
 const handleLogout = () => {
   localStorage.removeItem('token')
+  localStorage.removeItem('refresh_token')
   localStorage.removeItem('user')
   router.push('/login')
 }

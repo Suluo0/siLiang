@@ -39,8 +39,58 @@ langfuse = ">=2.0.0"
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8.0"
 pytest-asyncio = ">=0.24"
+pytest-cov = ">=6.0"
+pytest-mock = ">=3.14"
+pytest-timeout = ">=2.3"
 httpx = ">=0.27"
 ruff = ">=0.5"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+timeout = 30
+norecursedirs = ["tests/_archive", ".venv", ".git", "node_modules", "TOPICSYSTEM_Web", "relay-server"]
+collect_ignore_glob = ["tests/_archive/*"]
+# 默认只跑快速测试(unit + integration);e2e/slow 通过 --run-e2e 解锁
+addopts = "-v --tb=short -m 'not e2e and not slow' --strict-markers"
+markers = [
+    "unit: 纯逻辑单元测试(无外部依赖)",
+    "integration: DB + HTTP 集成测试",
+    "e2e: 全链路真实调用(LLM/Milvus/真实 API)",
+    "slow: 慢速测试",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning:tortoise.*",
+    "ignore::DeprecationWarning:pydantic.*",
+    "ignore::DeprecationWarning:fastapi.*",
+    "ignore::pydantic.PydanticDeprecatedSince20",
+]
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+omit = [
+    "tests/*",
+    "scripts/*",
+    "**/__pycache__/*",
+    "src/**/migrations/*",
+    "src/main.py",  # 启动文件,e2e 才覆盖
+]
+
+[tool.coverage.report]
+fail_under = 50  # 当前实测 56%,先以 50% 守门,提交后逐步上调
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
 
 [build-system]
 requires = ["poetry-core"]

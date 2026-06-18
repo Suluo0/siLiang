@@ -375,6 +375,10 @@ const submitAnswer = async () => {
     lastScores.value = data.scores
     lastRoute.value = data.route
     currentAnswer.value = ''
+    // 保存下一题供 nextRound 使用
+    if (data.next_question) {
+      interviewState.value._nextQuestion = data.next_question
+    }
     if (data.final) {
       interviewState.value.final = true
       await loadSummary()
@@ -387,6 +391,11 @@ const submitAnswer = async () => {
 }
 
 const nextRound = async () => {
+  // 使用 API 返回的下一题
+  if (interviewState.value._nextQuestion) {
+    interviewState.value.question = interviewState.value._nextQuestion
+    interviewState.value._nextQuestion = ''
+  }
   interviewState.value.round++
   interviewState.value.answered = false
   lastScores.value = null

@@ -16,6 +16,8 @@ async def auth_middleware(request: Request, call_next):
     # 从 Authorization header 提取 token
     auth = request.headers.get("Authorization", "")
     if not auth.startswith("Bearer "):
+        # 未登录 → 标记配额耗尽，放行但内容会被 topic_api 截断
+        request.state.quota_exhausted = True
         return await call_next(request)
 
     token = auth[7:]  # "Bearer " 之后的部分

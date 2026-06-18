@@ -20,6 +20,11 @@ class UserTopicStatus(Model):
     interview_count = fields.IntField(default=0)                   # 被问及次数
     interview_weak_points = fields.JSONField(default=[])           # 面试暴露的弱点
 
+    # 掌握度自查维度
+    mastery_score = fields.FloatField(default=0.0)                # 最新掌握度总分
+    mastery_attempts = fields.IntField(default=0)                 # 尝试次数
+    mastered_at = fields.DatetimeField(null=True)                 # 首次掌握时间
+
     updated_at = fields.DatetimeField(auto_now=True)
 
     class Meta:

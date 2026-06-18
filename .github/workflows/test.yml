@@ -1,0 +1,115 @@
+name: tests
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: topic_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    env:
+      # 测试 DB —— CI 里的 service container
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/topic_test
+      # Mock 外部依赖,所有 e2e/slow 默认排除
+      TS_DS_APIKEY: ci-mock-key
+      API_ADDRESS: https://mock.local
+      API_MODEL: mock-model
+      JWT_SECRET: ci-jwt-secret-32-chars-minimum-aaaaaa
+      SMTP_USER: ""
+      SMTP_PASS: ""
+      # Milvus 在 CI 里不起,涉及的 e2e 测试自动 pytest.skip
+      TEST_MILVUS_HOST: localhost
+      TEST_MILVUS_PORT: "19530"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Cache uv venv
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            .venv
+          key: ${{ runner.os }}-uv-py313-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-py313-
+
+      - name: Install deps
+        run: |
+          uv venv --python 3.13 .venv
+          source .venv/bin/activate
+          UV_HTTP_TIMEOUT=300 uv pip install -r requirements.txt \
+            pytest pytest-asyncio pytest-cov pytest-mock pytest-timeout \
+            ruff httpx
+
+      - name: Wait for Postgres
+        run: |
+          for i in $(seq 1 30); do
+            pg_isready -h localhost -p 5432 -U postgres && break
+            echo "wait pg... $i"
+            sleep 1
+          done
+
+      - name: Lint (ruff)
+        continue-on-error: true  # 暂时不强制 lint,逐步收紧
+        run: |
+          source .venv/bin/activate
+          ruff check src tests
+
+      - name: Run tests with coverage
+        run: |
+          source .venv/bin/activate
+          python -m pytest \
+            --cov=src \
+            --cov-report=xml \
+            --cov-report=term-missing:skip-covered \
+            --junitxml=junit.xml \
+            -p no:cacheprovider
+
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-results
+          path: junit.xml

@@ -1,14 +1,16 @@
-import asyncio
-from src.config.settings import settings
-from src.models.topic import Topic
+import pytest
+
+from src.agentv3.capabilities.write import save_to_postgres
 from src.models.knowledge_dict import KnowledgeDict
-from src.models.topic_prerequisite import TopicPrerequisite
+from src.models.topic import Topic
 from src.models.topic_core_concept import TopicCoreConcept
 from src.models.topic_derivative import TopicDerivative
-from src.models.topic_extension import TopicExtension
 from src.models.topic_evaluation_anchor import TopicEvaluationAnchor
+from src.models.topic_extension import TopicExtension
+from src.models.topic_prerequisite import TopicPrerequisite
 from src.models.topic_similar_question import TopicSimilarQuestion
-from src.agentv3.capabilities.write import save_to_postgres
+
+pytestmark = [pytest.mark.e2e, pytest.mark.slow, pytest.mark.asyncio]
 
 TOPIC_DATA = {
     "topic": {
@@ -55,31 +57,22 @@ TOPIC_DATA = {
 }
 
 
-async def test():
-    from src.config.database import db_lifespan
+async def test_save_to_postgres_full_topic(db):
+    """save_to_postgres 全字段落库验证"""
+    result = await save_to_postgres(TOPIC_DATA)
+    tid = result["topic_id"]
+    assert tid, "topic_id 应非空"
 
-    async with db_lifespan():
-        result = await save_to_postgres(TOPIC_DATA)
-        tid = result["topic_id"]
-        print(f"=== topic_id={tid}  created={result['created']} ===")
-
-        print(f"topic:             {await Topic.filter(id=tid).count()}")
-        print(f"knowledge_dict:    {await KnowledgeDict.all().count()}")
-        print(f"prerequisite:      {await TopicPrerequisite.filter(topic_id=tid).count()}")
-        print(f"core_concept:      {await TopicCoreConcept.filter(topic_id=tid).count()}")
-        print(f"derivative:        {await TopicDerivative.filter(topic_id=tid).count()}")
-        print(f"extension:         {await TopicExtension.filter(topic_id=tid).count()}")
-        print(f"evaluation_anchor: {await TopicEvaluationAnchor.filter(topic_id=tid).count()}")
-        print(f"similar_question:  {await TopicSimilarQuestion.filter(topic_id=tid).count()}")
-
-        print("\n=== Evaluation Anchors ===")
-        for e in await TopicEvaluationAnchor.filter(topic_id=tid).all():
-            print(f"  [{e.level}] {e.question}")
-
-        print("\n=== Prerequisites ===")
-        for p in await TopicPrerequisite.filter(topic_id=tid).prefetch_related("knowledge").all():
-            print(f"  {p.knowledge.name} (imp={p.importance})")
+    assert await Topic.filter(id=tid).count() == 1
+    assert await KnowledgeDict.all().count() >= 1
+    assert await TopicPrerequisite.filter(topic_id=tid).count() >= 1
+    assert await TopicCoreConcept.filter(topic_id=tid).count() >= 2
+    assert await TopicDerivative.filter(topic_id=tid).count() >= 1
+    assert await TopicExtension.filter(topic_id=tid).count() >= 1
+    assert await TopicEvaluationAnchor.filter(topic_id=tid).count() == 3
+    assert await TopicSimilarQuestion.filter(topic_id=tid).count() >= 1
 
 
 if __name__ == "__main__":
-    asyncio.run(test())
+    import asyncio
+    print("此文件已转为 pytest 用例,请用 `pytest tests/test_db_write.py --run-e2e` 运行")

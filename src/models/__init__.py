@@ -46,6 +46,9 @@ from .interview_room import InterviewRoom
 from .interview_round import InterviewRound
 from .interview_summary import InterviewSummary
 
+# Mastery 掌握度
+from .mastery_attempt import MasteryAttempt
+
 __all__ = [
     # Topic
     "Topic",
@@ -83,4 +86,6 @@ __all__ = [
     "InterviewRoom",
     "InterviewRound",
     "InterviewSummary",
+    # Mastery
+    "MasteryAttempt",
 ]

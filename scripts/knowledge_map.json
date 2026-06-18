@@ -1,0 +1,4664 @@
+[
+  {
+    "name": "A/B测试分流",
+    "domain": "CICD",
+    "sub_domain": "发布",
+    "importance": 2
+  },
+  {
+    "name": "制品仓库Nexus管理",
+    "domain": "CICD",
+    "sub_domain": "发布",
+    "importance": 2
+  },
+  {
+    "name": "滚动更新与金丝雀发布",
+    "domain": "CICD",
+    "sub_domain": "发布",
+    "importance": 2
+  },
+  {
+    "name": "蓝绿部署",
+    "domain": "CICD",
+    "sub_domain": "发布",
+    "importance": 2
+  },
+  {
+    "name": "Docker多阶段构建",
+    "domain": "CICD",
+    "sub_domain": "构建",
+    "importance": 2
+  },
+  {
+    "name": "GitHub Actions工作流",
+    "domain": "CICD",
+    "sub_domain": "构建",
+    "importance": 2
+  },
+  {
+    "name": "GitLab CI配置",
+    "domain": "CICD",
+    "sub_domain": "构建",
+    "importance": 2
+  },
+  {
+    "name": "Jenkins Pipeline流水线",
+    "domain": "CICD",
+    "sub_domain": "构建",
+    "importance": 2
+  },
+  {
+    "name": "Dubbo 3.0 Triple协议",
+    "domain": "Dubbo",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Dubbo RPC调用原理",
+    "domain": "Dubbo",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Dubbo SPI扩展机制",
+    "domain": "Dubbo",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Dubbo与Spring Cloud对比",
+    "domain": "Dubbo",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Dubbo协议对比(dubbo/http/rmi)",
+    "domain": "Dubbo",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Dubbo服务治理",
+    "domain": "Dubbo",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Dubbo服务注册与发现",
+    "domain": "Dubbo",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Dubbo负载均衡策略",
+    "domain": "Dubbo",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Dubbo集群容错(failover/failfast/failsafe)",
+    "domain": "Dubbo",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ES ik分词器",
+    "domain": "ElasticSearch",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ES与MySQL同步方案(Canal/Logstash)",
+    "domain": "ElasticSearch",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ES写入流程(refresh/flush/translog)",
+    "domain": "ElasticSearch",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ES分片与副本",
+    "domain": "ElasticSearch",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ES性能优化(forcemerge/routing)",
+    "domain": "ElasticSearch",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ES查询DSL语法",
+    "domain": "ElasticSearch",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ES索引模板与别名",
+    "domain": "ElasticSearch",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ES聚合查询",
+    "domain": "ElasticSearch",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ES集群节点类型(Master/Data/Coordinating)",
+    "domain": "ElasticSearch",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "倒排索引原理",
+    "domain": "ElasticSearch",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "JVM运行时数据区",
+    "domain": "JVM",
+    "sub_domain": "内存结构",
+    "importance": 4
+  },
+  {
+    "name": "堆内存分代模型",
+    "domain": "JVM",
+    "sub_domain": "内存结构",
+    "importance": 4
+  },
+  {
+    "name": "对象内存布局与指针压缩",
+    "domain": "JVM",
+    "sub_domain": "内存结构",
+    "importance": 4
+  },
+  {
+    "name": "方法区与元空间",
+    "domain": "JVM",
+    "sub_domain": "内存结构",
+    "importance": 4
+  },
+  {
+    "name": "栈帧结构",
+    "domain": "JVM",
+    "sub_domain": "内存结构",
+    "importance": 4
+  },
+  {
+    "name": "直接内存与堆外内存",
+    "domain": "JVM",
+    "sub_domain": "内存结构",
+    "importance": 4
+  },
+  {
+    "name": "CMS垃圾回收器",
+    "domain": "JVM",
+    "sub_domain": "垃圾回收",
+    "importance": 4
+  },
+  {
+    "name": "G1垃圾回收器Region与RSet",
+    "domain": "JVM",
+    "sub_domain": "垃圾回收",
+    "importance": 4
+  },
+  {
+    "name": "GC Roots可达性分析",
+    "domain": "JVM",
+    "sub_domain": "垃圾回收",
+    "importance": 4
+  },
+  {
+    "name": "GC日志解读",
+    "domain": "JVM",
+    "sub_domain": "垃圾回收",
+    "importance": 4
+  },
+  {
+    "name": "JVM调优参数",
+    "domain": "JVM",
+    "sub_domain": "垃圾回收",
+    "importance": 4
+  },
+  {
+    "name": "OOM排查与MAT分析",
+    "domain": "JVM",
+    "sub_domain": "垃圾回收",
+    "importance": 4
+  },
+  {
+    "name": "Shenandoah并发回收",
+    "domain": "JVM",
+    "sub_domain": "垃圾回收",
+    "importance": 4
+  },
+  {
+    "name": "ZGC染色指针技术",
+    "domain": "JVM",
+    "sub_domain": "垃圾回收",
+    "importance": 4
+  },
+  {
+    "name": "标记-清除与标记-整理与复制算法",
+    "domain": "JVM",
+    "sub_domain": "垃圾回收",
+    "importance": 4
+  },
+  {
+    "name": "SPI机制与线程上下文类加载器",
+    "domain": "JVM",
+    "sub_domain": "类加载",
+    "importance": 4
+  },
+  {
+    "name": "双亲委派模型",
+    "domain": "JVM",
+    "sub_domain": "类加载",
+    "importance": 4
+  },
+  {
+    "name": "破坏双亲委派的场景",
+    "domain": "JVM",
+    "sub_domain": "类加载",
+    "importance": 4
+  },
+  {
+    "name": "类加载机制七个阶段",
+    "domain": "JVM",
+    "sub_domain": "类加载",
+    "importance": 4
+  },
+  {
+    "name": "自定义类加载器",
+    "domain": "JVM",
+    "sub_domain": "类加载",
+    "importance": 4
+  },
+  {
+    "name": "CodeCache与编译缓存",
+    "domain": "JVM",
+    "sub_domain": "编译优化",
+    "importance": 4
+  },
+  {
+    "name": "JIT即时编译",
+    "domain": "JVM",
+    "sub_domain": "编译优化",
+    "importance": 4
+  },
+  {
+    "name": "方法内联",
+    "domain": "JVM",
+    "sub_domain": "编译优化",
+    "importance": 4
+  },
+  {
+    "name": "逃逸分析与栈上分配",
+    "domain": "JVM",
+    "sub_domain": "编译优化",
+    "importance": 4
+  },
+  {
+    "name": "锁消除与锁粗化",
+    "domain": "JVM",
+    "sub_domain": "编译优化",
+    "importance": 4
+  },
+  {
+    "name": "BIO与NIO与AIO对比",
+    "domain": "Java核心",
+    "sub_domain": "IO与NIO",
+    "importance": 5
+  },
+  {
+    "name": "Channel与Buffer",
+    "domain": "Java核心",
+    "sub_domain": "IO与NIO",
+    "importance": 5
+  },
+  {
+    "name": "Selector多路复用",
+    "domain": "Java核心",
+    "sub_domain": "IO与NIO",
+    "importance": 5
+  },
+  {
+    "name": "文件锁与内存映射",
+    "domain": "Java核心",
+    "sub_domain": "IO与NIO",
+    "importance": 5
+  },
+  {
+    "name": "零拷贝原理",
+    "domain": "Java核心",
+    "sub_domain": "IO与NIO",
+    "importance": 5
+  },
+  {
+    "name": "@Override与@Override检查",
+    "domain": "Java核心",
+    "sub_domain": "反射与注解",
+    "importance": 5
+  },
+  {
+    "name": "APT编译期注解处理",
+    "domain": "Java核心",
+    "sub_domain": "反射与注解",
+    "importance": 5
+  },
+  {
+    "name": "Class对象与类加载关系",
+    "domain": "Java核心",
+    "sub_domain": "反射与注解",
+    "importance": 5
+  },
+  {
+    "name": "动态代理原理与应用",
+    "domain": "Java核心",
+    "sub_domain": "反射与注解",
+    "importance": 5
+  },
+  {
+    "name": "反射破坏单例模式",
+    "domain": "Java核心",
+    "sub_domain": "反射与注解",
+    "importance": 5
+  },
+  {
+    "name": "反射获取字段与方法",
+    "domain": "Java核心",
+    "sub_domain": "反射与注解",
+    "importance": 5
+  },
+  {
+    "name": "运行时注解与Retention",
+    "domain": "Java核心",
+    "sub_domain": "反射与注解",
+    "importance": 5
+  },
+  {
+    "name": "JDK/JRE/JVM概念",
+    "domain": "Java核心",
+    "sub_domain": "基础",
+    "importance": 5
+  },
+  {
+    "name": "Java编译与执行流程",
+    "domain": "Java核心",
+    "sub_domain": "基础",
+    "importance": 5
+  },
+  {
+    "name": "基本类型与包装类",
+    "domain": "Java核心",
+    "sub_domain": "基础",
+    "importance": 5
+  },
+  {
+    "name": "数组与多维数组",
+    "domain": "Java核心",
+    "sub_domain": "基础",
+    "importance": 5
+  },
+  {
+    "name": "访问修饰符",
+    "domain": "Java核心",
+    "sub_domain": "基础",
+    "importance": 5
+  },
+  {
+    "name": "StringBuilder与StringBuffer",
+    "domain": "Java核心",
+    "sub_domain": "字符串",
+    "importance": 5
+  },
+  {
+    "name": "String不可变性设计原因",
+    "domain": "Java核心",
+    "sub_domain": "字符串",
+    "importance": 5
+  },
+  {
+    "name": "字符串常量池与intern",
+    "domain": "Java核心",
+    "sub_domain": "字符串",
+    "importance": 5
+  },
+  {
+    "name": "正则表达式性能优化",
+    "domain": "Java核心",
+    "sub_domain": "字符串",
+    "importance": 5
+  },
+  {
+    "name": "try-catch-finally执行顺序",
+    "domain": "Java核心",
+    "sub_domain": "异常处理",
+    "importance": 5
+  },
+  {
+    "name": "try-with-resources自动关闭",
+    "domain": "Java核心",
+    "sub_domain": "异常处理",
+    "importance": 5
+  },
+  {
+    "name": "全局异常处理最佳实践",
+    "domain": "Java核心",
+    "sub_domain": "异常处理",
+    "importance": 5
+  },
+  {
+    "name": "受检异常与非受检异常",
+    "domain": "Java核心",
+    "sub_domain": "异常处理",
+    "importance": 5
+  },
+  {
+    "name": "异常链与异常转译",
+    "domain": "Java核心",
+    "sub_domain": "异常处理",
+    "importance": 5
+  },
+  {
+    "name": "自定义异常设计",
+    "domain": "Java核心",
+    "sub_domain": "异常处理",
+    "importance": 5
+  },
+  {
+    "name": "Lambda表达式原理",
+    "domain": "Java核心",
+    "sub_domain": "新特性",
+    "importance": 5
+  },
+  {
+    "name": "Optional类最佳实践",
+    "domain": "Java核心",
+    "sub_domain": "新特性",
+    "importance": 5
+  },
+  {
+    "name": "Pattern Matching模式匹配",
+    "domain": "Java核心",
+    "sub_domain": "新特性",
+    "importance": 5
+  },
+  {
+    "name": "Records类特性",
+    "domain": "Java核心",
+    "sub_domain": "新特性",
+    "importance": 5
+  },
+  {
+    "name": "Sealed Classes密封类",
+    "domain": "Java核心",
+    "sub_domain": "新特性",
+    "importance": 5
+  },
+  {
+    "name": "Stream API流水线",
+    "domain": "Java核心",
+    "sub_domain": "新特性",
+    "importance": 5
+  },
+  {
+    "name": "Text Blocks文本块",
+    "domain": "Java核心",
+    "sub_domain": "新特性",
+    "importance": 5
+  },
+  {
+    "name": "泛型擦除机制",
+    "domain": "Java核心",
+    "sub_domain": "泛型",
+    "importance": 5
+  },
+  {
+    "name": "泛型方法与泛型类",
+    "domain": "Java核心",
+    "sub_domain": "泛型",
+    "importance": 5
+  },
+  {
+    "name": "泛型约束与边界",
+    "domain": "Java核心",
+    "sub_domain": "泛型",
+    "importance": 5
+  },
+  {
+    "name": "通配符与PECS原则",
+    "domain": "Java核心",
+    "sub_domain": "泛型",
+    "importance": 5
+  },
+  {
+    "name": "Java Bean规范",
+    "domain": "Java核心",
+    "sub_domain": "面向对象",
+    "importance": 5
+  },
+  {
+    "name": "equals与hashCode契约",
+    "domain": "Java核心",
+    "sub_domain": "面向对象",
+    "importance": 5
+  },
+  {
+    "name": "final关键字使用场景",
+    "domain": "Java核心",
+    "sub_domain": "面向对象",
+    "importance": 5
+  },
+  {
+    "name": "static关键字与类加载",
+    "domain": "Java核心",
+    "sub_domain": "面向对象",
+    "importance": 5
+  },
+  {
+    "name": "值传递与引用传递",
+    "domain": "Java核心",
+    "sub_domain": "面向对象",
+    "importance": 5
+  },
+  {
+    "name": "内部类与匿名类",
+    "domain": "Java核心",
+    "sub_domain": "面向对象",
+    "importance": 5
+  },
+  {
+    "name": "多态的实现机制",
+    "domain": "Java核心",
+    "sub_domain": "面向对象",
+    "importance": 5
+  },
+  {
+    "name": "封装的定义与作用",
+    "domain": "Java核心",
+    "sub_domain": "面向对象",
+    "importance": 5
+  },
+  {
+    "name": "抽象类与接口的区别",
+    "domain": "Java核心",
+    "sub_domain": "面向对象",
+    "importance": 5
+  },
+  {
+    "name": "方法重载与重写规则",
+    "domain": "Java核心",
+    "sub_domain": "面向对象",
+    "importance": 5
+  },
+  {
+    "name": "深拷贝与浅拷贝",
+    "domain": "Java核心",
+    "sub_domain": "面向对象",
+    "importance": 5
+  },
+  {
+    "name": "继承与组合的选择原则",
+    "domain": "Java核心",
+    "sub_domain": "面向对象",
+    "importance": 5
+  },
+  {
+    "name": "Shell脚本变量与循环",
+    "domain": "Linux",
+    "sub_domain": "Shell",
+    "importance": 2
+  },
+  {
+    "name": "函数与参数",
+    "domain": "Linux",
+    "sub_domain": "Shell",
+    "importance": 2
+  },
+  {
+    "name": "环境变量与profile",
+    "domain": "Linux",
+    "sub_domain": "Shell",
+    "importance": 2
+  },
+  {
+    "name": "计划任务crontab",
+    "domain": "Linux",
+    "sub_domain": "Shell",
+    "importance": 2
+  },
+  {
+    "name": "常用文件操作命令",
+    "domain": "Linux",
+    "sub_domain": "命令",
+    "importance": 2
+  },
+  {
+    "name": "文本处理grep/awk/sed",
+    "domain": "Linux",
+    "sub_domain": "命令",
+    "importance": 2
+  },
+  {
+    "name": "权限管理chmod/chown",
+    "domain": "Linux",
+    "sub_domain": "命令",
+    "importance": 2
+  },
+  {
+    "name": "磁盘管理df/du",
+    "domain": "Linux",
+    "sub_domain": "命令",
+    "importance": 2
+  },
+  {
+    "name": "系统日志journalctl",
+    "domain": "Linux",
+    "sub_domain": "命令",
+    "importance": 2
+  },
+  {
+    "name": "网络诊断curl/netstat/ss",
+    "domain": "Linux",
+    "sub_domain": "命令",
+    "importance": 2
+  },
+  {
+    "name": "进程管理ps/top/kill",
+    "domain": "Linux",
+    "sub_domain": "命令",
+    "importance": 2
+  },
+  {
+    "name": "SSH配置与密钥",
+    "domain": "Linux",
+    "sub_domain": "运维",
+    "importance": 2
+  },
+  {
+    "name": "systemctl服务管理",
+    "domain": "Linux",
+    "sub_domain": "运维",
+    "importance": 2
+  },
+  {
+    "name": "用户与组管理",
+    "domain": "Linux",
+    "sub_domain": "运维",
+    "importance": 2
+  },
+  {
+    "name": "软件包管理",
+    "domain": "Linux",
+    "sub_domain": "运维",
+    "importance": 2
+  },
+  {
+    "name": "防火墙iptables/firewalld",
+    "domain": "Linux",
+    "sub_domain": "运维",
+    "importance": 2
+  },
+  {
+    "name": "#{}与${}区别与SQL注入",
+    "domain": "MyBatis",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "MyBatis Generator代码生成",
+    "domain": "MyBatis",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "MyBatis-Plus分页插件",
+    "domain": "MyBatis",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "MyBatis-Plus条件构造器QueryWrapper",
+    "domain": "MyBatis",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "MyBatis-Plus自动填充",
+    "domain": "MyBatis",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "MyBatis-Plus逻辑删除",
+    "domain": "MyBatis",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "MyBatis与MyBatis-Plus对比",
+    "domain": "MyBatis",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "TypeHandler类型转换",
+    "domain": "MyBatis",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "一级缓存与二级缓存",
+    "domain": "MyBatis",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "动态SQL原理",
+    "domain": "MyBatis",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "延迟加载与N+1问题",
+    "domain": "MyBatis",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "执行器Executor(Batch/Reuse/Simple)",
+    "domain": "MyBatis",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "插件机制与拦截器",
+    "domain": "MyBatis",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "结果映射与resultMap",
+    "domain": "MyBatis",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nacos AP与CP模式切换",
+    "domain": "Nacos",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nacos与Eureka/Zookeeper对比",
+    "domain": "Nacos",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nacos与Spring Cloud整合",
+    "domain": "Nacos",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nacos健康检查机制",
+    "domain": "Nacos",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nacos命名空间与分组",
+    "domain": "Nacos",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nacos服务注册与发现",
+    "domain": "Nacos",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nacos配置中心动态刷新",
+    "domain": "Nacos",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nacos配置加密",
+    "domain": "Nacos",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nacos配置灰度发布",
+    "domain": "Nacos",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nacos长轮询机制",
+    "domain": "Nacos",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nacos集群部署",
+    "domain": "Nacos",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Channel与ChannelPipeline",
+    "domain": "Netty",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Netty ByteBuf与内存池",
+    "domain": "Netty",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Netty Reactor线程模型",
+    "domain": "Netty",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Netty与BIO/NIO对比",
+    "domain": "Netty",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Netty心跳与空闲检测",
+    "domain": "Netty",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Netty拆包粘包方案",
+    "domain": "Netty",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Netty零拷贝",
+    "domain": "Netty",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Netty高并发优化",
+    "domain": "Netty",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "事件驱动与Handler链",
+    "domain": "Netty",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Nginx SSL/TLS配置",
+    "domain": "Nginx",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nginx location匹配规则",
+    "domain": "Nginx",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nginx upstream配置",
+    "domain": "Nginx",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nginx动静分离",
+    "domain": "Nginx",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nginx反向代理",
+    "domain": "Nginx",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nginx日志格式与切割",
+    "domain": "Nginx",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nginx缓存配置",
+    "domain": "Nginx",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nginx负载均衡算法(轮询/加权/IPHash/least_conn)",
+    "domain": "Nginx",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nginx限流配置(limit_req/limit_conn)",
+    "domain": "Nginx",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Nginx高可用Keepalived",
+    "domain": "Nginx",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "OpenResty与Lua扩展",
+    "domain": "Nginx",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Grafana可视化配置",
+    "domain": "Prometheus",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "PromQL查询语言",
+    "domain": "Prometheus",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Prometheus告警规则AlertManager",
+    "domain": "Prometheus",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Prometheus指标类型(Counter/Gauge/Histogram/Summary)",
+    "domain": "Prometheus",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Prometheus联邦集群",
+    "domain": "Prometheus",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Prometheus采集器Exporter",
+    "domain": "Prometheus",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Spring Boot Actuator + Micrometer集成",
+    "domain": "Prometheus",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "AOF重写机制",
+    "domain": "Redis",
+    "sub_domain": "持久化",
+    "importance": 5
+  },
+  {
+    "name": "RDB与AOF混合持久化",
+    "domain": "Redis",
+    "sub_domain": "持久化",
+    "importance": 5
+  },
+  {
+    "name": "RDB快照与AOF日志",
+    "domain": "Redis",
+    "sub_domain": "持久化",
+    "importance": 5
+  },
+  {
+    "name": "Redis7 RDB+日志合并",
+    "domain": "Redis",
+    "sub_domain": "持久化",
+    "importance": 5
+  },
+  {
+    "name": "数据备份与恢复策略",
+    "domain": "Redis",
+    "sub_domain": "持久化",
+    "importance": 5
+  },
+  {
+    "name": "Cluster MOVED与ASK重定向",
+    "domain": "Redis",
+    "sub_domain": "持久化与集群",
+    "importance": 5
+  },
+  {
+    "name": "Cluster集群Slot机制",
+    "domain": "Redis",
+    "sub_domain": "持久化与集群",
+    "importance": 5
+  },
+  {
+    "name": "RDB与AOF混合持久化",
+    "domain": "Redis",
+    "sub_domain": "持久化与集群",
+    "importance": 5
+  },
+  {
+    "name": "RDB快照与AOF日志",
+    "domain": "Redis",
+    "sub_domain": "持久化与集群",
+    "importance": 5
+  },
+  {
+    "name": "Sentinel哨兵故障转移",
+    "domain": "Redis",
+    "sub_domain": "持久化与集群",
+    "importance": 5
+  },
+  {
+    "name": "主从复制与PSYNC",
+    "domain": "Redis",
+    "sub_domain": "持久化与集群",
+    "importance": 5
+  },
+  {
+    "name": "BitMap位图",
+    "domain": "Redis",
+    "sub_domain": "数据结构",
+    "importance": 5
+  },
+  {
+    "name": "GEO地理位置",
+    "domain": "Redis",
+    "sub_domain": "数据结构",
+    "importance": 5
+  },
+  {
+    "name": "HyperLogLog基数统计",
+    "domain": "Redis",
+    "sub_domain": "数据结构",
+    "importance": 5
+  },
+  {
+    "name": "SDS简单动态字符串",
+    "domain": "Redis",
+    "sub_domain": "数据结构",
+    "importance": 5
+  },
+  {
+    "name": "Stream消息队列",
+    "domain": "Redis",
+    "sub_domain": "数据结构",
+    "importance": 5
+  },
+  {
+    "name": "intset整数集合",
+    "domain": "Redis",
+    "sub_domain": "数据结构",
+    "importance": 5
+  },
+  {
+    "name": "listpack紧凑列表",
+    "domain": "Redis",
+    "sub_domain": "数据结构",
+    "importance": 5
+  },
+  {
+    "name": "quicklist快速列表",
+    "domain": "Redis",
+    "sub_domain": "数据结构",
+    "importance": 5
+  },
+  {
+    "name": "skiplist跳表",
+    "domain": "Redis",
+    "sub_domain": "数据结构",
+    "importance": 5
+  },
+  {
+    "name": "ziplist压缩列表",
+    "domain": "Redis",
+    "sub_domain": "数据结构",
+    "importance": 5
+  },
+  {
+    "name": "多级缓存架构",
+    "domain": "Redis",
+    "sub_domain": "缓存策略",
+    "importance": 5
+  },
+  {
+    "name": "大Key问题排查",
+    "domain": "Redis",
+    "sub_domain": "缓存策略",
+    "importance": 5
+  },
+  {
+    "name": "热点Key自动发现",
+    "domain": "Redis",
+    "sub_domain": "缓存策略",
+    "importance": 5
+  },
+  {
+    "name": "缓存与数据库双写一致性",
+    "domain": "Redis",
+    "sub_domain": "缓存策略",
+    "importance": 5
+  },
+  {
+    "name": "缓存击穿原因与对策",
+    "domain": "Redis",
+    "sub_domain": "缓存策略",
+    "importance": 5
+  },
+  {
+    "name": "缓存淘汰策略(LRU/LFU)",
+    "domain": "Redis",
+    "sub_domain": "缓存策略",
+    "importance": 5
+  },
+  {
+    "name": "缓存穿透解决方案",
+    "domain": "Redis",
+    "sub_domain": "缓存策略",
+    "importance": 5
+  },
+  {
+    "name": "缓存雪崩防护",
+    "domain": "Redis",
+    "sub_domain": "缓存策略",
+    "importance": 5
+  },
+  {
+    "name": "缓存预热方案",
+    "domain": "Redis",
+    "sub_domain": "缓存策略",
+    "importance": 5
+  },
+  {
+    "name": "过期策略定时/惰性/定期",
+    "domain": "Redis",
+    "sub_domain": "缓存策略",
+    "importance": 5
+  },
+  {
+    "name": "Cluster MOVED/ASK重定向",
+    "domain": "Redis",
+    "sub_domain": "集群与高可用",
+    "importance": 5
+  },
+  {
+    "name": "Cluster集群Slot机制",
+    "domain": "Redis",
+    "sub_domain": "集群与高可用",
+    "importance": 5
+  },
+  {
+    "name": "Redis集群Proxy",
+    "domain": "Redis",
+    "sub_domain": "集群与高可用",
+    "importance": 5
+  },
+  {
+    "name": "Sentinel哨兵故障转移",
+    "domain": "Redis",
+    "sub_domain": "集群与高可用",
+    "importance": 5
+  },
+  {
+    "name": "主从复制原理",
+    "domain": "Redis",
+    "sub_domain": "集群与高可用",
+    "importance": 5
+  },
+  {
+    "name": "集群数据迁移reshard",
+    "domain": "Redis",
+    "sub_domain": "集群与高可用",
+    "importance": 5
+  },
+  {
+    "name": "Pipeline批处理",
+    "domain": "Redis",
+    "sub_domain": "高级",
+    "importance": 5
+  },
+  {
+    "name": "Pub/Sub与Stream对比",
+    "domain": "Redis",
+    "sub_domain": "高级",
+    "importance": 5
+  },
+  {
+    "name": "Redis Module扩展",
+    "domain": "Redis",
+    "sub_domain": "高级",
+    "importance": 5
+  },
+  {
+    "name": "Redis事务与Lua脚本",
+    "domain": "Redis",
+    "sub_domain": "高级",
+    "importance": 5
+  },
+  {
+    "name": "Redis慢查询优化",
+    "domain": "Redis",
+    "sub_domain": "高级",
+    "importance": 5
+  },
+  {
+    "name": "Redis过期策略与淘汰算法",
+    "domain": "Redis",
+    "sub_domain": "高级",
+    "importance": 5
+  },
+  {
+    "name": "分布式锁RedLock算法",
+    "domain": "Redis",
+    "sub_domain": "高级",
+    "importance": 5
+  },
+  {
+    "name": "布隆过滤器",
+    "domain": "Redis",
+    "sub_domain": "高级",
+    "importance": 5
+  },
+  {
+    "name": "布隆过滤器与缓存穿透",
+    "domain": "Redis",
+    "sub_domain": "高级",
+    "importance": 5
+  },
+  {
+    "name": "慢查询日志分析",
+    "domain": "Redis",
+    "sub_domain": "高级",
+    "importance": 5
+  },
+  {
+    "name": "RocketMQ DLedger高可用(Raft)",
+    "domain": "RocketMQ",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "RocketMQ与Kafka/RabbitMQ对比",
+    "domain": "RocketMQ",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "RocketMQ事务消息",
+    "domain": "RocketMQ",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "RocketMQ延迟消息",
+    "domain": "RocketMQ",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "RocketMQ架构(NameServer/Broker/Producer/Consumer)",
+    "domain": "RocketMQ",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "RocketMQ消息轨迹追踪",
+    "domain": "RocketMQ",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "RocketMQ消息过滤(tag/SQL)",
+    "domain": "RocketMQ",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "RocketMQ消费者负载均衡",
+    "domain": "RocketMQ",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "RocketMQ顺序消息实现",
+    "domain": "RocketMQ",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Seata AT模式(两阶段提交)",
+    "domain": "Seata",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Seata SAGA长事务",
+    "domain": "Seata",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Seata TC/Transaction Manager/TM",
+    "domain": "Seata",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Seata TCC模式",
+    "domain": "Seata",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Seata XA模式",
+    "domain": "Seata",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Seata undo_log回滚日志",
+    "domain": "Seata",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Seata全局事务与分支事务",
+    "domain": "Seata",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Seata全局锁",
+    "domain": "Seata",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Seata集成Nacos",
+    "domain": "Seata",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Seata集成SpringBoot",
+    "domain": "Seata",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "@SentinelResource注解",
+    "domain": "Sentinel",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Sentinel Dashboard控制台",
+    "domain": "Sentinel",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Sentinel与Hystrix对比",
+    "domain": "Sentinel",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Sentinel与OpenFeign整合",
+    "domain": "Sentinel",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Sentinel滑动窗口限流",
+    "domain": "Sentinel",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Sentinel热点参数限流",
+    "domain": "Sentinel",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Sentinel熔断降级",
+    "domain": "Sentinel",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Sentinel系统自适应限流",
+    "domain": "Sentinel",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Sentinel网关流控",
+    "domain": "Sentinel",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Sentinel规则持久化",
+    "domain": "Sentinel",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "Sentinel集群流控",
+    "domain": "Sentinel",
+    "sub_domain": "核心",
+    "importance": 5
+  },
+  {
+    "name": "ShardingSphere-JDBC分片策略",
+    "domain": "ShardingSphere",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ShardingSphere-Proxy代理模式",
+    "domain": "ShardingSphere",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ShardingSphere事务(Seata集成)",
+    "domain": "ShardingSphere",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "分布式主键生成(雪花算法)",
+    "domain": "ShardingSphere",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "分库分表键选择原则",
+    "domain": "ShardingSphere",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "广播表与绑定表",
+    "domain": "ShardingSphere",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "影子库压测",
+    "domain": "ShardingSphere",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "数据加密与脱敏",
+    "domain": "ShardingSphere",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "读写分离配置",
+    "domain": "ShardingSphere",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "Java Agent探针原理(ByteBuddy)",
+    "domain": "SkyWalking",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "SkyWalking与Zipkin/Jaeger对比",
+    "domain": "SkyWalking",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "SkyWalking告警规则配置",
+    "domain": "SkyWalking",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "SkyWalking拓扑图与服务依赖",
+    "domain": "SkyWalking",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "SkyWalking日志与链路关联",
+    "domain": "SkyWalking",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "SkyWalking架构(OAP/Agent/UI)",
+    "domain": "SkyWalking",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "SkyWalking链路追踪(trace/span)",
+    "domain": "SkyWalking",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "AOP自调用失效问题",
+    "domain": "Spring",
+    "sub_domain": "AOP",
+    "importance": 5
+  },
+  {
+    "name": "Advisor与Advice关系",
+    "domain": "Spring",
+    "sub_domain": "AOP",
+    "importance": 5
+  },
+  {
+    "name": "AspectJ与Spring AOP对比",
+    "domain": "Spring",
+    "sub_domain": "AOP",
+    "importance": 5
+  },
+  {
+    "name": "JDK动态代理与CGLIB区别",
+    "domain": "Spring",
+    "sub_domain": "AOP",
+    "importance": 5
+  },
+  {
+    "name": "Spring AOP与AspectJ对比",
+    "domain": "Spring",
+    "sub_domain": "AOP",
+    "importance": 5
+  },
+  {
+    "name": "Spring AOP实现原理",
+    "domain": "Spring",
+    "sub_domain": "AOP",
+    "importance": 5
+  },
+  {
+    "name": "切面与切点表达式",
+    "domain": "Spring",
+    "sub_domain": "AOP",
+    "importance": 5
+  },
+  {
+    "name": "@Autowired注入原理",
+    "domain": "Spring",
+    "sub_domain": "IoC容器",
+    "importance": 5
+  },
+  {
+    "name": "@Configuration与@Bean原理",
+    "domain": "Spring",
+    "sub_domain": "IoC容器",
+    "importance": 5
+  },
+  {
+    "name": "BeanFactory与ApplicationContext",
+    "domain": "Spring",
+    "sub_domain": "IoC容器",
+    "importance": 5
+  },
+  {
+    "name": "Bean作用域",
+    "domain": "Spring",
+    "sub_domain": "IoC容器",
+    "importance": 5
+  },
+  {
+    "name": "Bean生命周期",
+    "domain": "Spring",
+    "sub_domain": "IoC容器",
+    "importance": 5
+  },
+  {
+    "name": "Bean销毁回调",
+    "domain": "Spring",
+    "sub_domain": "IoC容器",
+    "importance": 5
+  },
+  {
+    "name": "FactoryBean与ObjectFactory",
+    "domain": "Spring",
+    "sub_domain": "IoC容器",
+    "importance": 5
+  },
+  {
+    "name": "ImportSelector机制",
+    "domain": "Spring",
+    "sub_domain": "IoC容器",
+    "importance": 5
+  },
+  {
+    "name": "Spring IoC容器原理",
+    "domain": "Spring",
+    "sub_domain": "IoC容器",
+    "importance": 5
+  },
+  {
+    "name": "依赖注入三种方式",
+    "domain": "Spring",
+    "sub_domain": "IoC容器",
+    "importance": 5
+  },
+  {
+    "name": "循环依赖解决方案",
+    "domain": "Spring",
+    "sub_domain": "IoC容器",
+    "importance": 5
+  },
+  {
+    "name": "懒加载与预初始化",
+    "domain": "Spring",
+    "sub_domain": "IoC容器",
+    "importance": 5
+  },
+  {
+    "name": "DispatcherServlet请求流程",
+    "domain": "Spring",
+    "sub_domain": "MVC",
+    "importance": 5
+  },
+  {
+    "name": "RESTful API设计",
+    "domain": "Spring",
+    "sub_domain": "MVC",
+    "importance": 5
+  },
+  {
+    "name": "参数校验Validation",
+    "domain": "Spring",
+    "sub_domain": "MVC",
+    "importance": 5
+  },
+  {
+    "name": "异常统一处理",
+    "domain": "Spring",
+    "sub_domain": "MVC",
+    "importance": 5
+  },
+  {
+    "name": "拦截器与过滤器区别",
+    "domain": "Spring",
+    "sub_domain": "MVC",
+    "importance": 5
+  },
+  {
+    "name": "数据校验Validation",
+    "domain": "Spring",
+    "sub_domain": "MVC",
+    "importance": 5
+  },
+  {
+    "name": "跨域CORS处理",
+    "domain": "Spring",
+    "sub_domain": "MVC",
+    "importance": 5
+  },
+  {
+    "name": "CSRF防护",
+    "domain": "Spring",
+    "sub_domain": "Security",
+    "importance": 5
+  },
+  {
+    "name": "JWT集成方案",
+    "domain": "Spring",
+    "sub_domain": "Security",
+    "importance": 5
+  },
+  {
+    "name": "OAuth2授权码模式",
+    "domain": "Spring",
+    "sub_domain": "Security",
+    "importance": 5
+  },
+  {
+    "name": "Spring Security认证流程",
+    "domain": "Spring",
+    "sub_domain": "Security",
+    "importance": 5
+  },
+  {
+    "name": "方法级权限控制",
+    "domain": "Spring",
+    "sub_domain": "Security",
+    "importance": 5
+  },
+  {
+    "name": "过滤器链与SecurityContext",
+    "domain": "Spring",
+    "sub_domain": "Security",
+    "importance": 5
+  },
+  {
+    "name": "@EventListener注解",
+    "domain": "Spring",
+    "sub_domain": "事件与扩展",
+    "importance": 5
+  },
+  {
+    "name": "BeanFactoryPostProcessor",
+    "domain": "Spring",
+    "sub_domain": "事件与扩展",
+    "importance": 5
+  },
+  {
+    "name": "BeanPostProcessor后处理器",
+    "domain": "Spring",
+    "sub_domain": "事件与扩展",
+    "importance": 5
+  },
+  {
+    "name": "Spring事件监听机制",
+    "domain": "Spring",
+    "sub_domain": "事件与扩展",
+    "importance": 5
+  },
+  {
+    "name": "Spring类型转换Converter",
+    "domain": "Spring",
+    "sub_domain": "事件与扩展",
+    "importance": 5
+  },
+  {
+    "name": "@Transactional失效场景",
+    "domain": "Spring",
+    "sub_domain": "事务",
+    "importance": 5
+  },
+  {
+    "name": "Spring事务与分布式事务",
+    "domain": "Spring",
+    "sub_domain": "事务",
+    "importance": 5
+  },
+  {
+    "name": "Spring事务管理机制",
+    "domain": "Spring",
+    "sub_domain": "事务",
+    "importance": 5
+  },
+  {
+    "name": "事务传播行为七种类型",
+    "domain": "Spring",
+    "sub_domain": "事务",
+    "importance": 5
+  },
+  {
+    "name": "事务隔离级别",
+    "domain": "Spring",
+    "sub_domain": "事务",
+    "importance": 5
+  },
+  {
+    "name": "编程式事务与声明式事务",
+    "domain": "Spring",
+    "sub_domain": "事务",
+    "importance": 5
+  },
+  {
+    "name": "Actuator健康监控",
+    "domain": "SpringBoot",
+    "sub_domain": "基础特性",
+    "importance": 3
+  },
+  {
+    "name": "Profile多环境切换",
+    "domain": "SpringBoot",
+    "sub_domain": "基础特性",
+    "importance": 3
+  },
+  {
+    "name": "外部化配置优先级",
+    "domain": "SpringBoot",
+    "sub_domain": "基础特性",
+    "importance": 3
+  },
+  {
+    "name": "嵌入式容器Tomcat优化",
+    "domain": "SpringBoot",
+    "sub_domain": "基础特性",
+    "importance": 3
+  },
+  {
+    "name": "异常统一处理",
+    "domain": "SpringBoot",
+    "sub_domain": "基础特性",
+    "importance": 3
+  },
+  {
+    "name": "跨域CORS配置",
+    "domain": "SpringBoot",
+    "sub_domain": "基础特性",
+    "importance": 3
+  },
+  {
+    "name": "配置刷新@RefreshScope",
+    "domain": "SpringBoot",
+    "sub_domain": "基础特性",
+    "importance": 3
+  },
+  {
+    "name": "@EnableAutoConfiguration",
+    "domain": "SpringBoot",
+    "sub_domain": "自动装配",
+    "importance": 3
+  },
+  {
+    "name": "spring.factories机制",
+    "domain": "SpringBoot",
+    "sub_domain": "自动装配",
+    "importance": 3
+  },
+  {
+    "name": "条件注解@Conditional",
+    "domain": "SpringBoot",
+    "sub_domain": "自动装配",
+    "importance": 3
+  },
+  {
+    "name": "自动装配原理",
+    "domain": "SpringBoot",
+    "sub_domain": "自动装配",
+    "importance": 3
+  },
+  {
+    "name": "自动配置失败分析",
+    "domain": "SpringBoot",
+    "sub_domain": "自动装配",
+    "importance": 3
+  },
+  {
+    "name": "自定义Starter开发",
+    "domain": "SpringBoot",
+    "sub_domain": "自动装配",
+    "importance": 3
+  },
+  {
+    "name": "Admin应用监控",
+    "domain": "SpringBoot",
+    "sub_domain": "进阶",
+    "importance": 3
+  },
+  {
+    "name": "GraalVM原生镜像",
+    "domain": "SpringBoot",
+    "sub_domain": "进阶",
+    "importance": 3
+  },
+  {
+    "name": "Spring Boot Test测试切片",
+    "domain": "SpringBoot",
+    "sub_domain": "进阶",
+    "importance": 3
+  },
+  {
+    "name": "WebFlux响应式编程",
+    "domain": "SpringBoot",
+    "sub_domain": "进阶",
+    "importance": 3
+  },
+  {
+    "name": "SAGA长事务",
+    "domain": "SpringCloud",
+    "sub_domain": "分布式事务",
+    "importance": 4
+  },
+  {
+    "name": "Seata AT模式两阶段提交",
+    "domain": "SpringCloud",
+    "sub_domain": "分布式事务",
+    "importance": 4
+  },
+  {
+    "name": "Seata TCC模式",
+    "domain": "SpringCloud",
+    "sub_domain": "分布式事务",
+    "importance": 4
+  },
+  {
+    "name": "最大努力通知",
+    "domain": "SpringCloud",
+    "sub_domain": "分布式事务",
+    "importance": 4
+  },
+  {
+    "name": "Nacos AP与CP模式",
+    "domain": "SpringCloud",
+    "sub_domain": "注册与发现",
+    "importance": 4
+  },
+  {
+    "name": "Nacos配置中心动态刷新",
+    "domain": "SpringCloud",
+    "sub_domain": "注册与发现",
+    "importance": 4
+  },
+  {
+    "name": "服务注册与发现原理",
+    "domain": "SpringCloud",
+    "sub_domain": "注册与发现",
+    "importance": 4
+  },
+  {
+    "name": "注册中心对比(Eureka/Nacos/Consul)",
+    "domain": "SpringCloud",
+    "sub_domain": "注册与发现",
+    "importance": 4
+  },
+  {
+    "name": "Sentinel滑动窗口限流",
+    "domain": "SpringCloud",
+    "sub_domain": "熔断限流",
+    "importance": 4
+  },
+  {
+    "name": "Sentinel热点参数限流",
+    "domain": "SpringCloud",
+    "sub_domain": "熔断限流",
+    "importance": 4
+  },
+  {
+    "name": "熔断降级Sentinel与Hystrix",
+    "domain": "SpringCloud",
+    "sub_domain": "熔断限流",
+    "importance": 4
+  },
+  {
+    "name": "API网关Gateway",
+    "domain": "SpringCloud",
+    "sub_domain": "网关与调用",
+    "importance": 4
+  },
+  {
+    "name": "Gateway路由谓词工厂",
+    "domain": "SpringCloud",
+    "sub_domain": "网关与调用",
+    "importance": 4
+  },
+  {
+    "name": "OpenFeign声明式调用",
+    "domain": "SpringCloud",
+    "sub_domain": "网关与调用",
+    "importance": 4
+  },
+  {
+    "name": "负载均衡Ribbon与LoadBalancer",
+    "domain": "SpringCloud",
+    "sub_domain": "网关与调用",
+    "importance": 4
+  },
+  {
+    "name": "OpenTelemetry可观测性",
+    "domain": "SpringCloud",
+    "sub_domain": "链路追踪",
+    "importance": 4
+  },
+  {
+    "name": "SkyWalking Agent探针原理",
+    "domain": "SpringCloud",
+    "sub_domain": "链路追踪",
+    "importance": 4
+  },
+  {
+    "name": "Sleuth与Zipkin链路追踪",
+    "domain": "SpringCloud",
+    "sub_domain": "链路追踪",
+    "importance": 4
+  },
+  {
+    "name": "Composition API vs Options API",
+    "domain": "Vue",
+    "sub_domain": "基础",
+    "importance": 3
+  },
+  {
+    "name": "Pinia状态管理",
+    "domain": "Vue",
+    "sub_domain": "基础",
+    "importance": 3
+  },
+  {
+    "name": "Vue Router 路由原理",
+    "domain": "Vue",
+    "sub_domain": "基础",
+    "importance": 3
+  },
+  {
+    "name": "Vue3响应式原理(Proxy/Reflect)",
+    "domain": "Vue",
+    "sub_domain": "基础",
+    "importance": 3
+  },
+  {
+    "name": "keep-alive缓存组件",
+    "domain": "Vue",
+    "sub_domain": "基础",
+    "importance": 3
+  },
+  {
+    "name": "v-model技术实现",
+    "domain": "Vue",
+    "sub_domain": "基础",
+    "importance": 3
+  },
+  {
+    "name": "异步组件与Suspense",
+    "domain": "Vue",
+    "sub_domain": "基础",
+    "importance": 3
+  },
+  {
+    "name": "组件通信(props/emit/provide/inject)",
+    "domain": "Vue",
+    "sub_domain": "基础",
+    "importance": 3
+  },
+  {
+    "name": "自定义指令",
+    "domain": "Vue",
+    "sub_domain": "基础",
+    "importance": 3
+  },
+  {
+    "name": "虚拟DOM与Diff算法",
+    "domain": "Vue",
+    "sub_domain": "基础",
+    "importance": 3
+  },
+  {
+    "name": "SSR服务端渲染Nuxt3",
+    "domain": "Vue",
+    "sub_domain": "进阶",
+    "importance": 3
+  },
+  {
+    "name": "TypeScript集成",
+    "domain": "Vue",
+    "sub_domain": "进阶",
+    "importance": 3
+  },
+  {
+    "name": "Vite原理与插件开发",
+    "domain": "Vue",
+    "sub_domain": "进阶",
+    "importance": 3
+  },
+  {
+    "name": "Vue3编译优化(静态提升/补丁标记)",
+    "domain": "Vue",
+    "sub_domain": "进阶",
+    "importance": 3
+  },
+  {
+    "name": "前端监控Sentry集成",
+    "domain": "Vue",
+    "sub_domain": "进阶",
+    "importance": 3
+  },
+  {
+    "name": "微前端qiankun集成",
+    "domain": "Vue",
+    "sub_domain": "进阶",
+    "importance": 3
+  },
+  {
+    "name": "性能优化策略",
+    "domain": "Vue",
+    "sub_domain": "进阶",
+    "importance": 3
+  },
+  {
+    "name": "Curator框架简化ZK操作",
+    "domain": "ZooKeeper",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ZAB协议与Leader选举",
+    "domain": "ZooKeeper",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ZooKeeper Watch机制",
+    "domain": "ZooKeeper",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ZooKeeper与Eureka/Nacos对比",
+    "domain": "ZooKeeper",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ZooKeeper会话与心跳",
+    "domain": "ZooKeeper",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ZooKeeper分布式锁(临时顺序节点)",
+    "domain": "ZooKeeper",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ZooKeeper数据模型(Znode)",
+    "domain": "ZooKeeper",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "ZooKeeper集群部署(奇数台)",
+    "domain": "ZooKeeper",
+    "sub_domain": "核心",
+    "importance": 4
+  },
+  {
+    "name": "SAGA长事务",
+    "domain": "分布式",
+    "sub_domain": "事务",
+    "importance": 4
+  },
+  {
+    "name": "Seata AT模式",
+    "domain": "分布式",
+    "sub_domain": "事务",
+    "importance": 4
+  },
+  {
+    "name": "TCC分布式事务",
+    "domain": "分布式",
+    "sub_domain": "事务",
+    "importance": 4
+  },
+  {
+    "name": "三阶段提交3PC",
+    "domain": "分布式",
+    "sub_domain": "事务",
+    "importance": 4
+  },
+  {
+    "name": "两阶段提交2PC",
+    "domain": "分布式",
+    "sub_domain": "事务",
+    "importance": 4
+  },
+  {
+    "name": "事务消息RocketMQ",
+    "domain": "分布式",
+    "sub_domain": "事务",
+    "importance": 4
+  },
+  {
+    "name": "最大努力通知",
+    "domain": "分布式",
+    "sub_domain": "事务",
+    "importance": 4
+  },
+  {
+    "name": "本地消息表",
+    "domain": "分布式",
+    "sub_domain": "事务",
+    "importance": 4
+  },
+  {
+    "name": "分布式ID生成(雪花算法/Leaf)",
+    "domain": "分布式",
+    "sub_domain": "分布式组件",
+    "importance": 4
+  },
+  {
+    "name": "分布式任务调度(XXL-JOB)",
+    "domain": "分布式",
+    "sub_domain": "分布式组件",
+    "importance": 4
+  },
+  {
+    "name": "分布式配置中心(Apollo/Nacos)",
+    "domain": "分布式",
+    "sub_domain": "分布式组件",
+    "importance": 4
+  },
+  {
+    "name": "分布式链路追踪(Jaeger/Zipkin)",
+    "domain": "分布式",
+    "sub_domain": "分布式组件",
+    "importance": 4
+  },
+  {
+    "name": "分布式锁(Redis/ZK/数据库)",
+    "domain": "分布式",
+    "sub_domain": "分布式组件",
+    "importance": 4
+  },
+  {
+    "name": "CDN内容分发网络",
+    "domain": "分布式",
+    "sub_domain": "加速",
+    "importance": 4
+  },
+  {
+    "name": "HTTP2与ServerPush",
+    "domain": "分布式",
+    "sub_domain": "加速",
+    "importance": 4
+  },
+  {
+    "name": "多级缓存架构设计",
+    "domain": "分布式",
+    "sub_domain": "加速",
+    "importance": 4
+  },
+  {
+    "name": "异步化与消息队列解耦",
+    "domain": "分布式",
+    "sub_domain": "加速",
+    "importance": 4
+  },
+  {
+    "name": "数据预聚合与物化视图",
+    "domain": "分布式",
+    "sub_domain": "加速",
+    "importance": 4
+  },
+  {
+    "name": "读写分离与分库分表",
+    "domain": "分布式",
+    "sub_domain": "加速",
+    "importance": 4
+  },
+  {
+    "name": "边缘计算",
+    "domain": "分布式",
+    "sub_domain": "加速",
+    "importance": 4
+  },
+  {
+    "name": "零拷贝与用户态网络栈",
+    "domain": "分布式",
+    "sub_domain": "加速",
+    "importance": 4
+  },
+  {
+    "name": "BASE理论与最终一致性",
+    "domain": "分布式",
+    "sub_domain": "理论基础",
+    "importance": 4
+  },
+  {
+    "name": "CAP定理",
+    "domain": "分布式",
+    "sub_domain": "理论基础",
+    "importance": 4
+  },
+  {
+    "name": "Gossip协议",
+    "domain": "分布式",
+    "sub_domain": "理论基础",
+    "importance": 4
+  },
+  {
+    "name": "Paxos与MultiPaxos",
+    "domain": "分布式",
+    "sub_domain": "理论基础",
+    "importance": 4
+  },
+  {
+    "name": "Quorum读写机制",
+    "domain": "分布式",
+    "sub_domain": "理论基础",
+    "importance": 4
+  },
+  {
+    "name": "Raft共识算法",
+    "domain": "分布式",
+    "sub_domain": "理论基础",
+    "importance": 4
+  },
+  {
+    "name": "一致性哈希",
+    "domain": "分布式",
+    "sub_domain": "理论基础",
+    "importance": 4
+  },
+  {
+    "name": "Nginx限流配置",
+    "domain": "分布式",
+    "sub_domain": "限流",
+    "importance": 4
+  },
+  {
+    "name": "Sentinel限流原理",
+    "domain": "分布式",
+    "sub_domain": "限流",
+    "importance": 4
+  },
+  {
+    "name": "令牌桶算法",
+    "domain": "分布式",
+    "sub_domain": "限流",
+    "importance": 4
+  },
+  {
+    "name": "分布式限流方案",
+    "domain": "分布式",
+    "sub_domain": "限流",
+    "importance": 4
+  },
+  {
+    "name": "滑动窗口限流",
+    "domain": "分布式",
+    "sub_domain": "限流",
+    "importance": 4
+  },
+  {
+    "name": "漏桶算法",
+    "domain": "分布式",
+    "sub_domain": "限流",
+    "importance": 4
+  },
+  {
+    "name": "计数器限流",
+    "domain": "分布式",
+    "sub_domain": "限流",
+    "importance": 4
+  },
+  {
+    "name": "ES Module与CommonJS区别",
+    "domain": "前端工程化",
+    "sub_domain": "构建",
+    "importance": 3
+  },
+  {
+    "name": "Monorepo架构Turborepo",
+    "domain": "前端工程化",
+    "sub_domain": "构建",
+    "importance": 3
+  },
+  {
+    "name": "Tree Shaking原理",
+    "domain": "前端工程化",
+    "sub_domain": "构建",
+    "importance": 3
+  },
+  {
+    "name": "Webpack vs Vite对比",
+    "domain": "前端工程化",
+    "sub_domain": "构建",
+    "importance": 3
+  },
+  {
+    "name": "pnpm幽灵依赖",
+    "domain": "前端工程化",
+    "sub_domain": "构建",
+    "importance": 3
+  },
+  {
+    "name": "Core Web Vitals性能指标",
+    "domain": "前端工程化",
+    "sub_domain": "质量",
+    "importance": 3
+  },
+  {
+    "name": "E2E测试Playwright",
+    "domain": "前端工程化",
+    "sub_domain": "质量",
+    "importance": 3
+  },
+  {
+    "name": "ESLint与Prettier配置",
+    "domain": "前端工程化",
+    "sub_domain": "质量",
+    "importance": 3
+  },
+  {
+    "name": "前端安全XSS与CSRF防护",
+    "domain": "前端工程化",
+    "sub_domain": "质量",
+    "importance": 3
+  },
+  {
+    "name": "前端自动化测试Vitest",
+    "domain": "前端工程化",
+    "sub_domain": "质量",
+    "importance": 3
+  },
+  {
+    "name": "Cron表达式",
+    "domain": "定时任务",
+    "sub_domain": "核心",
+    "importance": 2
+  },
+  {
+    "name": "Elastic-Job对比",
+    "domain": "定时任务",
+    "sub_domain": "核心",
+    "importance": 2
+  },
+  {
+    "name": "Quartz调度框架三要素(Job/Trigger/Scheduler)",
+    "domain": "定时任务",
+    "sub_domain": "核心",
+    "importance": 2
+  },
+  {
+    "name": "Quartz集群与任务分片",
+    "domain": "定时任务",
+    "sub_domain": "核心",
+    "importance": 2
+  },
+  {
+    "name": "Spring @Scheduled与分布式定时任务对比",
+    "domain": "定时任务",
+    "sub_domain": "核心",
+    "importance": 2
+  },
+  {
+    "name": "XXL-JOB任务路由策略",
+    "domain": "定时任务",
+    "sub_domain": "核心",
+    "importance": 2
+  },
+  {
+    "name": "XXL-JOB失败重试与告警",
+    "domain": "定时任务",
+    "sub_domain": "核心",
+    "importance": 2
+  },
+  {
+    "name": "XXL-JOB架构(调度中心/执行器)",
+    "domain": "定时任务",
+    "sub_domain": "核心",
+    "importance": 2
+  },
+  {
+    "name": "Dockerfile最佳实践",
+    "domain": "容器化与K8s",
+    "sub_domain": "Docker",
+    "importance": 2
+  },
+  {
+    "name": "Docker核心原理cgroup与namespace",
+    "domain": "容器化与K8s",
+    "sub_domain": "Docker",
+    "importance": 2
+  },
+  {
+    "name": "Docker网络模式bridge与host",
+    "domain": "容器化与K8s",
+    "sub_domain": "Docker",
+    "importance": 2
+  },
+  {
+    "name": "多阶段构建优化镜像体积",
+    "domain": "容器化与K8s",
+    "sub_domain": "Docker",
+    "importance": 2
+  },
+  {
+    "name": "ConfigMap与Secret",
+    "domain": "容器化与K8s",
+    "sub_domain": "K8s",
+    "importance": 2
+  },
+  {
+    "name": "HPA自动扩缩容",
+    "domain": "容器化与K8s",
+    "sub_domain": "K8s",
+    "importance": 2
+  },
+  {
+    "name": "Helm包管理",
+    "domain": "容器化与K8s",
+    "sub_domain": "K8s",
+    "importance": 2
+  },
+  {
+    "name": "K8s架构与核心组件",
+    "domain": "容器化与K8s",
+    "sub_domain": "K8s",
+    "importance": 2
+  },
+  {
+    "name": "Pod调度策略",
+    "domain": "容器化与K8s",
+    "sub_domain": "K8s",
+    "importance": 2
+  },
+  {
+    "name": "RBAC权限控制",
+    "domain": "容器化与K8s",
+    "sub_domain": "K8s",
+    "importance": 2
+  },
+  {
+    "name": "Service与服务发现",
+    "domain": "容器化与K8s",
+    "sub_domain": "K8s",
+    "importance": 2
+  },
+  {
+    "name": "滚动更新与回滚",
+    "domain": "容器化与K8s",
+    "sub_domain": "K8s",
+    "importance": 2
+  },
+  {
+    "name": "BlockingQueue阻塞队列",
+    "domain": "并发编程",
+    "sub_domain": "JUC工具",
+    "importance": 5
+  },
+  {
+    "name": "ConcurrentHashMap线程安全",
+    "domain": "并发编程",
+    "sub_domain": "JUC工具",
+    "importance": 5
+  },
+  {
+    "name": "CopyOnWriteArrayList读写分离",
+    "domain": "并发编程",
+    "sub_domain": "JUC工具",
+    "importance": 5
+  },
+  {
+    "name": "CountDownLatch使用场景",
+    "domain": "并发编程",
+    "sub_domain": "JUC工具",
+    "importance": 5
+  },
+  {
+    "name": "CyclicBarrier回环屏障",
+    "domain": "并发编程",
+    "sub_domain": "JUC工具",
+    "importance": 5
+  },
+  {
+    "name": "DelayQueue延迟队列",
+    "domain": "并发编程",
+    "sub_domain": "JUC工具",
+    "importance": 5
+  },
+  {
+    "name": "Exchanger线程间交换",
+    "domain": "并发编程",
+    "sub_domain": "JUC工具",
+    "importance": 5
+  },
+  {
+    "name": "Phaser多阶段同步",
+    "domain": "并发编程",
+    "sub_domain": "JUC工具",
+    "importance": 5
+  },
+  {
+    "name": "Semaphore信号量限流",
+    "domain": "并发编程",
+    "sub_domain": "JUC工具",
+    "importance": 5
+  },
+  {
+    "name": "DCL单例中volatile作用",
+    "domain": "并发编程",
+    "sub_domain": "内存模型",
+    "importance": 5
+  },
+  {
+    "name": "Java内存模型JMM",
+    "domain": "并发编程",
+    "sub_domain": "内存模型",
+    "importance": 5
+  },
+  {
+    "name": "happens-before规则",
+    "domain": "并发编程",
+    "sub_domain": "内存模型",
+    "importance": 5
+  },
+  {
+    "name": "volatile与synchronized区别",
+    "domain": "并发编程",
+    "sub_domain": "内存模型",
+    "importance": 5
+  },
+  {
+    "name": "volatile内存语义",
+    "domain": "并发编程",
+    "sub_domain": "内存模型",
+    "importance": 5
+  },
+  {
+    "name": "伪共享与@Contended",
+    "domain": "并发编程",
+    "sub_domain": "内存模型",
+    "importance": 5
+  },
+  {
+    "name": "指令重排与内存屏障",
+    "domain": "并发编程",
+    "sub_domain": "内存模型",
+    "importance": 5
+  },
+  {
+    "name": "协程ProjectLoom",
+    "domain": "并发编程",
+    "sub_domain": "并发模式",
+    "importance": 5
+  },
+  {
+    "name": "反应式编程Reactor",
+    "domain": "并发编程",
+    "sub_domain": "并发模式",
+    "importance": 5
+  },
+  {
+    "name": "异步编程模式回调/Future/响应式",
+    "domain": "并发编程",
+    "sub_domain": "并发模式",
+    "importance": 5
+  },
+  {
+    "name": "无锁并发设计",
+    "domain": "并发编程",
+    "sub_domain": "并发模式",
+    "importance": 5
+  },
+  {
+    "name": "生产者消费者五种实现",
+    "domain": "并发编程",
+    "sub_domain": "并发模式",
+    "importance": 5
+  },
+  {
+    "name": "读写锁缓存设计",
+    "domain": "并发编程",
+    "sub_domain": "并发模式",
+    "importance": 5
+  },
+  {
+    "name": "守护线程与用户线程",
+    "domain": "并发编程",
+    "sub_domain": "线程基础",
+    "importance": 5
+  },
+  {
+    "name": "线程join与yield",
+    "domain": "并发编程",
+    "sub_domain": "线程基础",
+    "importance": 5
+  },
+  {
+    "name": "线程中断机制",
+    "domain": "并发编程",
+    "sub_domain": "线程基础",
+    "importance": 5
+  },
+  {
+    "name": "线程优先级",
+    "domain": "并发编程",
+    "sub_domain": "线程基础",
+    "importance": 5
+  },
+  {
+    "name": "线程创建方式对比",
+    "domain": "并发编程",
+    "sub_domain": "线程基础",
+    "importance": 5
+  },
+  {
+    "name": "线程生命周期与状态转换",
+    "domain": "并发编程",
+    "sub_domain": "线程基础",
+    "importance": 5
+  },
+  {
+    "name": "CompletableFuture异步编排",
+    "domain": "并发编程",
+    "sub_domain": "线程池",
+    "importance": 5
+  },
+  {
+    "name": "ForkJoinPool工作窃取",
+    "domain": "并发编程",
+    "sub_domain": "线程池",
+    "importance": 5
+  },
+  {
+    "name": "ScheduledThreadPoolExecutor定时任务",
+    "domain": "并发编程",
+    "sub_domain": "线程池",
+    "importance": 5
+  },
+  {
+    "name": "ThreadPoolExecutor核心参数",
+    "domain": "并发编程",
+    "sub_domain": "线程池",
+    "importance": 5
+  },
+  {
+    "name": "拒绝策略四种类型",
+    "domain": "并发编程",
+    "sub_domain": "线程池",
+    "importance": 5
+  },
+  {
+    "name": "线程池优雅关闭",
+    "domain": "并发编程",
+    "sub_domain": "线程池",
+    "importance": 5
+  },
+  {
+    "name": "线程池大小如何设置",
+    "domain": "并发编程",
+    "sub_domain": "线程池",
+    "importance": 5
+  },
+  {
+    "name": "线程池监控与动态调整",
+    "domain": "并发编程",
+    "sub_domain": "线程池",
+    "importance": 5
+  },
+  {
+    "name": "Atomic类与LongAdder",
+    "domain": "并发编程",
+    "sub_domain": "锁机制",
+    "importance": 5
+  },
+  {
+    "name": "CAS与ABA问题",
+    "domain": "并发编程",
+    "sub_domain": "锁机制",
+    "importance": 5
+  },
+  {
+    "name": "ReentrantLock与AQS原理",
+    "domain": "并发编程",
+    "sub_domain": "锁机制",
+    "importance": 5
+  },
+  {
+    "name": "StampedLock乐观读",
+    "domain": "并发编程",
+    "sub_domain": "锁机制",
+    "importance": 5
+  },
+  {
+    "name": "synchronized与Lock对比",
+    "domain": "并发编程",
+    "sub_domain": "锁机制",
+    "importance": 5
+  },
+  {
+    "name": "synchronized底层实现",
+    "domain": "并发编程",
+    "sub_domain": "锁机制",
+    "importance": 5
+  },
+  {
+    "name": "公平锁与非公平锁",
+    "domain": "并发编程",
+    "sub_domain": "锁机制",
+    "importance": 5
+  },
+  {
+    "name": "分布式锁",
+    "domain": "并发编程",
+    "sub_domain": "锁机制",
+    "importance": 5
+  },
+  {
+    "name": "死锁产生条件与排查",
+    "domain": "并发编程",
+    "sub_domain": "锁机制",
+    "importance": 5
+  },
+  {
+    "name": "自旋锁",
+    "domain": "并发编程",
+    "sub_domain": "锁机制",
+    "importance": 5
+  },
+  {
+    "name": "读写锁ReentrantReadWriteLock",
+    "domain": "并发编程",
+    "sub_domain": "锁机制",
+    "importance": 5
+  },
+  {
+    "name": "锁升级过程(偏向→轻量→重量)",
+    "domain": "并发编程",
+    "sub_domain": "锁机制",
+    "importance": 5
+  },
+  {
+    "name": "锁消除与锁粗化",
+    "domain": "并发编程",
+    "sub_domain": "锁机制",
+    "importance": 5
+  },
+  {
+    "name": "内存碎片与内存泄漏",
+    "domain": "操作系统",
+    "sub_domain": "内存管理",
+    "importance": 4
+  },
+  {
+    "name": "堆与栈内存",
+    "domain": "操作系统",
+    "sub_domain": "内存管理",
+    "importance": 4
+  },
+  {
+    "name": "虚拟内存与分页",
+    "domain": "操作系统",
+    "sub_domain": "内存管理",
+    "importance": 4
+  },
+  {
+    "name": "页面置换算法(LRU/LFU)",
+    "domain": "操作系统",
+    "sub_domain": "内存管理",
+    "importance": 4
+  },
+  {
+    "name": "inode与文件描述符",
+    "domain": "操作系统",
+    "sub_domain": "文件系统",
+    "importance": 4
+  },
+  {
+    "name": "文件IO与缓冲IO",
+    "domain": "操作系统",
+    "sub_domain": "文件系统",
+    "importance": 4
+  },
+  {
+    "name": "文件锁",
+    "domain": "操作系统",
+    "sub_domain": "文件系统",
+    "importance": 4
+  },
+  {
+    "name": "零拷贝sendfile",
+    "domain": "操作系统",
+    "sub_domain": "文件系统",
+    "importance": 4
+  },
+  {
+    "name": "CFS完全公平调度",
+    "domain": "操作系统",
+    "sub_domain": "调度",
+    "importance": 4
+  },
+  {
+    "name": "CPU调度算法",
+    "domain": "操作系统",
+    "sub_domain": "调度",
+    "importance": 4
+  },
+  {
+    "name": "优先级反转",
+    "domain": "操作系统",
+    "sub_domain": "调度",
+    "importance": 4
+  },
+  {
+    "name": "信号量与互斥量",
+    "domain": "操作系统",
+    "sub_domain": "进程线程",
+    "importance": 4
+  },
+  {
+    "name": "内存共享与消息队列",
+    "domain": "操作系统",
+    "sub_domain": "进程线程",
+    "importance": 4
+  },
+  {
+    "name": "进程与线程区别",
+    "domain": "操作系统",
+    "sub_domain": "进程线程",
+    "importance": 4
+  },
+  {
+    "name": "进程间通信IPC",
+    "domain": "操作系统",
+    "sub_domain": "进程线程",
+    "importance": 4
+  },
+  {
+    "name": "GROUP BY与HAVING使用",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "INSERT/UPDATE/DELETE语句",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "ORDER BY与LIMIT分页",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "SELECT查询完整语法与执行顺序",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "UNION与UNION ALL区别",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "临时表与会话表",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "主键与外键约束",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "元数据查询",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "全局临时表与局部临时表",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "反范式设计原则",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "子查询与关联子查询",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "存储过程与函数区别",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "存储过程参数与返回值",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "存储过程调试与优化",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "数据字典与information_schema",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "数据库范式1NF/2NF/3NF/BCNF",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "数据库表设计原则与命名规范",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "数据库设计ER图",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "游标与WHILE循环",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "游标使用与替代",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "物化视图",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "级联删除与更新",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "视图与表的区别",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "视图创建与使用场景",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "触发器创建与触发时机",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "触发器的限制与替代方案",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "隐含游标",
+    "domain": "数据库",
+    "sub_domain": "SQL基础",
+    "importance": 5
+  },
+  {
+    "name": "ACID四个特性",
+    "domain": "数据库",
+    "sub_domain": "事务与锁",
+    "importance": 5
+  },
+  {
+    "name": "MVCC多版本并发控制",
+    "domain": "数据库",
+    "sub_domain": "事务与锁",
+    "importance": 5
+  },
+  {
+    "name": "Next-Key Lock临键锁",
+    "domain": "数据库",
+    "sub_domain": "事务与锁",
+    "importance": 5
+  },
+  {
+    "name": "两阶段锁协议",
+    "domain": "数据库",
+    "sub_domain": "事务与锁",
+    "importance": 5
+  },
+  {
+    "name": "事务隔离级别与实现",
+    "domain": "数据库",
+    "sub_domain": "事务与锁",
+    "importance": 5
+  },
+  {
+    "name": "元数据锁MDL",
+    "domain": "数据库",
+    "sub_domain": "事务与锁",
+    "importance": 5
+  },
+  {
+    "name": "全局读锁",
+    "domain": "数据库",
+    "sub_domain": "事务与锁",
+    "importance": 5
+  },
+  {
+    "name": "悲观锁与乐观锁",
+    "domain": "数据库",
+    "sub_domain": "事务与锁",
+    "importance": 5
+  },
+  {
+    "name": "意向锁",
+    "domain": "数据库",
+    "sub_domain": "事务与锁",
+    "importance": 5
+  },
+  {
+    "name": "死锁日志分析",
+    "domain": "数据库",
+    "sub_domain": "事务与锁",
+    "importance": 5
+  },
+  {
+    "name": "死锁检测与回滚",
+    "domain": "数据库",
+    "sub_domain": "事务与锁",
+    "importance": 5
+  },
+  {
+    "name": "行锁与表锁与间隙锁",
+    "domain": "数据库",
+    "sub_domain": "事务与锁",
+    "importance": 5
+  },
+  {
+    "name": "Explain执行计划解读",
+    "domain": "数据库",
+    "sub_domain": "优化",
+    "importance": 5
+  },
+  {
+    "name": "Optimizer Trace优化器追踪",
+    "domain": "数据库",
+    "sub_domain": "优化",
+    "importance": 5
+  },
+  {
+    "name": "Profile性能分析",
+    "domain": "数据库",
+    "sub_domain": "优化",
+    "importance": 5
+  },
+  {
+    "name": "SQL优化十大技巧",
+    "domain": "数据库",
+    "sub_domain": "优化",
+    "importance": 5
+  },
+  {
+    "name": "ShardingSphere分片策略",
+    "domain": "数据库",
+    "sub_domain": "优化",
+    "importance": 5
+  },
+  {
+    "name": "分库分表ShardingSphere",
+    "domain": "数据库",
+    "sub_domain": "优化",
+    "importance": 5
+  },
+  {
+    "name": "分库分表方案",
+    "domain": "数据库",
+    "sub_domain": "优化",
+    "importance": 5
+  },
+  {
+    "name": "慢查询日志分析",
+    "domain": "数据库",
+    "sub_domain": "优化",
+    "importance": 5
+  },
+  {
+    "name": "数据迁移与同步方案",
+    "domain": "数据库",
+    "sub_domain": "优化",
+    "importance": 5
+  },
+  {
+    "name": "直方图统计信息",
+    "domain": "数据库",
+    "sub_domain": "优化",
+    "importance": 5
+  },
+  {
+    "name": "读写分离与数据源路由",
+    "domain": "数据库",
+    "sub_domain": "优化",
+    "importance": 5
+  },
+  {
+    "name": "读写分离与路由",
+    "domain": "数据库",
+    "sub_domain": "优化",
+    "importance": 5
+  },
+  {
+    "name": "连接池HikariCP配置",
+    "domain": "数据库",
+    "sub_domain": "优化",
+    "importance": 5
+  },
+  {
+    "name": "ClickHouse列式存储",
+    "domain": "数据库",
+    "sub_domain": "其他引擎",
+    "importance": 5
+  },
+  {
+    "name": "ElasticSearch倒排索引",
+    "domain": "数据库",
+    "sub_domain": "其他引擎",
+    "importance": 5
+  },
+  {
+    "name": "MongoDB副本集与分片",
+    "domain": "数据库",
+    "sub_domain": "其他引擎",
+    "importance": 5
+  },
+  {
+    "name": "PostgreSQL与MySQL对比",
+    "domain": "数据库",
+    "sub_domain": "其他引擎",
+    "importance": 5
+  },
+  {
+    "name": "Binlog格式ROW/STATEMENT/Mixed",
+    "domain": "数据库",
+    "sub_domain": "备份恢复",
+    "importance": 5
+  },
+  {
+    "name": "PITR时间点恢复",
+    "domain": "数据库",
+    "sub_domain": "备份恢复",
+    "importance": 5
+  },
+  {
+    "name": "mysqldump逻辑备份",
+    "domain": "数据库",
+    "sub_domain": "备份恢复",
+    "importance": 5
+  },
+  {
+    "name": "xtrabackup物理备份",
+    "domain": "数据库",
+    "sub_domain": "备份恢复",
+    "importance": 5
+  },
+  {
+    "name": "全量备份与增量备份",
+    "domain": "数据库",
+    "sub_domain": "备份恢复",
+    "importance": 5
+  },
+  {
+    "name": "备份策略自动化",
+    "domain": "数据库",
+    "sub_domain": "备份恢复",
+    "importance": 5
+  },
+  {
+    "name": "数据库迁移方案",
+    "domain": "数据库",
+    "sub_domain": "备份恢复",
+    "importance": 5
+  },
+  {
+    "name": "数据校验与一致性检查",
+    "domain": "数据库",
+    "sub_domain": "备份恢复",
+    "importance": 5
+  },
+  {
+    "name": "闪回与回收站",
+    "domain": "数据库",
+    "sub_domain": "备份恢复",
+    "importance": 5
+  },
+  {
+    "name": "Buffer Pool与LRU",
+    "domain": "数据库",
+    "sub_domain": "引擎",
+    "importance": 5
+  },
+  {
+    "name": "ChangeBuffer变更缓冲",
+    "domain": "数据库",
+    "sub_domain": "引擎",
+    "importance": 5
+  },
+  {
+    "name": "Double Write双写",
+    "domain": "数据库",
+    "sub_domain": "引擎",
+    "importance": 5
+  },
+  {
+    "name": "InnoDB Full-Text索引",
+    "domain": "数据库",
+    "sub_domain": "引擎",
+    "importance": 5
+  },
+  {
+    "name": "InnoDB与MyISAM区别",
+    "domain": "数据库",
+    "sub_domain": "引擎",
+    "importance": 5
+  },
+  {
+    "name": "InnoDB存储引擎架构",
+    "domain": "数据库",
+    "sub_domain": "引擎",
+    "importance": 5
+  },
+  {
+    "name": "InnoDB架构与特性",
+    "domain": "数据库",
+    "sub_domain": "引擎",
+    "importance": 5
+  },
+  {
+    "name": "Memory引擎场景",
+    "domain": "数据库",
+    "sub_domain": "引擎",
+    "importance": 5
+  },
+  {
+    "name": "MyISAM与InnoDB对比",
+    "domain": "数据库",
+    "sub_domain": "引擎",
+    "importance": 5
+  },
+  {
+    "name": "Redo Log与Undo Log",
+    "domain": "数据库",
+    "sub_domain": "引擎",
+    "importance": 5
+  },
+  {
+    "name": "TokuDB分形树",
+    "domain": "数据库",
+    "sub_domain": "引擎",
+    "importance": 5
+  },
+  {
+    "name": "存储引擎可插拔架构",
+    "domain": "数据库",
+    "sub_domain": "引擎",
+    "importance": 5
+  },
+  {
+    "name": "引擎选择原则",
+    "domain": "数据库",
+    "sub_domain": "引擎",
+    "importance": 5
+  },
+  {
+    "name": "自适应哈希索引AHI",
+    "domain": "数据库",
+    "sub_domain": "引擎",
+    "importance": 5
+  },
+  {
+    "name": "SQL注入防御",
+    "domain": "数据库",
+    "sub_domain": "权限与安全",
+    "importance": 5
+  },
+  {
+    "name": "敏感数据加密存储",
+    "domain": "数据库",
+    "sub_domain": "权限与安全",
+    "importance": 5
+  },
+  {
+    "name": "数据库审计方案",
+    "domain": "数据库",
+    "sub_domain": "权限与安全",
+    "importance": 5
+  },
+  {
+    "name": "数据库防火墙",
+    "domain": "数据库",
+    "sub_domain": "权限与安全",
+    "importance": 5
+  },
+  {
+    "name": "数据脱敏方案",
+    "domain": "数据库",
+    "sub_domain": "权限与安全",
+    "importance": 5
+  },
+  {
+    "name": "用户与权限管理GRANT/REVOKE",
+    "domain": "数据库",
+    "sub_domain": "权限与安全",
+    "importance": 5
+  },
+  {
+    "name": "行级安全策略",
+    "domain": "数据库",
+    "sub_domain": "权限与安全",
+    "importance": 5
+  },
+  {
+    "name": "角色管理",
+    "domain": "数据库",
+    "sub_domain": "权限与安全",
+    "importance": 5
+  },
+  {
+    "name": "连接加密SSL/TLS",
+    "domain": "数据库",
+    "sub_domain": "权限与安全",
+    "importance": 5
+  },
+  {
+    "name": "B+Tree索引结构与查找过程",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "InnoDB与MyISAM区别",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "InnoDB存储引擎架构",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "不可见索引",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "全文索引",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "冗余索引与重复索引",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "函数索引",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "前缀索引",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "前缀索引与倒排索引",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "哈希索引",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "多范围读MRR",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "最左前缀原则",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "空间索引GIS",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "索引下推ICP",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "索引失效的十大场景",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "索引失效的场景",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "联合索引设计原则",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "聚簇索引与非聚簇索引",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "覆盖索引与回表查询",
+    "domain": "数据库",
+    "sub_domain": "索引",
+    "importance": 5
+  },
+  {
+    "name": "GTID复制",
+    "domain": "数据库",
+    "sub_domain": "高可用",
+    "importance": 5
+  },
+  {
+    "name": "MGR组复制",
+    "domain": "数据库",
+    "sub_domain": "高可用",
+    "importance": 5
+  },
+  {
+    "name": "MySQL主从复制原理",
+    "domain": "数据库",
+    "sub_domain": "高可用",
+    "importance": 5
+  },
+  {
+    "name": "Orchestrator自动故障转移",
+    "domain": "数据库",
+    "sub_domain": "高可用",
+    "importance": 5
+  },
+  {
+    "name": "ProxySQL读写分离",
+    "domain": "数据库",
+    "sub_domain": "高可用",
+    "importance": 5
+  },
+  {
+    "name": "半同步复制",
+    "domain": "数据库",
+    "sub_domain": "高可用",
+    "importance": 5
+  },
+  {
+    "name": "异地灾备方案",
+    "domain": "数据库",
+    "sub_domain": "高可用",
+    "importance": 5
+  },
+  {
+    "name": "跨机房同步延迟处理",
+    "domain": "数据库",
+    "sub_domain": "高可用",
+    "importance": 5
+  },
+  {
+    "name": "CTE公用表表达式",
+    "domain": "数据库",
+    "sub_domain": "高级特性",
+    "importance": 5
+  },
+  {
+    "name": "JSON函数与JSON_TABLE",
+    "domain": "数据库",
+    "sub_domain": "高级特性",
+    "importance": 5
+  },
+  {
+    "name": "事件调度器EventScheduler",
+    "domain": "数据库",
+    "sub_domain": "高级特性",
+    "importance": 5
+  },
+  {
+    "name": "分区表管理",
+    "domain": "数据库",
+    "sub_domain": "高级特性",
+    "importance": 5
+  },
+  {
+    "name": "外部数据源Federated",
+    "domain": "数据库",
+    "sub_domain": "高级特性",
+    "importance": 5
+  },
+  {
+    "name": "数据库邮件通知",
+    "domain": "数据库",
+    "sub_domain": "高级特性",
+    "importance": 5
+  },
+  {
+    "name": "生成列与虚拟列",
+    "domain": "数据库",
+    "sub_domain": "高级特性",
+    "importance": 5
+  },
+  {
+    "name": "窗口函数ROW_NUMBER/RANK/DENSE_RANK",
+    "domain": "数据库",
+    "sub_domain": "高级特性",
+    "importance": 5
+  },
+  {
+    "name": "递归CTE",
+    "domain": "数据库",
+    "sub_domain": "高级特性",
+    "importance": 5
+  },
+  {
+    "name": "二叉树与二叉搜索树",
+    "domain": "数据结构与算法",
+    "sub_domain": "基本结构",
+    "importance": 4
+  },
+  {
+    "name": "哈希表",
+    "domain": "数据结构与算法",
+    "sub_domain": "基本结构",
+    "importance": 4
+  },
+  {
+    "name": "图结构",
+    "domain": "数据结构与算法",
+    "sub_domain": "基本结构",
+    "importance": 4
+  },
+  {
+    "name": "堆与优先队列",
+    "domain": "数据结构与算法",
+    "sub_domain": "基本结构",
+    "importance": 4
+  },
+  {
+    "name": "数组与动态数组",
+    "domain": "数据结构与算法",
+    "sub_domain": "基本结构",
+    "importance": 4
+  },
+  {
+    "name": "栈与队列",
+    "domain": "数据结构与算法",
+    "sub_domain": "基本结构",
+    "importance": 4
+  },
+  {
+    "name": "链表(单向/双向/循环)",
+    "domain": "数据结构与算法",
+    "sub_domain": "基本结构",
+    "importance": 4
+  },
+  {
+    "name": "冒泡/插入/选择排序",
+    "domain": "数据结构与算法",
+    "sub_domain": "排序算法",
+    "importance": 4
+  },
+  {
+    "name": "堆排序",
+    "domain": "数据结构与算法",
+    "sub_domain": "排序算法",
+    "importance": 4
+  },
+  {
+    "name": "外部排序",
+    "domain": "数据结构与算法",
+    "sub_domain": "排序算法",
+    "importance": 4
+  },
+  {
+    "name": "归并排序",
+    "domain": "数据结构与算法",
+    "sub_domain": "排序算法",
+    "importance": 4
+  },
+  {
+    "name": "快速排序",
+    "domain": "数据结构与算法",
+    "sub_domain": "排序算法",
+    "importance": 4
+  },
+  {
+    "name": "拓扑排序",
+    "domain": "数据结构与算法",
+    "sub_domain": "排序算法",
+    "importance": 4
+  },
+  {
+    "name": "DFS与BFS",
+    "domain": "数据结构与算法",
+    "sub_domain": "查找与遍历",
+    "importance": 4
+  },
+  {
+    "name": "二分查找",
+    "domain": "数据结构与算法",
+    "sub_domain": "查找与遍历",
+    "importance": 4
+  },
+  {
+    "name": "动态规划",
+    "domain": "数据结构与算法",
+    "sub_domain": "查找与遍历",
+    "importance": 4
+  },
+  {
+    "name": "回溯算法",
+    "domain": "数据结构与算法",
+    "sub_domain": "查找与遍历",
+    "importance": 4
+  },
+  {
+    "name": "最短路径Dijkstra",
+    "domain": "数据结构与算法",
+    "sub_domain": "查找与遍历",
+    "importance": 4
+  },
+  {
+    "name": "贪心算法",
+    "domain": "数据结构与算法",
+    "sub_domain": "查找与遍历",
+    "importance": 4
+  },
+  {
+    "name": "B树与B+树",
+    "domain": "数据结构与算法",
+    "sub_domain": "高级结构",
+    "importance": 4
+  },
+  {
+    "name": "LRU/LFU缓存",
+    "domain": "数据结构与算法",
+    "sub_domain": "高级结构",
+    "importance": 4
+  },
+  {
+    "name": "字典树Trie",
+    "domain": "数据结构与算法",
+    "sub_domain": "高级结构",
+    "importance": 4
+  },
+  {
+    "name": "布隆过滤器",
+    "domain": "数据结构与算法",
+    "sub_domain": "高级结构",
+    "importance": 4
+  },
+  {
+    "name": "并查集",
+    "domain": "数据结构与算法",
+    "sub_domain": "高级结构",
+    "importance": 4
+  },
+  {
+    "name": "红黑树",
+    "domain": "数据结构与算法",
+    "sub_domain": "高级结构",
+    "importance": 4
+  },
+  {
+    "name": "跳表",
+    "domain": "数据结构与算法",
+    "sub_domain": "高级结构",
+    "importance": 4
+  },
+  {
+    "name": "JUnit5用法",
+    "domain": "测试",
+    "sub_domain": "单元测试",
+    "importance": 2
+  },
+  {
+    "name": "Mockito模拟依赖",
+    "domain": "测试",
+    "sub_domain": "单元测试",
+    "importance": 2
+  },
+  {
+    "name": "Spring Boot Test",
+    "domain": "测试",
+    "sub_domain": "单元测试",
+    "importance": 2
+  },
+  {
+    "name": "TestContainers集成测试",
+    "domain": "测试",
+    "sub_domain": "单元测试",
+    "importance": 2
+  },
+  {
+    "name": "压力测试JMeter",
+    "domain": "测试",
+    "sub_domain": "质量",
+    "importance": 2
+  },
+  {
+    "name": "契约测试Pact",
+    "domain": "测试",
+    "sub_domain": "质量",
+    "importance": 2
+  },
+  {
+    "name": "性能测试JMH",
+    "domain": "测试",
+    "sub_domain": "质量",
+    "importance": 2
+  },
+  {
+    "name": "测试覆盖率Jacoco",
+    "domain": "测试",
+    "sub_domain": "质量",
+    "importance": 2
+  },
+  {
+    "name": "Controller选举",
+    "domain": "消息队列",
+    "sub_domain": "Kafka",
+    "importance": 4
+  },
+  {
+    "name": "ISR与ACK机制",
+    "domain": "消息队列",
+    "sub_domain": "Kafka",
+    "importance": 4
+  },
+  {
+    "name": "Kafka事务消息ExactlyOnce",
+    "domain": "消息队列",
+    "sub_domain": "Kafka",
+    "importance": 4
+  },
+  {
+    "name": "PageCache与顺序IO",
+    "domain": "消息队列",
+    "sub_domain": "Kafka",
+    "importance": 4
+  },
+  {
+    "name": "Rebalance再平衡",
+    "domain": "消息队列",
+    "sub_domain": "Kafka",
+    "importance": 4
+  },
+  {
+    "name": "分区与消费者组",
+    "domain": "消息队列",
+    "sub_domain": "Kafka",
+    "importance": 4
+  },
+  {
+    "name": "日志段LogSegment管理",
+    "domain": "消息队列",
+    "sub_domain": "Kafka",
+    "importance": 4
+  },
+  {
+    "name": "零拷贝sendfile",
+    "domain": "消息队列",
+    "sub_domain": "Kafka",
+    "importance": 4
+  },
+  {
+    "name": "Exchange与Queue与Binding",
+    "domain": "消息队列",
+    "sub_domain": "RabbitMQ",
+    "importance": 4
+  },
+  {
+    "name": "TTL消息过期",
+    "domain": "消息队列",
+    "sub_domain": "RabbitMQ",
+    "importance": 4
+  },
+  {
+    "name": "持久化与镜像队列",
+    "domain": "消息队列",
+    "sub_domain": "RabbitMQ",
+    "importance": 4
+  },
+  {
+    "name": "死信队列与延迟队列",
+    "domain": "消息队列",
+    "sub_domain": "RabbitMQ",
+    "importance": 4
+  },
+  {
+    "name": "消息确认ACK与NACK",
+    "domain": "消息队列",
+    "sub_domain": "RabbitMQ",
+    "importance": 4
+  },
+  {
+    "name": "集群与高可用",
+    "domain": "消息队列",
+    "sub_domain": "RabbitMQ",
+    "importance": 4
+  },
+  {
+    "name": "延迟消息实现",
+    "domain": "消息队列",
+    "sub_domain": "核心概念",
+    "importance": 4
+  },
+  {
+    "name": "消息可靠性保障",
+    "domain": "消息队列",
+    "sub_domain": "核心概念",
+    "importance": 4
+  },
+  {
+    "name": "消息幂等性设计",
+    "domain": "消息队列",
+    "sub_domain": "核心概念",
+    "importance": 4
+  },
+  {
+    "name": "消息积压处理方案",
+    "domain": "消息队列",
+    "sub_domain": "核心概念",
+    "importance": 4
+  },
+  {
+    "name": "消息队列选型对比",
+    "domain": "消息队列",
+    "sub_domain": "核心概念",
+    "importance": 4
+  },
+  {
+    "name": "顺序消息实现",
+    "domain": "消息队列",
+    "sub_domain": "核心概念",
+    "importance": 4
+  },
+  {
+    "name": "设计API限流系统",
+    "domain": "系统设计",
+    "sub_domain": "经典题",
+    "importance": 4
+  },
+  {
+    "name": "设计IM即时通讯",
+    "domain": "系统设计",
+    "sub_domain": "经典题",
+    "importance": 4
+  },
+  {
+    "name": "设计SSO单点登录",
+    "domain": "系统设计",
+    "sub_domain": "经典题",
+    "importance": 4
+  },
+  {
+    "name": "设计审批流引擎",
+    "domain": "系统设计",
+    "sub_domain": "经典题",
+    "importance": 4
+  },
+  {
+    "name": "设计排行榜系统",
+    "domain": "系统设计",
+    "sub_domain": "经典题",
+    "importance": 4
+  },
+  {
+    "name": "设计搜索系统",
+    "domain": "系统设计",
+    "sub_domain": "经典题",
+    "importance": 4
+  },
+  {
+    "name": "设计文件存储系统",
+    "domain": "系统设计",
+    "sub_domain": "经典题",
+    "importance": 4
+  },
+  {
+    "name": "设计权限系统RBAC",
+    "domain": "系统设计",
+    "sub_domain": "经典题",
+    "importance": 4
+  },
+  {
+    "name": "设计消息推送系统",
+    "domain": "系统设计",
+    "sub_domain": "经典题",
+    "importance": 4
+  },
+  {
+    "name": "设计灰度发布系统",
+    "domain": "系统设计",
+    "sub_domain": "经典题",
+    "importance": 4
+  },
+  {
+    "name": "设计爬虫调度平台",
+    "domain": "系统设计",
+    "sub_domain": "经典题",
+    "importance": 4
+  },
+  {
+    "name": "设计短链接系统",
+    "domain": "系统设计",
+    "sub_domain": "经典题",
+    "importance": 4
+  },
+  {
+    "name": "设计秒杀系统",
+    "domain": "系统设计",
+    "sub_domain": "经典题",
+    "importance": 4
+  },
+  {
+    "name": "设计红包系统",
+    "domain": "系统设计",
+    "sub_domain": "经典题",
+    "importance": 4
+  },
+  {
+    "name": "设计订单系统",
+    "domain": "系统设计",
+    "sub_domain": "经典题",
+    "importance": 4
+  },
+  {
+    "name": "CQRS命令查询分离",
+    "domain": "系统设计",
+    "sub_domain": "设计思想",
+    "importance": 4
+  },
+  {
+    "name": "DDD领域驱动设计",
+    "domain": "系统设计",
+    "sub_domain": "设计思想",
+    "importance": 4
+  },
+  {
+    "name": "事件驱动架构",
+    "domain": "系统设计",
+    "sub_domain": "设计思想",
+    "importance": 4
+  },
+  {
+    "name": "全链路压测方案",
+    "domain": "系统设计",
+    "sub_domain": "设计思想",
+    "importance": 4
+  },
+  {
+    "name": "六边形架构与整洁架构",
+    "domain": "系统设计",
+    "sub_domain": "设计思想",
+    "importance": 4
+  },
+  {
+    "name": "异地多活架构",
+    "domain": "系统设计",
+    "sub_domain": "设计思想",
+    "importance": 4
+  },
+  {
+    "name": "灰度发布与蓝绿部署",
+    "domain": "系统设计",
+    "sub_domain": "设计思想",
+    "importance": 4
+  },
+  {
+    "name": "系统容量规划",
+    "domain": "系统设计",
+    "sub_domain": "设计思想",
+    "importance": 4
+  },
+  {
+    "name": "高可用架构设计原则",
+    "domain": "系统设计",
+    "sub_domain": "设计思想",
+    "importance": 4
+  },
+  {
+    "name": "CDN调度与DNS解析",
+    "domain": "网络协议",
+    "sub_domain": "HTTP",
+    "importance": 4
+  },
+  {
+    "name": "HTTP2多路复用",
+    "domain": "网络协议",
+    "sub_domain": "HTTP",
+    "importance": 4
+  },
+  {
+    "name": "HTTP3与QUIC协议",
+    "domain": "网络协议",
+    "sub_domain": "HTTP",
+    "importance": 4
+  },
+  {
+    "name": "HTTPS握手与证书验证",
+    "domain": "网络协议",
+    "sub_domain": "HTTP",
+    "importance": 4
+  },
+  {
+    "name": "HTTP缓存策略(ETag/Cache-Control)",
+    "domain": "网络协议",
+    "sub_domain": "HTTP",
+    "importance": 4
+  },
+  {
+    "name": "TCP三次握手与四次挥手",
+    "domain": "网络协议",
+    "sub_domain": "TCP",
+    "importance": 4
+  },
+  {
+    "name": "TCP拥塞控制算法(BBR/CUBIC)",
+    "domain": "网络协议",
+    "sub_domain": "TCP",
+    "importance": 4
+  },
+  {
+    "name": "TCP滑动窗口与流量控制",
+    "domain": "网络协议",
+    "sub_domain": "TCP",
+    "importance": 4
+  },
+  {
+    "name": "TCP粘包拆包",
+    "domain": "网络协议",
+    "sub_domain": "TCP",
+    "importance": 4
+  },
+  {
+    "name": "TIME_WAIT与CLOSE_WAIT状态",
+    "domain": "网络协议",
+    "sub_domain": "TCP",
+    "importance": 4
+  },
+  {
+    "name": "ARP与ICMP协议",
+    "domain": "网络协议",
+    "sub_domain": "网络基础",
+    "importance": 4
+  },
+  {
+    "name": "DNS解析过程",
+    "domain": "网络协议",
+    "sub_domain": "网络基础",
+    "importance": 4
+  },
+  {
+    "name": "Nginx反向代理与负载均衡",
+    "domain": "网络协议",
+    "sub_domain": "网络基础",
+    "importance": 4
+  },
+  {
+    "name": "iptables与防火墙",
+    "domain": "网络协议",
+    "sub_domain": "网络基础",
+    "importance": 4
+  },
+  {
+    "name": "CDN工作原理",
+    "domain": "计算机网络",
+    "sub_domain": "DNS与CDN",
+    "importance": 4
+  },
+  {
+    "name": "DNS解析过程",
+    "domain": "计算机网络",
+    "sub_domain": "DNS与CDN",
+    "importance": 4
+  },
+  {
+    "name": "智能DNS与GSLB",
+    "domain": "计算机网络",
+    "sub_domain": "DNS与CDN",
+    "importance": 4
+  },
+  {
+    "name": "Cookie/Session/JWT",
+    "domain": "计算机网络",
+    "sub_domain": "HTTP",
+    "importance": 4
+  },
+  {
+    "name": "HTTP2多路复用",
+    "domain": "计算机网络",
+    "sub_domain": "HTTP",
+    "importance": 4
+  },
+  {
+    "name": "HTTP3 QUIC",
+    "domain": "计算机网络",
+    "sub_domain": "HTTP",
+    "importance": 4
+  },
+  {
+    "name": "HTTPS握手机制",
+    "domain": "计算机网络",
+    "sub_domain": "HTTP",
+    "importance": 4
+  },
+  {
+    "name": "HTTP缓存与协商缓存",
+    "domain": "计算机网络",
+    "sub_domain": "HTTP",
+    "importance": 4
+  },
+  {
+    "name": "RESTful API设计原则",
+    "domain": "计算机网络",
+    "sub_domain": "HTTP",
+    "importance": 4
+  },
+  {
+    "name": "状态码分类与含义",
+    "domain": "计算机网络",
+    "sub_domain": "HTTP",
+    "importance": 4
+  },
+  {
+    "name": "TCP三次握手与四次挥手",
+    "domain": "计算机网络",
+    "sub_domain": "TCP/IP",
+    "importance": 4
+  },
+  {
+    "name": "TCP拥塞控制",
+    "domain": "计算机网络",
+    "sub_domain": "TCP/IP",
+    "importance": 4
+  },
+  {
+    "name": "TCP滑动窗口",
+    "domain": "计算机网络",
+    "sub_domain": "TCP/IP",
+    "importance": 4
+  },
+  {
+    "name": "TCP粘包拆包",
+    "domain": "计算机网络",
+    "sub_domain": "TCP/IP",
+    "importance": 4
+  },
+  {
+    "name": "TIME_WAIT状态",
+    "domain": "计算机网络",
+    "sub_domain": "TCP/IP",
+    "importance": 4
+  },
+  {
+    "name": "UDP与TCP对比",
+    "domain": "计算机网络",
+    "sub_domain": "TCP/IP",
+    "importance": 4
+  },
+  {
+    "name": "CSRF跨站请求伪造",
+    "domain": "计算机网络",
+    "sub_domain": "安全",
+    "importance": 4
+  },
+  {
+    "name": "OAuth2.0与OIDC",
+    "domain": "计算机网络",
+    "sub_domain": "安全",
+    "importance": 4
+  },
+  {
+    "name": "SQL注入防护",
+    "domain": "计算机网络",
+    "sub_domain": "安全",
+    "importance": 4
+  },
+  {
+    "name": "XSS跨站脚本",
+    "domain": "计算机网络",
+    "sub_domain": "安全",
+    "importance": 4
+  },
+  {
+    "name": "对称与非对称加密",
+    "domain": "计算机网络",
+    "sub_domain": "安全",
+    "importance": 4
+  },
+  {
+    "name": "单例模式多种实现(DCL/枚举/静态内部类)",
+    "domain": "设计模式",
+    "sub_domain": "创建型",
+    "importance": 3
+  },
+  {
+    "name": "工厂模式与抽象工厂",
+    "domain": "设计模式",
+    "sub_domain": "创建型",
+    "importance": 3
+  },
+  {
+    "name": "建造者模式与链式调用",
+    "domain": "设计模式",
+    "sub_domain": "创建型",
+    "importance": 3
+  },
+  {
+    "name": "代理模式与Spring AOP",
+    "domain": "设计模式",
+    "sub_domain": "结构型",
+    "importance": 3
+  },
+  {
+    "name": "组合模式处理树形结构",
+    "domain": "设计模式",
+    "sub_domain": "结构型",
+    "importance": 3
+  },
+  {
+    "name": "装饰器模式在IO中的应用",
+    "domain": "设计模式",
+    "sub_domain": "结构型",
+    "importance": 3
+  },
+  {
+    "name": "适配器模式",
+    "domain": "设计模式",
+    "sub_domain": "结构型",
+    "importance": 3
+  },
+  {
+    "name": "模板方法模式",
+    "domain": "设计模式",
+    "sub_domain": "行为型",
+    "importance": 3
+  },
+  {
+    "name": "状态模式与状态机",
+    "domain": "设计模式",
+    "sub_domain": "行为型",
+    "importance": 3
+  },
+  {
+    "name": "策略模式消除if-else",
+    "domain": "设计模式",
+    "sub_domain": "行为型",
+    "importance": 3
+  },
+  {
+    "name": "观察者模式与发布订阅",
+    "domain": "设计模式",
+    "sub_domain": "行为型",
+    "importance": 3
+  },
+  {
+    "name": "责任链模式在Filter中的应用",
+    "domain": "设计模式",
+    "sub_domain": "行为型",
+    "importance": 3
+  },
+  {
+    "name": "Profiling工具",
+    "domain": "软件工程",
+    "sub_domain": "性能",
+    "importance": 2
+  },
+  {
+    "name": "性能优化方法论",
+    "domain": "软件工程",
+    "sub_domain": "性能",
+    "importance": 2
+  },
+  {
+    "name": "火焰图分析",
+    "domain": "软件工程",
+    "sub_domain": "性能",
+    "importance": 2
+  },
+  {
+    "name": "缓存策略金字塔",
+    "domain": "软件工程",
+    "sub_domain": "性能",
+    "importance": 2
+  },
+  {
+    "name": "CQRS命令查询分离",
+    "domain": "软件工程",
+    "sub_domain": "架构模式",
+    "importance": 2
+  },
+  {
+    "name": "DDD领域驱动设计",
+    "domain": "软件工程",
+    "sub_domain": "架构模式",
+    "importance": 2
+  },
+  {
+    "name": "MVC/MVP/MVVM",
+    "domain": "软件工程",
+    "sub_domain": "架构模式",
+    "importance": 2
+  },
+  {
+    "name": "事件驱动架构",
+    "domain": "软件工程",
+    "sub_domain": "架构模式",
+    "importance": 2
+  },
+  {
+    "name": "六边形架构",
+    "domain": "软件工程",
+    "sub_domain": "架构模式",
+    "importance": 2
+  },
+  {
+    "name": "微服务与单体架构对比",
+    "domain": "软件工程",
+    "sub_domain": "架构模式",
+    "importance": 2
+  },
+  {
+    "name": "DRY与KISS",
+    "domain": "软件工程",
+    "sub_domain": "设计原则",
+    "importance": 2
+  },
+  {
+    "name": "SOLID五大原则",
+    "domain": "软件工程",
+    "sub_domain": "设计原则",
+    "importance": 2
+  },
+  {
+    "name": "YAGNI",
+    "domain": "软件工程",
+    "sub_domain": "设计原则",
+    "importance": 2
+  },
+  {
+    "name": "依赖倒置",
+    "domain": "软件工程",
+    "sub_domain": "设计原则",
+    "importance": 2
+  },
+  {
+    "name": "开闭原则",
+    "domain": "软件工程",
+    "sub_domain": "设计原则",
+    "importance": 2
+  },
+  {
+    "name": "接口隔离",
+    "domain": "软件工程",
+    "sub_domain": "设计原则",
+    "importance": 2
+  },
+  {
+    "name": "API文档Swagger",
+    "domain": "软件工程",
+    "sub_domain": "项目管理",
+    "importance": 2
+  },
+  {
+    "name": "Code Review最佳实践",
+    "domain": "软件工程",
+    "sub_domain": "项目管理",
+    "importance": 2
+  },
+  {
+    "name": "技术文档编写",
+    "domain": "软件工程",
+    "sub_domain": "项目管理",
+    "importance": 2
+  },
+  {
+    "name": "敏捷开发Scrum",
+    "domain": "软件工程",
+    "sub_domain": "项目管理",
+    "importance": 2
+  },
+  {
+    "name": "版本控制Git工作流",
+    "domain": "软件工程",
+    "sub_domain": "项目管理",
+    "importance": 2
+  },
+  {
+    "name": "SLA与错误预算",
+    "domain": "高可用与稳定性",
+    "sub_domain": "可用性",
+    "importance": 3
+  },
+  {
+    "name": "全链路灰度发布",
+    "domain": "高可用与稳定性",
+    "sub_domain": "可用性",
+    "importance": 3
+  },
+  {
+    "name": "容错与降级策略",
+    "domain": "高可用与稳定性",
+    "sub_domain": "可用性",
+    "importance": 3
+  },
+  {
+    "name": "异地多活数据同步",
+    "domain": "高可用与稳定性",
+    "sub_domain": "可用性",
+    "importance": 3
+  },
+  {
+    "name": "故障演练混沌工程",
+    "domain": "高可用与稳定性",
+    "sub_domain": "可用性",
+    "importance": 3
+  },
+  {
+    "name": "自动恢复与自愈机制",
+    "domain": "高可用与稳定性",
+    "sub_domain": "可用性",
+    "importance": 3
+  },
+  {
+    "name": "Grafana看板配置",
+    "domain": "高可用与稳定性",
+    "sub_domain": "监控",
+    "importance": 3
+  },
+  {
+    "name": "Prometheus指标采集",
+    "domain": "高可用与稳定性",
+    "sub_domain": "监控",
+    "importance": 3
+  },
+  {
+    "name": "分布式链路追踪埋点",
+    "domain": "高可用与稳定性",
+    "sub_domain": "监控",
+    "importance": 3
+  },
+  {
+    "name": "可观测性三支柱",
+    "domain": "高可用与稳定性",
+    "sub_domain": "监控",
+    "importance": 3
+  },
+  {
+    "name": "告警规则设计",
+    "domain": "高可用与稳定性",
+    "sub_domain": "监控",
+    "importance": 3
+  },
+  {
+    "name": "日志收集ELK方案",
+    "domain": "高可用与稳定性",
+    "sub_domain": "监控",
+    "importance": 3
+  }
+]

@@ -1,6 +1,7 @@
 """
 Topic API — 面试题 CRUD + Agent 生成
 """
+import json
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, field_validator
 
@@ -109,7 +110,18 @@ async def list_tags():
     for t in topics:
         tags = t.tags if isinstance(t.tags, list) else []
         tag_set.update(tags)
-    result = {"tags": sorted(tag_set)}
+
+    def _quality(tag: str) -> bool:
+        has_cn = any('\u4e00' <= c <= '\u9fff' for c in tag)
+        if has_cn:
+            return True
+        if len(tag) <= 2:
+            return False
+        if tag.isupper() and len(tag) <= 4:
+            return False
+        return True
+
+    result = {"tags": sorted(t for t in tag_set if _quality(t))}
     cache.set("topic_tags", result, ttl=300)
     return result
 
@@ -138,26 +150,16 @@ async def get_topic_detail(topic_id: str, request: Request = None):
             "mastery_level": topic.mastery_level,
             "one_liner": topic.one_liner,
             "core_summary": topic.core_summary, "core_points": topic.core_points,
-            "detailed_explanation": None, "code_example": None,
-            "traps": None, "bonuses": None,
+            "detailed_explanation": topic.detailed_explanation,
+            "code_example": topic.code_example,
+            "traps": topic.traps, "bonuses": topic.bonuses,
             "prerequisites": [], "core_concepts": [], "derivatives": [],
             "extensions": [], "evaluation_anchors": [],
             "similar_questions": [], "advanced_questions": [], "references": [],
             "locked": False, "locked_sections": [],
         }
 
-        if exhausted:
-            data["locked"] = True
-            data["locked_sections"] = ["detailed_explanation", "code_example", "traps", "bonuses"]
-            expl = topic.detailed_explanation or ""
-            data["detailed_explanation"] = expl[:200] if len(expl) > 200 else expl
-        else:
-            data["detailed_explanation"] = topic.detailed_explanation
-            data["code_example"] = topic.code_example
-            data["traps"] = topic.traps
-            data["bonuses"] = topic.bonuses
-
-        # 关联数据 — join 表真实内容在 knowledge.name / evaluation.question
+        # 关联数据
         data["prerequisites"] = [
             {"content": (await p.knowledge).name if p.knowledge_id else "", "sort_order": p.sort_order}
             async for p in topic.prerequisites.all().prefetch_related("knowledge")
@@ -191,9 +193,42 @@ async def get_topic_detail(topic_id: str, request: Request = None):
             async for r in topic.references.all()
         ]
 
+        if exhausted:
+            return _truncate_json_response(data)
+
         return data
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"Topic 不存在: {str(e)}")
+
+
+def _truncate_json_response(data: dict, max_len: int = 200) -> dict:
+    """序列化完整 data 为 JSON，在 max_len 位置硬切割，修复 JSON 闭合。"""
+    raw = json.dumps(data, ensure_ascii=False)
+
+    if len(raw) <= max_len:
+        data["locked"] = True
+        data["locked_sections"] = ["*"]
+        return data
+
+    cut = raw[:max_len]
+    # 从尾部回退找到安全切割点：在逗号或闭括号处（确保在字符串外）
+    for i in range(max_len - 1, max_len // 2, -1):
+        ch = raw[i]
+        if ch in (',', '}', ']') and (raw[:i].count('"') - raw[:i].count('\\"')) % 2 == 0:
+            cut = raw[:i]
+            break
+
+    cut_clean = cut.rstrip(' \t\n\r,')
+    open_braces = cut_clean.count('{') - cut_clean.count('}')
+    open_brackets = cut_clean.count('[') - cut_clean.count(']')
+    result_str = cut_clean + ', "locked":true,"locked_sections":["*"]' + '}' * open_braces + ']' * open_brackets
+
+    try:
+        return json.loads(result_str)
+    except json.JSONDecodeError:
+        return {"id": data.get("id",""), "topic": data.get("topic",""),
+                "domain": data.get("domain",""), "difficulty": data.get("difficulty",0),
+                "tags": data.get("tags",[]), "locked":True, "locked_sections":["*"]}
 
 
 # ═══════════════════════════════════════════
@@ -274,3 +309,78 @@ async def generate_topic_via_agent(req: GenerateRequest):
         trace_id=result.get("trace_id"),
         message=result.get("message"),
     )
+
+
+# ═══════════════════════════════════════════
+# 掌握度自查（无 LLM）
+# ═══════════════════════════════════════════
+
+class MasteryCheckRequest(BaseModel):
+    answer: str
+
+    @field_validator("answer")
+    @classmethod
+    def validate_answer(cls, v: str) -> str:
+        if not v or len(v.strip()) < 10:
+            raise ValueError("回答不能为空且不少于 10 字")
+        return v.strip()
+
+
+@router.post("/{topic_id}/mastery-check")
+async def mastery_check_endpoint(topic_id: str, req: MasteryCheckRequest, request: Request = None):
+    from src.models import Topic
+    from src.models.mastery_attempt import MasteryAttempt
+    from src.models.user_topic_status import UserTopicStatus
+    from src.agentv3.capabilities.mastery_check import mastery_check
+
+    topic = await Topic.filter(id=topic_id).first()
+    if not topic:
+        raise HTTPException(status_code=404, detail="题目不存在")
+
+    uid = getattr(getattr(request, "state", None), "user_id", None) if request else None
+    if not uid:
+        raise HTTPException(status_code=401, detail="请先登录")
+
+    # 评分
+    result = await mastery_check(
+        topic_id=topic_id,
+        answer_text=req.answer,
+        core_summary=topic.core_summary or "",
+        core_points=topic.core_points or "",
+        keywords=topic.keywords or [],
+        detailed_explanation=topic.detailed_explanation or "",
+    )
+
+    # 记录评测
+    status, _ = await UserTopicStatus.get_or_create(user_id=uid, topic_id=topic_id, defaults={"status": "learning"})
+    prev_attempts = status.mastery_attempts or 0
+    status.mastery_attempts = prev_attempts + 1
+    status.mastery_score = result["total"]
+
+    if result["mastered"]:
+        if status.status != "mastered" or not status.mastered_at:
+            status.mastered_at = __import__("datetime").datetime.utcnow()
+        status.status = "mastered"
+    await status.save()
+
+    await MasteryAttempt.create(
+        id=str(__import__("uuid").uuid4()),
+        user_id=uid, topic_id=topic_id,
+        answer_text=req.answer,
+        attempt_number=prev_attempts + 1,
+        score_keypoint=result["scores"]["keypoint"],
+        score_structure=result["scores"]["structure"],
+        score_keyword=result["scores"]["keyword"],
+        score_length=result["scores"]["length"],
+        score_coherence=result["scores"]["coherence"],
+        score_total=result["total"],
+        is_mastered=result["mastered"],
+    )
+
+    return {
+        "topic_id": topic_id,
+        "total": result["total"],
+        "mastered": result["mastered"],
+        "scores": result["scores"],
+        "feedback": result["feedback"],
+    }

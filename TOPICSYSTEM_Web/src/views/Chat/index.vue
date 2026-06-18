@@ -203,10 +203,14 @@ const sendMessage = async () => {
     
     const assistantMsg = {
       type: 'assistant',
-      topic: data.topic_name || '',
-      domain: data.domain || '',
-      source: data.source || '',
-      trace: data.trace_id || ''
+      topic: {
+        topic_id: data.topic_id || '',
+        topic_name: data.topic_name || data.topic || '',
+        domain: data.domain || '',
+        difficulty: data.difficulty || 3,
+        tags: data.tags || [],
+        source: data.source || '',
+      }
     }
     messages.value.push(assistantMsg)
     
