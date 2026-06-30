@@ -1,0 +1,85 @@
+name: Deploy Frontend to Production
+
+on:
+  push:
+    branches: [main]
+    # 仅当前端代码变更时触发（与后端 deploy.yml 的 paths-ignore 互补）
+    paths:
+      - 'TOPICSYSTEM_Web/**'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-frontend-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy-frontend:
+    name: build + rsync dist to nginx
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: TOPICSYSTEM_Web/package-lock.json
+
+      - name: Install deps
+        working-directory: TOPICSYSTEM_Web
+        run: npm ci
+
+      - name: Build
+        working-directory: TOPICSYSTEM_Web
+        run: npm run build
+
+      - name: Verify build output
+        working-directory: TOPICSYSTEM_Web
+        run: |
+          if [ ! -f dist/index.html ]; then
+            echo "::error::dist/index.html 不存在，build 可能失败"
+            exit 1
+          fi
+          echo "✅ dist/ 产物就绪"
+          ls -la dist/
+
+      - name: Setup SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          if [ -z "$DEPLOY_SSH_KEY" ]; then
+            echo "::error::Secret DEPLOY_SSH_KEY 未配置，部署中止"
+            echo "::error::请在 GitHub repo Settings → Secrets and variables → Actions 添加 DEPLOY_SSH_KEY"
+            exit 1
+          fi
+          mkdir -p ~/.ssh
+          echo "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H 115.190.161.132 >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Sync dist to nginx web root
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" \
+            --exclude='voiceprint-clip-guide.md' \
+            --exclude='._dist' \
+            --exclude='.DS_Store' \
+            --exclude='._.*' \
+            TOPICSYSTEM_Web/dist/ root@115.190.161.132:/var/www/siliang/
+
+      - name: Reload nginx
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
+            root@115.190.161.132 \
+            "nginx -t && systemctl reload nginx && echo '✅ nginx reloaded'"
+
+      - name: Smoke test
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
+            root@115.190.161.132 \
+            "curl -sf -o /dev/null -w 'HTTP %{http_code}\n' --max-time 5 http://localhost/ | grep -q '200' || (echo 'Smoke test failed'; exit 1)"
+          echo "✅ Production homepage responding 200"

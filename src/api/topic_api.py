@@ -51,7 +51,8 @@ router = APIRouter(prefix="/api/topic", tags=["topic"])
 
 @router.get("/list", response_model=ListResponse)
 async def list_topics(
-    keyword: str = "", tag: str = "", limit: int = 20, offset: int = 0
+    keyword: str = "", tag: str = "", limit: int = 20, offset: int = 0,
+    request: Request = None,
 ):
     from src.models import Topic
     from src.common.cache import cache
@@ -60,6 +61,8 @@ async def list_topics(
         key = f"topic_list_{limit}_{offset}"
         cached = cache.get(key)
         if cached:
+            # 缓存只存题目基础数据;掌握状态按当前用户实时注入(避免串用户)
+            await _inject_user_status(cached["items"], request)
             return cached
 
     query = Topic.all()
@@ -77,8 +80,27 @@ async def list_topics(
 
     result = ListResponse(total=total, items=items)
     if not keyword and not tag:
+        # 入缓存的是不含 user_status 的基础数据
         cache.set(key, result.model_dump(), ttl=30)
+    # 注入当前用户掌握状态(不进缓存)
+    await _inject_user_status(result.items, request)
     return result
+
+
+async def _inject_user_status(items: list[dict], request: Request = None) -> None:
+    """为题目列表批量注入当前用户的掌握状态(user_status: mastered/learning/None)。
+    未登录则全部为 None。单次批量查询,无 N+1。原地修改 items。"""
+    for it in items:
+        it["user_status"] = None
+    uid = getattr(getattr(request, "state", None), "user_id", None) if request else None
+    if not uid or not items:
+        return
+    from src.models.user_topic_status import UserTopicStatus
+    topic_ids = [it["id"] for it in items]
+    rows = await UserTopicStatus.filter(user_id=uid, topic_id__in=topic_ids).values("topic_id", "status")
+    status_map = {str(r["topic_id"]): r["status"] for r in rows}
+    for it in items:
+        it["user_status"] = status_map.get(str(it["id"]))
 
 
 def _build_items(topics, tag: str = "") -> list[dict]:
@@ -371,8 +393,7 @@ async def mastery_check_endpoint(topic_id: str, req: MasteryCheckRequest, reques
         score_keypoint=result["scores"]["keypoint"],
         score_structure=result["scores"]["structure"],
         score_keyword=result["scores"]["keyword"],
-        score_length=result["scores"]["length"],
-        score_coherence=result["scores"]["coherence"],
+        # length / coherence 维度已废弃(三维重构),旧 DB 列保留为 NULL
         score_total=result["total"],
         is_mastered=result["mastered"],
     )
@@ -383,4 +404,48 @@ async def mastery_check_endpoint(topic_id: str, req: MasteryCheckRequest, reques
         "mastered": result["mastered"],
         "scores": result["scores"],
         "feedback": result["feedback"],
+    }
+
+
+@router.get("/{topic_id}/attempts")
+async def list_mastery_attempts(topic_id: str, request: Request = None):
+    """返回当前用户对该题的历史自查记录(五维分+总分+时间),按时间倒序。"""
+    from src.models.mastery_attempt import MasteryAttempt
+    from src.models.user_topic_status import UserTopicStatus
+
+    uid = getattr(getattr(request, "state", None), "user_id", None) if request else None
+    if not uid:
+        raise HTTPException(status_code=401, detail="请先登录")
+
+    attempts = await MasteryAttempt.filter(
+        user_id=uid, topic_id=topic_id
+    ).order_by("-created_at").limit(50).values(
+        "id", "attempt_number", "answer_text",
+        "score_keypoint", "score_structure", "score_keyword",
+        "score_total",
+        "is_mastered", "created_at",
+    )
+
+    status = await UserTopicStatus.filter(user_id=uid, topic_id=topic_id).first()
+    return {
+        "topic_id": topic_id,
+        "user_status": status.status if status else None,
+        "mastery_score": status.mastery_score if status else 0.0,
+        "mastery_attempts": status.mastery_attempts if status else 0,
+        "attempts": [
+            {
+                "id": str(a["id"]),
+                "attempt_number": a["attempt_number"],
+                "answer_text": a["answer_text"],
+                "scores": {
+                    "keypoint": a["score_keypoint"],
+                    "structure": a["score_structure"],
+                    "keyword": a["score_keyword"],
+                },
+                "total": a["score_total"],
+                "is_mastered": a["is_mastered"],
+                "created_at": a["created_at"].isoformat() if a["created_at"] else None,
+            }
+            for a in attempts
+        ],
     }

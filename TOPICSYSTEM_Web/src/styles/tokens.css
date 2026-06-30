@@ -1,0 +1,235 @@
+/**
+ * TopicSystem 全局设计 Token
+ * ─────────────────────────────────────────
+ * 来源:基于现有 vue 文件视觉反推 + 用户拍板 Q1=B(品牌色统一 Indigo #6366f1)
+ * 维护规则:所有页面禁止硬编码色值/圆角/字号/断点,统一通过 var(--xxx) 引用
+ * 修改需同步更新 skill `topicsystem-frontend`
+ */
+
+:root {
+  /* ════════════════════════════════════════════
+   * 品牌主色(Indigo 体系,统一全项目)
+   * ════════════════════════════════════════════ */
+  --color-primary: #6366f1;          /* Indigo-500,主品牌 */
+  --color-primary-hover: #818cf8;    /* Indigo-400,hover */
+  --color-primary-active: #4f46e5;   /* Indigo-600,按下 */
+  --color-primary-soft: rgba(99, 102, 241, 0.08);  /* 透明叠加,nav hover 用 */
+  --color-primary-soft-2: rgba(99, 102, 241, 0.12); /* 稍重叠加,active 用 */
+
+  /* 渐变(Hero / 装饰用) */
+  --gradient-brand: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --gradient-brand-soft: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(139,92,246,0.1) 100%);
+
+  /* ════════════════════════════════════════════
+   * 语义色(状态)
+   * ════════════════════════════════════════════ */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger:  #ef4444;
+  --color-info:    #3b82f6;
+
+  /* ════════════════════════════════════════════
+   * 文本色阶
+   * ════════════════════════════════════════════ */
+  --text-1: #1a1a2e;   /* 主标题 */
+  --text-2: #303133;   /* 正文(取代 #606266 让对比度更稳) */
+  --text-3: #606266;   /* 次要文字 */
+  --text-4: #86909c;   /* 辅助说明 */
+  --text-5: #a8abb2;   /* 占位/禁用 */
+
+  /* ════════════════════════════════════════════
+   * 背景色阶(取代散落的 #f5f7fa / #f0f2f5)
+   * ════════════════════════════════════════════ */
+  --bg-page:  #eef1f6;   /* 整页大底(从 #f5f7fa 加深一档,让白卡圆角可见) */
+  --bg-card:  #ffffff;   /* 卡片/弹窗白底 */
+  --bg-soft:  #fafbfc;   /* 卡片内嵌浅区 */
+  --bg-soft-2: #f7f8fa;  /* hover 浅灰 */
+  --bg-tag:   #f0f2f5;   /* Tag/小块底 */
+  --bg-mask:  rgba(0, 0, 0, 0.5);  /* 遮罩 */
+
+  /* ════════════════════════════════════════════
+   * 边框
+   * ════════════════════════════════════════════ */
+  --border-light:  #ebeef5;
+  --border-base:   #dcdfe6;
+  --border-dark:   #c0c4cc;
+
+  /* ════════════════════════════════════════════
+   * 圆角阶梯
+   * ════════════════════════════════════════════ */
+  --r-xs:  6px;    /* Tag、小标签 */
+  --r-sm:  8px;    /* 输入框、小按钮 */
+  --r-md:  10px;   /* 主按钮 */
+  --r-lg:  12px;   /* 卡片、Modal */
+  --r-xl:  16px;   /* 大卡片 */
+  --r-2xl: 24px;   /* Hero 装饰块 */
+  --r-full: 9999px; /* 圆形 */
+
+  /* ════════════════════════════════════════════
+   * 阴影
+   * ════════════════════════════════════════════ */
+  --shadow-xs:     0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card:   0 2px 8px rgba(15, 23, 42, 0.06), 0 4px 16px rgba(15, 23, 42, 0.04);
+  --shadow-header: 0 1px 4px rgba(0, 21, 41, 0.08);
+  --shadow-modal:  0 8px 40px rgba(0, 0, 0, 0.08);
+  --shadow-hover:  0 8px 20px rgba(0, 0, 0, 0.12);
+  --shadow-strong: 0 12px 40px rgba(0, 0, 0, 0.16);
+
+  /* ════════════════════════════════════════════
+   * 字号(流式 — clamp 自适应桌面/移动)
+   *   小字保持稳定,大字桌面端放大,移动端自动缩
+   * ════════════════════════════════════════════ */
+  --fs-xs:   12px;
+  --fs-sm:   13px;
+  --fs-md:   14px;
+  --fs-base: 15px;
+  --fs-lg:   16px;
+  --fs-xl:   clamp(16px, 1.6vw, 18px);
+  --fs-2xl:  clamp(18px, 2.0vw, 22px);
+  --fs-3xl:  clamp(20px, 2.6vw, 28px);
+  --fs-4xl:  clamp(24px, 3.4vw, 36px);
+  --fs-hero: clamp(28px, 5.0vw, 48px);
+
+  /* 字重 */
+  --fw-normal: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-extrabold: 800;
+
+  /* 行高 */
+  --lh-tight: 1.25;
+  --lh-base:  1.6;
+  --lh-loose: 1.8;
+
+  /* ════════════════════════════════════════════
+   * 间距阶梯(8px 基准)
+   * ════════════════════════════════════════════ */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-7: 32px;
+  --sp-8: 40px;
+  --sp-9: 48px;
+  --sp-10: 60px;
+
+  /* ════════════════════════════════════════════
+   * 页面横向 gutter(全面屏移动端,行业惯例 4% 左右安全边)
+   *   桌面端使用固定 sp-7(32px),移动端切换为视口百分比,
+   *   保证在任意宽度的全面屏机型上视觉留白比例一致。
+   * ════════════════════════════════════════════ */
+  --page-gutter-mobile: 4%;
+
+  /* ════════════════════════════════════════════
+   * 断点(供 JS 通过 getComputedStyle 读取;CSS 用 @media 直接写)
+   *   全项目统一这 4 档,禁止再用 1200/1024/375 等散值
+   * ════════════════════════════════════════════ */
+  --bp-md: 768px;    /* < md 手机:单栏 + 汉堡菜单 + drawer */
+  --bp-lg: 1024px;   /* < lg 平板:两栏 */
+  --bp-xl: 1280px;   /* < xl 笔记本:三栏完整 */
+  --bp-2xl: 1536px;  /* ≥ 2xl 大屏桌面:加大留边 */
+
+  /* ════════════════════════════════════════════
+   * 容器最大宽度
+   * ════════════════════════════════════════════ */
+  --container-sm: 640px;    /* 登录卡 */
+  --container-md: 960px;    /* 表单页 */
+  --container-lg: 1200px;   /* Dashboard / 列表 */
+  --container-xl: 1400px;   /* 超宽内容(图表) */
+  --container-text: 720px;  /* 长文阅读区(Privacy/Terms) */
+
+  /* ════════════════════════════════════════════
+   * 控件尺寸
+   * ════════════════════════════════════════════ */
+  --btn-h-sm: 32px;
+  --btn-h-md: 40px;
+  --btn-h-lg: 44px;
+
+  --header-h: 64px;        /* 桌面顶栏 */
+  --header-h-mobile: 56px; /* 移动端顶栏(略矮)*/
+
+  /* ════════════════════════════════════════════
+   * 动效曲线(统一 timing-function)
+   * ════════════════════════════════════════════ */
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 0.15s;
+  --duration-base: 0.25s;
+  --duration-slow: 0.4s;
+
+  /* ════════════════════════════════════════════
+   * z-index 层级管理
+   * ════════════════════════════════════════════ */
+  --z-base: 1;
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-header: 1030;
+  --z-drawer: 2000;
+  --z-modal: 3000;
+  --z-toast: 5000;
+}
+
+/* ════════════════════════════════════════════
+ * Element Plus 主题色覆盖(基于 CSS 变量)
+ *   让 el-button el-tag el-link 等控件自动跟随 Indigo
+ * ════════════════════════════════════════════ */
+:root {
+  --el-color-primary: #6366f1;
+  --el-color-primary-light-3: #818cf8;
+  --el-color-primary-light-5: #a5b4fc;
+  --el-color-primary-light-7: #c7d2fe;
+  --el-color-primary-light-8: #e0e7ff;
+  --el-color-primary-light-9: #eef2ff;
+  --el-color-primary-dark-2: #4f46e5;
+}
+
+/* ════════════════════════════════════════════
+ * 移动端通用工具类
+ * ════════════════════════════════════════════ */
+
+/* 仅桌面显示 */
+.only-desktop {
+  display: initial;
+}
+@media (max-width: 767px) {
+  .only-desktop { display: none !important; }
+}
+
+/* 仅移动端显示 */
+.only-mobile {
+  display: none !important;
+}
+@media (max-width: 767px) {
+  .only-mobile { display: initial !important; }
+}
+
+/* 容器:自动留边 + 限宽 */
+.container-page {
+  width: 100%;
+  max-width: var(--container-lg);
+  margin: 0 auto;
+  padding: 0 var(--sp-6);
+}
+@media (max-width: 767px) {
+  .container-page {
+    padding: 0 var(--sp-4);
+  }
+}
+
+/* 文字截断单行 */
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 多行截断(2 行) */
+.text-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

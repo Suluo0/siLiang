@@ -47,73 +47,80 @@ const topics = ref([
 
 <style scoped>
 .content-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  background: var(--bg-card);
+  border-radius: var(--r-xl);
+  padding: var(--sp-6);
+  box-shadow: var(--shadow-card);
+  min-width: 0;
 }
 
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: var(--sp-5);
+  gap: var(--sp-3);
 }
 
 .card-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #1a1a2e;
+  gap: var(--sp-2);
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-semibold);
+  color: var(--text-1);
   margin: 0;
+  min-width: 0;
 }
 
 .card-title svg {
-  color: #667eea;
+  color: var(--color-primary);
+  flex-shrink: 0;
 }
 
 .card-more {
-  font-size: 14px;
-  color: #667eea;
+  font-size: var(--fs-md);
+  color: var(--color-primary);
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .topic-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--sp-3);
 }
 
 .topic-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 12px;
-  transition: background 0.2s;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border-radius: var(--r-lg);
+  transition: background var(--duration-fast);
+  min-width: 0;
 }
 
 .topic-item:hover {
-  background: #f7f8fa;
+  background: var(--bg-soft-2);
 }
 
 .topic-rank {
+  flex: 0 0 auto;
   width: 28px;
   height: 28px;
-  border-radius: 8px;
-  background: #f0f2f5;
+  border-radius: var(--r-sm);
+  background: var(--bg-tag);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: 600;
-  color: #86909c;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  color: var(--text-4);
 }
 
 .topic-rank.top {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-brand);
   color: #fff;
 }
 
@@ -123,17 +130,17 @@ const topics = ref([
 }
 
 .topic-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: #1a1a2e;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-medium);
+  color: var(--text-1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .topic-meta {
-  font-size: 12px;
-  color: #86909c;
+  font-size: var(--fs-xs);
+  color: var(--text-4);
   margin-top: 4px;
 }
 
@@ -144,25 +151,43 @@ const topics = ref([
 .topic-progress {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--sp-2);
+  flex-shrink: 0;
 }
 
 .progress-bar {
   width: 60px;
   height: 4px;
-  background: #e8e8e8;
+  background: var(--border-light);
   border-radius: 2px;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-brand);
   border-radius: 2px;
 }
 
 .progress-text {
-  font-size: 12px;
-  color: #86909c;
+  font-size: var(--fs-xs);
+  color: var(--text-4);
   min-width: 32px;
+}
+
+/* 移动端:进度条窄屏隐藏文字保留色条 */
+@media (max-width: 767px) {
+  .content-card {
+    padding: var(--sp-4);
+    border-radius: var(--r-lg);
+  }
+  .topic-progress {
+    gap: var(--sp-1);
+  }
+  .progress-bar {
+    width: 40px;
+  }
+  .progress-text {
+    display: none;
+  }
 }
 </style>

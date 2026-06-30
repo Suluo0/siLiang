@@ -86,70 +86,77 @@ const feedItems = ref([
 
 <style scoped>
 .content-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  background: var(--bg-card);
+  border-radius: var(--r-xl);
+  padding: var(--sp-6);
+  box-shadow: var(--shadow-card);
+  min-width: 0;
 }
 
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: var(--sp-5);
+  gap: var(--sp-3);
+  flex-wrap: wrap;
 }
 
 .card-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #1a1a2e;
+  gap: var(--sp-2);
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-semibold);
+  color: var(--text-1);
   margin: 0;
+  min-width: 0;
 }
 
 .card-title svg {
-  color: #667eea;
+  color: var(--color-primary);
+  flex-shrink: 0;
 }
 
 .tab-nav {
   display: flex;
   gap: 4px;
+  flex-shrink: 0;
 }
 
 .tab-btn {
-  padding: 6px 12px;
+  padding: 6px var(--sp-3);
   border: none;
   background: transparent;
-  font-size: 13px;
-  color: #86909c;
+  font-size: var(--fs-sm);
+  color: var(--text-4);
   cursor: pointer;
-  border-radius: 6px;
-  transition: all 0.2s;
+  border-radius: var(--r-xs);
+  transition: all var(--duration-fast);
 }
 
 .tab-btn.active {
-  background: #667eea;
+  background: var(--color-primary);
   color: #fff;
 }
 
 .feed-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--sp-5);
 }
 
 .feed-item {
   display: flex;
-  gap: 20px;
-  padding: 16px;
-  border-radius: 12px;
-  transition: background 0.2s;
+  gap: var(--sp-5);
+  padding: var(--sp-4);
+  border-radius: var(--r-lg);
+  transition: background var(--duration-fast);
+  min-width: 0;
 }
 
 .feed-item:hover {
-  background: #f7f8fa;
+  background: var(--bg-soft-2);
 }
 
 .feed-content {
@@ -159,26 +166,26 @@ const feedItems = ref([
 
 .feed-tag {
   display: inline-block;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
-  margin-bottom: 8px;
+  padding: 4px var(--sp-3);
+  border-radius: var(--r-xs);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  margin-bottom: var(--sp-2);
 }
 
 .feed-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1a1a2e;
-  margin: 0 0 8px;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  color: var(--text-1);
+  margin: 0 0 var(--sp-2);
   line-height: 1.4;
 }
 
 .feed-excerpt {
-  font-size: 14px;
-  color: #86909c;
-  line-height: 1.6;
-  margin-bottom: 12px;
+  font-size: var(--fs-md);
+  color: var(--text-4);
+  line-height: var(--lh-base);
+  margin-bottom: var(--sp-3);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -189,21 +196,31 @@ const feedItems = ref([
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
 }
 
 .feed-author {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #86909c;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--text-4);
+  min-width: 0;
+}
+
+.feed-author span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .feed-stats {
   display: flex;
-  gap: 16px;
-  font-size: 13px;
-  color: #86909c;
+  gap: var(--sp-4);
+  font-size: var(--fs-sm);
+  color: var(--text-4);
+  flex-shrink: 0;
 }
 
 .feed-stats span {
@@ -215,7 +232,7 @@ const feedItems = ref([
 .feed-cover {
   width: 140px;
   height: 100px;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -226,13 +243,24 @@ const feedItems = ref([
   object-fit: cover;
 }
 
-@media (max-width: 768px) {
+/* ─── 响应式 ─── */
+
+/* < md 手机:封面在上,内容在下;封面变高一些 */
+@media (max-width: 767px) {
+  .content-card {
+    padding: var(--sp-4);
+    border-radius: var(--r-lg);
+  }
   .feed-item {
     flex-direction: column;
+    gap: var(--sp-3);
+    padding: var(--sp-3);
   }
   .feed-cover {
+    order: -1;          /* 封面跑到顶部 */
     width: 100%;
     height: 160px;
+    border-radius: var(--r-md);
   }
 }
 </style>

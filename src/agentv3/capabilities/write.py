@@ -257,6 +257,13 @@ async def save_to_milvus(
             embedding=vector.tolist(), domain=domain,
             keywords=keywords, difficulty=difficulty,
         )
+        # 增量更新 whitening 均值 μ(题库增长时 μ 自动跟进,数学上与全量重算等价)。
+        # 隔离失败:μ 更新出错绝不影响写库主流程。
+        try:
+            from src.tools.embedding_mean import update_mean
+            update_mean([vector])
+        except Exception:
+            pass
         return {"success": True, "compensable": False}
     except Exception as e:
         try:

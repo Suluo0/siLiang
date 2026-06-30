@@ -9,38 +9,37 @@
       <span class="total-hint">{{ totalTopics }} 道题</span>
     </div>
 
-    <!-- Tag 筛选栏 -->
+    <!-- Tag 筛选栏:先选维度,再展开该维度下的细标签 -->
     <div class="tag-strip">
-      <el-tag v-for="t in dedupedTags" :key="t" size="small"
-        :type="activeTag === t ? '' : 'info'"
-        :effect="activeTag === t ? 'dark' : 'plain'"
-        class="ftag" @click="toggleTag(t)">{{ t }}</el-tag>
-      <el-button v-if="activeTag" size="small" text @click="clearTag">✕ 清除</el-button>
+      <!-- 维度按钮行 -->
+      <div class="dim-row">
+        <el-tag
+          v-for="d in dimensions" :key="d.key" size="small"
+          :type="activeDim === d.key ? '' : 'info'"
+          :effect="activeDim === d.key ? 'dark' : 'plain'"
+          class="dim-tag" @click="toggleDim(d.key)">
+          {{ d.label }}
+          <span class="dim-count">{{ d.tags.length }}</span>
+        </el-tag>
+        <el-button v-if="activeTag || activeDim" size="small" text @click="clearAll">✕ 清除</el-button>
+      </div>
+
+      <!-- 选中维度后展开其细标签 -->
+      <div v-if="activeDim && currentDimTags.length" class="sub-row">
+        <el-tag
+          v-for="t in currentDimTags" :key="t" size="small"
+          :type="activeTag === t ? '' : 'info'"
+          :effect="activeTag === t ? 'dark' : 'plain'"
+          class="ftag" @click="toggleTag(t)">{{ t }}</el-tag>
+      </div>
     </div>
 
-    <!-- 三列信息流 -->
+    <!-- 三列信息流:每列复用 Category 组件 -->
     <div class="feed-grid" v-loading="loading">
-      <div class="feed-col" v-for="col in columns" :key="col.key">
-        <div class="col-header">
-          <span class="col-dot" :style="{ background: col.color }"></span>
-          {{ col.label }}
-          <span class="col-count">{{ col.items.length }}</span>
-        </div>
-
-        <div class="col-body">
-          <div v-if="!col.items.length" class="col-empty">暂无</div>
-          <div v-for="item in col.items" :key="item.id" class="card" @click="goDetail(item.id)">
-            <div class="card-head">
-              <span class="card-domain">{{ item.domain }}</span>
-              <span class="card-diff">L{{ item.difficulty }}</span>
-            </div>
-            <div class="card-title">{{ item.topic }}</div>
-            <div class="card-tags" v-if="item.tags?.length">
-              <span v-for="tg in item.tags.slice(0, 4)" :key="tg" class="ctag">{{ tg }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Category
+        v-for="col in columns" :key="col.key"
+        :label="col.label" :color="col.color" :items="col.items"
+        @card-click="goDetail" />
     </div>
   </div>
 </template>
@@ -50,10 +49,12 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search } from '@element-plus/icons-vue'
 import { getTopicList, getTopicTags } from '@/api/topic'
+import Category from '@/components/Topic/Category.vue'
 
 const router = useRouter()
 const keyword = ref('')
 const activeTag = ref('')
+const activeDim = ref('')
 const loading = ref(false)
 const totalTopics = ref(0)
 const feedTags = ref([])
@@ -67,13 +68,36 @@ onMounted(async () => {
   fetchAll()
 })
 
-// Tag 去重合并
-const dedupedTags = computed(() => {
-  const priority = ['核心能力', '并发', '锁', 'JVM', 'MySQL', 'Redis', 'Spring', '分布式',
-    '消息队列', '缓存', '框架', '中间件', '架构', '数据结构', '算法', '后端', '事务']
-  const seen = new Set(priority)
-  const rest = (feedTags.value || []).filter(t => !seen.has(t))
-  return [...priority.filter(t => feedTags.value.includes(t)), ...rest]
+// ── 维度分类:把后端扁平标签按技术栈归到通用维度 ──
+// 每个维度的成员标签(命中即归入);未命中的归到"其他"
+const DIM_DEF = [
+  { key: 'java',    label: 'Java 基础', members: ['Java', '基础', '基础语法', '面向对象', '反射', '注解', '泛型', '集合', '容器', '异常', 'IO', '序列化'] },
+  { key: 'concurrent', label: '并发 & JVM', members: ['并发', '锁', '线程安全', '线程', '多线程', 'JUC', 'JVM', 'GC', '内存模型', '类加载', '垃圾回收'] },
+  { key: 'db',      label: '数据库', members: ['MySQL', 'Redis', 'SQL', '索引', '事务', '存储', 'NoSQL', '关系型数据库', '存储层', '数据库', '锁机制', 'B+树', '隔离级别'] },
+  { key: 'frame',   label: '框架 & 中间件', members: ['框架', 'Spring', 'SpringBoot', 'SpringCloud', 'MyBatis', '中间件', '消息队列', 'RabbitMQ', 'Kafka', '缓存', 'ORM'] },
+  { key: 'infra',   label: '分布式 & 架构', members: ['分布式', '架构', '高可用', '一致性', 'RPC', '微服务', '服务治理', '网关', '配置中心', '注册中心', '服务发现', '负载均衡', '限流', '熔断', '降级', '稳定性', '幂等', '可观测性', '链路追踪'] },
+  { key: 'algo',    label: '数据结构 & 算法', members: ['数据结构', '算法', '排序', '查找', '树', '图', '动态规划', '链表', '哈希', '栈', '队列'] },
+]
+
+// 计算每个维度实际拥有的标签(交集:后端返回的标签 ∩ 维度成员)+ "其他"兜底
+const dimensions = computed(() => {
+  const all = feedTags.value || []
+  const claimed = new Set()
+  const dims = DIM_DEF.map(d => {
+    const tags = all.filter(t => d.members.includes(t))
+    tags.forEach(t => claimed.add(t))
+    return { key: d.key, label: d.label, tags }
+  }).filter(d => d.tags.length)  // 没有任何标签的维度不显示
+  // 未被任何维度认领的标签 → 其他
+  const rest = all.filter(t => !claimed.has(t))
+  if (rest.length) dims.push({ key: '__other', label: '其他', tags: rest })
+  return dims
+})
+
+// 当前选中维度下的细标签
+const currentDimTags = computed(() => {
+  const d = dimensions.value.find(x => x.key === activeDim.value)
+  return d ? d.tags : []
 })
 
 const columns = reactive([
@@ -122,11 +146,23 @@ async function fetchAll() {
   }
 }
 
+// 切换维度:展开/收起该维度的细标签;收起时清掉已选细标签
+function toggleDim(key) {
+  if (activeDim.value === key) {
+    activeDim.value = ''
+    if (activeTag.value) { activeTag.value = ''; fetchAll() }
+  } else {
+    activeDim.value = key
+  }
+}
 function toggleTag(tag) {
   activeTag.value = activeTag.value === tag ? '' : tag
   fetchAll()
 }
-function clearTag() { activeTag.value = ''; fetchAll() }
+function clearAll() {
+  activeDim.value = ''
+  if (activeTag.value) { activeTag.value = ''; fetchAll() }
+}
 function goDetail(id) { router.push(`/topic/detail/${id}`) }
 </script>
 
@@ -151,10 +187,24 @@ function goDetail(id) { router.push(`/topic/detail/${id}`) }
 
 /* ── Tag 条 ── */
 .tag-strip {
-  display: flex; flex-wrap: wrap; gap: 6px;
   padding-bottom: 12px; margin-bottom: 10px;
   border-bottom: 1px solid #eee;
-  align-items: center; flex-shrink: 0;
+  flex-shrink: 0;
+}
+.dim-row {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+}
+.dim-tag {
+  cursor: pointer; border-radius: 8px; transition: all 0.15s;
+  font-size: 13px; font-weight: 600; padding: 0 12px; height: 28px; line-height: 26px;
+}
+.dim-tag:hover { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+.dim-count {
+  margin-left: 5px; font-size: 11px; font-weight: 400; opacity: 0.65;
+}
+.sub-row {
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  margin-top: 10px; padding-top: 10px; border-top: 1px dashed #eee;
 }
 .ftag { cursor: pointer; border-radius: 6px; transition: all 0.15s; font-size: 12px; }
 .ftag:hover { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
@@ -169,68 +219,40 @@ function goDetail(id) { router.push(`/topic/detail/${id}`) }
   overflow: hidden;
 }
 
-.feed-col {
-  background: #f8f9fc;
-  border-radius: 14px;
-  padding: 18px 16px 8px;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
+/* 列内样式(.feed-col / .card 等)已抽到 components/Topic/Category.vue */
 
-.col-header {
-  font-size: 14px; font-weight: 600; color: #333;
-  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
-  flex-shrink: 0;
-}
-.col-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-.col-count { margin-left: auto; font-size: 12px; color: #aaa; font-weight: 400; }
+/* ─── 响应式:移动端单列 ─── */
+@media (max-width: 767px) {
+  .feed-page {
+    padding: 14px 4% 0;
+    /* 移动端改为整页纵向滚动,不再锁死高度 */
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 
-.col-body {
-  display: flex; flex-direction: column; gap: 12px;
-  flex: 1;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-.col-body::-webkit-scrollbar { width: 5px; }
-.col-body::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+  /* 顶部栏:标题 + 搜索 + 计数 竖向收敛 */
+  .top-bar {
+    flex-wrap: wrap; gap: 10px; margin-bottom: 8px;
+  }
+  .brand { font-size: 18px; }
+  .search-box { width: 100%; order: 3; }
+  .total-hint { margin-left: auto; }
 
-.col-empty {
-  text-align: center; color: #ccc; font-size: 13px; padding: 30px 0;
-}
+  /* 标签维度按钮:横向铺开但不撑出屏幕 */
+  .dim-row { gap: 6px; }
+  .dim-tag {
+    font-size: 12px; padding: 0 10px; height: 26px; line-height: 24px;
+  }
 
-/* ── 卡片 ── */
-.card {
-  background: #fff; border-radius: 10px; padding: 16px 18px;
-  cursor: pointer; transition: all 0.2s;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04); flex-shrink: 0;
-}
-.card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); transform: translateY(-1px); }
-
-.card-head {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 8px;
-}
-.card-domain {
-  font-size: 11px; font-weight: 600; color: #6366f1;
-  background: rgba(99,102,241,0.08); padding: 2px 8px; border-radius: 4px;
-}
-.card-diff {
-  font-size: 11px; color: #aaa; font-weight: 500;
-}
-
-.card-title {
-  font-size: 14px; font-weight: 600; color: #222;
-  line-height: 1.5; margin-bottom: 10px;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.card-tags {
-  display: flex; flex-wrap: wrap; gap: 5px;
-}
-.ctag {
-  font-size: 11px; color: #888; background: #f1f2f3;
-  padding: 2px 8px; border-radius: 4px;
+  /* 关键:单列,三个分类区上下纵向堆叠(不再横排挤出屏幕) */
+  .feed-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    flex: none;
+    overflow: visible;
+    max-width: 100%;
+  }
+  /* 列内移动端样式(.feed-col / .col-body / .card)已在 Category.vue 内处理 */
 }
 </style>

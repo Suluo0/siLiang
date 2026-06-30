@@ -64,37 +64,39 @@ const learningProgress = ref([
 
 <style scoped>
 .content-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  background: var(--bg-card);
+  border-radius: var(--r-xl);
+  padding: var(--sp-6);
+  box-shadow: var(--shadow-card);
+  min-width: 0;
 }
 
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: var(--sp-5);
 }
 
 .card-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #1a1a2e;
+  gap: var(--sp-2);
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-semibold);
+  color: var(--text-1);
   margin: 0;
 }
 
 .card-title svg {
-  color: #667eea;
+  color: var(--color-primary);
+  flex-shrink: 0;
 }
 
 .progress-overview {
   display: flex;
   justify-content: center;
-  margin-bottom: 24px;
+  margin-bottom: var(--sp-6);
 }
 
 .progress-ring {
@@ -105,11 +107,13 @@ const learningProgress = ref([
 
 .progress-ring svg {
   transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
 }
 
 .ring-bg {
   fill: none;
-  stroke: #f0f2f5;
+  stroke: var(--bg-tag);
   stroke-width: 8;
 }
 
@@ -130,32 +134,34 @@ const learningProgress = ref([
 
 .ring-value {
   display: block;
-  font-size: 32px;
-  font-weight: 700;
-  color: #1a1a2e;
+  font-size: var(--fs-4xl);
+  font-weight: var(--fw-bold);
+  color: var(--text-1);
 }
 
 .ring-label {
-  font-size: 12px;
-  color: #86909c;
+  font-size: var(--fs-xs);
+  color: var(--text-4);
 }
 
 .progress-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--sp-4);
 }
 
 .progress-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--sp-3);
+  min-width: 0;
 }
 
 .progress-icon {
+  flex: 0 0 auto;
   width: 36px;
   height: 36px;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -164,31 +170,52 @@ const learningProgress = ref([
 
 .progress-info {
   flex: 1;
+  min-width: 0;
 }
 
 .progress-name {
-  font-size: 14px;
-  color: #1a1a2e;
+  font-size: var(--fs-md);
+  color: var(--text-1);
   margin-bottom: 6px;
   display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .progress-bar-small {
   width: 100%;
   height: 6px;
-  background: #f0f2f5;
+  background: var(--bg-tag);
   border-radius: 3px;
+  overflow: hidden;
 }
 
 .progress-fill-small {
   height: 100%;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-brand);
   border-radius: 3px;
+  transition: width var(--duration-slow) var(--ease-out);
 }
 
 .progress-percent {
-  font-size: 14px;
-  font-weight: 600;
-  color: #667eea;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+  .content-card {
+    padding: var(--sp-4);
+    border-radius: var(--r-lg);
+  }
+  .progress-ring {
+    width: 120px;
+    height: 120px;
+  }
+  .ring-value {
+    font-size: var(--fs-3xl);
+  }
 }
 </style>

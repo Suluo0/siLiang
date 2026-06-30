@@ -41,7 +41,13 @@ const routes = [
         path: '/topic/library',
         name: 'TopicLibrary',
         component: () => import('../views/Topic/topic_list.vue'),
-        meta: { title: '题库', guest: true }
+        meta: { title: '背题', guest: true }
+      },
+      {
+        path: '/topic/practice',
+        name: 'TopicPractice',
+        component: () => import('../views/Topic/Practice.vue'),
+        meta: { title: '刷题' }
       },
       {
         path: '/topic/detail/:id',

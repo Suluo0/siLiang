@@ -1,0 +1,164 @@
+{
+  "version": "1.1",
+  "projectRoot": "/Users/xunsu/PycharmProjects/PythonProject/TopicSystem",
+  "lastGenerationTime": "2026-06-21T16:50:40.098131+08:00",
+  "lastCommitHash": "b2fadb87c8f380e7dea38996141e5164621fa09e",
+  "lastBranch": "main",
+  "isMonorepo": false,
+  "gitAvailable": true,
+  "generatedDocs": [
+    "01-project-overview",
+    "02-architecture",
+    "03-directory-structure",
+    "16-frontend-backend-contract"
+  ],
+  "pendingDocs": [
+    "04-tech-stack",
+    "05-dev-setup",
+    "06-core-modules",
+    "07-api-reference",
+    "08-data-flow",
+    "09-configuration",
+    "10-testing",
+    "11-coding-conventions",
+    "12-error-handling",
+    "13-authentication",
+    "14-database",
+    "15-deployment"
+  ],
+  "modules": [
+    {
+      "id": "topic",
+      "name": "题目/题库",
+      "files": [
+        "src/api/topic_api.py",
+        "TOPICSYSTEM_Web/src/api/topic.js",
+        "TOPICSYSTEM_Web/src/views/Topic/topic_list.vue",
+        "TOPICSYSTEM_Web/src/views/Topic/topic_detail.vue",
+        "TOPICSYSTEM_Web/src/components/Topic/Category.vue",
+        "TOPICSYSTEM_Web/src/views/Topic/Practice.vue",
+        "TOPICSYSTEM_Web/src/components/Topic/MasteryPanel.vue"
+      ],
+      "dependsOn": [
+        "auth"
+      ]
+    },
+    {
+      "id": "auth",
+      "name": "认证/用户",
+      "files": [
+        "src/auth/api.py",
+        "TOPICSYSTEM_Web/src/views/Auth/Login.vue",
+        "TOPICSYSTEM_Web/src/views/User/Center.vue"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "menu",
+      "name": "菜单",
+      "files": [
+        "src/api/menu_api.py",
+        "TOPICSYSTEM_Web/src/api/menu.js"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "interview",
+      "name": "模拟面试",
+      "files": [
+        "src/api/interview_api.py",
+        "TOPICSYSTEM_Web/src/views/Interview/index.vue"
+      ],
+      "dependsOn": [
+        "topic"
+      ]
+    },
+    {
+      "id": "dashboard",
+      "name": "首页统计",
+      "files": [
+        "TOPICSYSTEM_Web/src/components/Dashboard/StatsSection.vue",
+        "TOPICSYSTEM_Web/src/components/Dashboard/PreferencesModal.vue"
+      ],
+      "dependsOn": [
+        "topic"
+      ]
+    }
+  ],
+  "documentMappings": {
+    "01-project-overview": {
+      "triggers": [
+        "README*",
+        "src/main.py",
+        "pyproject.toml"
+      ],
+      "lastUpdated": "2026-06-21T14:49:43.759804+08:00"
+    },
+    "02-architecture": {
+      "modules": [
+        "topic",
+        "auth",
+        "interview"
+      ],
+      "lastUpdated": "2026-06-21T14:49:43.759804+08:00"
+    },
+    "03-directory-structure": {
+      "triggers": [
+        "src/**",
+        "TOPICSYSTEM_Web/src/**",
+        ".github/workflows/**"
+      ],
+      "lastUpdated": "2026-06-21T14:49:43.759804+08:00"
+    },
+    "16-frontend-backend-contract": {
+      "modules": [
+        "topic",
+        "auth",
+        "menu",
+        "interview",
+        "dashboard"
+      ],
+      "triggers": [
+        "TOPICSYSTEM_Web/src/router/index.js",
+        "TOPICSYSTEM_Web/src/api/**",
+        "src/api/**",
+        "src/auth/api.py"
+      ],
+      "lastUpdated": "2026-06-21T16:50:40.098131+08:00"
+    }
+  },
+  "fileHashes": {
+    "src/main.py": "a6d5b92ab75abc739b3b1af8cfff993f",
+    "TOPICSYSTEM_Web/src/router/index.js": "de31bd65157d471c4f245e3cc796c7d4",
+    "TOPICSYSTEM_Web/src/api/topic.js": "c578b0e31405c9f91f350f04b5ec98cb",
+    "TOPICSYSTEM_Web/src/api/menu.js": "5b4a4cb94b10e1ac3b6e50bb6faee5e4",
+    "TOPICSYSTEM_Web/src/api/request.js": "08f4b907b4eb1e45d6ea14b9f5ae233c",
+    "src/api/topic_api.py": "374d4709d9bf6f05641bcd22df2cd5a7",
+    "src/api/menu_api.py": "b3a75b089362700c9b7a7bbdd44fb0a8",
+    "src/api/interview_api.py": "868dd09b14199450c066cd8973ed5296",
+    "src/api/healthcheck.py": "811f0d846b52d3ea3aa50b2f6c440944",
+    "src/auth/api.py": "9eec9b6c886a91a6c1e9749c81c0eb56",
+    "TOPICSYSTEM_Web/src/views/Topic/topic_list.vue": "5ddea6e3c78260ed9dc11bde2927126a",
+    "TOPICSYSTEM_Web/src/views/Topic/topic_detail.vue": "cf4c5d5d9ff92686297175aec6bd782d",
+    "TOPICSYSTEM_Web/src/views/Auth/Login.vue": "33519bee0bbdda709d08ebca4c72b2fd",
+    "TOPICSYSTEM_Web/src/views/Interview/index.vue": "f90621b43bfdda859002f1d3fb32efcb",
+    "TOPICSYSTEM_Web/src/views/Chat/index.vue": "a788db51020458daac815f38a461fa47",
+    "TOPICSYSTEM_Web/src/views/User/Center.vue": "9c547f89143092c3939a8768258a95b0",
+    "TOPICSYSTEM_Web/src/components/Dashboard/StatsSection.vue": "20a653fb432f103d1bb3f706dd9b93b5",
+    "TOPICSYSTEM_Web/src/components/Dashboard/PreferencesModal.vue": "6d4d83fc6d57e89cebccafd39d7849ce",
+    "pyproject.toml": "4ee68aef04e3267f04425f6ba2b02b66",
+    "TOPICSYSTEM_Web/package.json": "bd34ad08cd7b4d4318b5af13ca5c194e",
+    "TOPICSYSTEM_Web/src/components/Topic/Category.vue": "b172581560136cc398477f96b6260044",
+    "TOPICSYSTEM_Web/src/layout/MainLayout.vue": "99630eb11c2c94ee1987b1e913140769",
+    "TOPICSYSTEM_Web/src/views/Topic/Practice.vue": "b8035d9bb6492d8297e2fbfd2c6452e4",
+    "TOPICSYSTEM_Web/src/components/Topic/MasteryPanel.vue": "9cd982ae2a2a8b32c2e3b922a92c2d54"
+  },
+  "skippedPaths": {
+    "node_modules/": "排除目录",
+    ".venv/": "排除目录",
+    "dist/": "排除目录",
+    ".git/": "排除目录"
+  },
+  "userModifiedDocs": [],
+  "note": "fileHashes 为真实 md5(execute_code hashlib 计算,非占位)。04-15 文档尚未生成,见 pendingDocs。"
+}

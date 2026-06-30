@@ -17,15 +17,17 @@ TopicSystem/
 ├── TOPICSYSTEM_Web/              # Vue 3 前端
 ├── relay-server/                 # WebSocket 中继(仅本地,未提交) — 实时面试通信
 ├── docs/                         # 项目文档
-│   ├── wiki/                     # ★ 本 Repo Wiki (15 份 markdown)
+│   ├── wiki/                     # ★ 本 Repo Wiki
 │   ├── TODO.md                   # 任务清单(从 .opencode/ 迁来)
 │   ├── diff-local-vs-server.md   # 本地 vs 服务器代码差异报告
 │   └── data-sync-plan.md         # 数据同步可行性方案
 ├── docker-compose.yml            # 本地 dev compose
 ├── docker-compose.server.yml     # 线上 server compose(siliang-* 容器)
 ├── Dockerfile                    # 后端镜像
-├── Jenkinsfile                   # CI 配置(老,GitHub Actions 是主)
-├── .github/workflows/test.yml    # GitHub Actions: pytest + cov
+├── .github/workflows/
+│   ├── deploy.yml                # 后端部署(paths-ignore: TOPICSYSTEM_Web/**)
+│   ├── deploy-frontend.yml       # 前端部署
+│   └── test.yml                  # GitHub Actions: pytest + cov
 ├── Makefile                      # 14 个目标:test/cov/lint/setup-test-db
 ├── .pre-commit-config.yaml       # ruff + detect-secrets
 ├── pyproject.toml                # Python 项目元数据 + pytest 配置 + cov 阈值

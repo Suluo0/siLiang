@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import './styles/tokens.css'   // 必须最先引入,后续 element-plus 主题会读 --el-color-primary
 import './style.css'
 import App from './App.vue'
 import router from './router'

@@ -91,6 +91,8 @@ services:
     image: siliang-app:latest
     container_name: siliang-app
     network_mode: "host"
+    volumes:
+      - app_data:/app/data
     environment:
       JWT_SECRET: "${JWT_SECRET}"
       DATABASE_URL: "${DATABASE_URL}"
@@ -124,3 +126,4 @@ volumes:
   etcd_data:
   minio_data:
   milvus_data:
+  app_data:
