@@ -1,20 +1,33 @@
 -- 数据库角色权限初始化
 -- 三角色: topic_admin (DDL), topic_app (读写), topic_read (只读)
--- ⚠️ 生产环境务必更换以下三个密码为强随机密码 ⚠️
+-- 用法: psql -v admin_password="$DB_ADMIN_PASSWORD" -v app_password="$DB_APP_PASSWORD" \
+--            -v read_password="$DB_READ_PASSWORD" -f scripts/init_db_roles.sql
+\if :{?admin_password}
+\else
+  \echo 'missing psql variable: admin_password'
+  \quit
+\endif
+\if :{?app_password}
+\else
+  \echo 'missing psql variable: app_password'
+  \quit
+\endif
+\if :{?read_password}
+\else
+  \echo 'missing psql variable: read_password'
+  \quit
+\endif
 
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'topic_admin') THEN
-        CREATE ROLE topic_admin WITH LOGIN PASSWORD 'Top1cAdm1n#2026';
-    END IF;
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'topic_app') THEN
-        CREATE ROLE topic_app WITH LOGIN PASSWORD 'Top1cApp#2026';
-    END IF;
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'topic_read') THEN
-        CREATE ROLE topic_read WITH LOGIN PASSWORD 'Top1cRead#2026';
-    END IF;
-END
-$$;
+SELECT format('CREATE ROLE topic_admin WITH LOGIN PASSWORD %L', :'admin_password')
+WHERE NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'topic_admin') \gexec
+SELECT format('CREATE ROLE topic_app WITH LOGIN PASSWORD %L', :'app_password')
+WHERE NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'topic_app') \gexec
+SELECT format('CREATE ROLE topic_read WITH LOGIN PASSWORD %L', :'read_password')
+WHERE NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'topic_read') \gexec
+
+SELECT format('ALTER ROLE topic_admin PASSWORD %L', :'admin_password') \gexec
+SELECT format('ALTER ROLE topic_app PASSWORD %L', :'app_password') \gexec
+SELECT format('ALTER ROLE topic_read PASSWORD %L', :'read_password') \gexec
 
 -- 赋权
 GRANT ALL PRIVILEGES ON DATABASE topic TO topic_admin;

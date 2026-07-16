@@ -12,6 +12,7 @@ __pypackages__/
 .env
 .env.test
 .env.local
+.env.production
 .envrc
 .hypothesis/
 .idea/

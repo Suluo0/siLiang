@@ -78,6 +78,7 @@ RSYNC_EXCLUDES := \
 	--exclude='.git/' --exclude='.venv/' --exclude='__pycache__/' \
 	--exclude='.pytest_cache/' --exclude='.ruff_cache/' --exclude='htmlcov/' \
 	--exclude='.coverage' --exclude='.env' --exclude='.env.test' --exclude='.env.local' \
+	--exclude='.env.production' \
 	--exclude='.opencode/' --exclude='node_modules/' \
 	--exclude='TOPICSYSTEM_Web/dist/' --exclude='TOPICSYSTEM_Web/node_modules/' \
 	--exclude='relay-server/' --exclude='test_output/' \

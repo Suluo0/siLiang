@@ -89,7 +89,7 @@ services:
       - "8000:8000"
     environment:
       JWT_SECRET: "${JWT_SECRET}"
-      DATABASE_URL: "postgres://topic_app:Top1cApp%232026@postgres:5432/topic"
+      DATABASE_URL: "${DATABASE_URL}"
       DATABASE_READ_URL: "${DATABASE_READ_URL:-}"
       MILVUS_HOST: "milvus"
       MILVUS_PORT: "19530"

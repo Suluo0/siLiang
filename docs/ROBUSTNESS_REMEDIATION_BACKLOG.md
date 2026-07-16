@@ -19,7 +19,7 @@
 | R-002 | P0 | PLAN-6; GLM P0-2,P0-3,P1-2,P1-16,P1-23,P2-7,P2-8,P2-9,P2-10,P3-3 | 验证码泄露、未绑定用途/邮箱、非原子消费、无限流 | 图片验证码；密码学随机；hash 存储；绑定 purpose/target；条件 UPDATE 原子消费；IP/账号/邮箱限流 | 并发仅一次成功；跨邮箱不可用；响应/日志/DB 无明文；前后端契约测试通过 | 已修复 | |
 | R-003 | P0 | PLAN-3; GLM P0-4,P0-5,P0-7,P0-8,P0-9,P1-1,P1-3,P1-17,P2-11,P3-2 | 默认放行、中间件顺序错误、JWT 类型/寿命/密钥错误、配额竞态 | 路由级默认拒绝；统一鉴权；Access 15min/Refresh 7d；类型校验；原子配额扣减；精确 update_fields | 全路由鉴权矩阵；refresh 不可作 access；改密/禁用立即失效；并发不透支 | 已修复 | |
 | R-004 | P0 | GLM P0-6,P1-22,P2-4,P2-5 | 面试端点无鉴权/IDOR，输入无上限，内存会话不可持久 | 会话绑定 user_id；所有权校验；输入/轮数限制；共享持久化与 TTL；任务引用 | 匿名/跨用户/猜 room_id/超大请求/并发答题测试 | 已修复 | |
-| R-005 | P0 | PLAN-4; GLM P0-10,P1-29,P2-20 | 有效凭据和弱默认进入仓库，生产缺配置仍启动 | 移除跟踪凭据；环境/secret 注入；生产启动校验；修复 rsync 排除；轮换已暴露密钥 | secret scan 无高危；缺少/占位密钥时生产拒绝启动；镜像无 secret | 待确认 | |
+| R-005 | P0 | PLAN-4; GLM P0-10,P1-29,P2-20 | 有效凭据和弱默认进入仓库，生产缺配置仍启动 | 移除跟踪凭据；环境/secret 注入；生产启动校验；修复 rsync 排除；轮换已暴露密钥 | secret scan 无高危；缺少/占位密钥时生产拒绝启动；镜像无 secret | 已修复 | |
 | R-006 | P0 | PLAN-2; GLM P0-11,P0-12,P1-25,P1-26,P1-30,P2-15,P2-29,P3-9 | Outbox 可重复消费、全量载入、静默成功，耗尽后删业务数据 | claim/lease/SKIP LOCKED/幂等键；有界 batch；指数退避；dead-letter/重放；禁止删 Topic；优雅关闭 | 双 worker 仅一次副作用；故障/崩溃/租约过期可恢复；持续失败不丢 PG 数据 | 待确认 | |
 | R-007 | P0 | GLM P0-13,P1-12,P1-13,P1-14,P1-15,P2-18 | Master/Slave 吞失失败，绕过执行保护，空 topic_id 写入 | 传播 failed/partial/compensable；Slave 统一走 ToolExecutor；guard/超时/预算接线；前置失败终止 | 主写失败不得 success；无空 ID 向量；超时和预算穷尽确定终止 | 待确认 | |
 | R-008 | P0 | GLM P0-14,P1-31,P1-32,P2-23,P3-1 | 未净化 HTML、可篡改前端权限、缺安全头/CORS 过宽 | 去除 v-html 或采用成熟净化库；后端授权；CSP/HSTS/frame/content-type/referrer 头；最小 CORS | 存储型 XSS 不执行；篡改 localStorage 无法越权；安全头自动检查 | 待确认 | |

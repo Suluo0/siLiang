@@ -54,6 +54,7 @@ jobs:
             --exclude='.env' \
             --exclude='.env.test' \
             --exclude='.env.local' \
+            --exclude='.env.production' \
             --exclude='.opencode/' \
             --exclude='node_modules/' \
             --exclude='TOPICSYSTEM_Web/dist/' \
