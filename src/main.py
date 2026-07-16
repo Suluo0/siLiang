@@ -27,8 +27,8 @@ app.add_middleware(
 )
 
 # ── 全局中间件 ──
-app.middleware("http")(auth_middleware)
 app.middleware("http")(quota_middleware)
+app.middleware("http")(auth_middleware)
 
 app.include_router(topic_router)
 app.include_router(healthcheck_router)

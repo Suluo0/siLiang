@@ -2,6 +2,7 @@
 Quota Middleware 测试 —— 扣减 / 403 / 零值 / 并发安全
 """
 import pytest
+import asyncio
 
 
 @pytest.mark.integration
@@ -46,3 +47,18 @@ class TestQuotaMiddleware:
         """标签页不消耗配额"""
         resp = await client.get("/api/topic/tags", headers=auth_headers)
         assert resp.status_code == 200
+
+
+@pytest.mark.integration
+@pytest.mark.concurrency
+async def test_agent_credit_atomic_under_concurrency(db):
+    from src.middleware.quota import consume_agent_credit
+    from tests.factories import create_test_user, create_test_quota
+
+    user = await create_test_user()
+    await create_test_quota(user_id=str(user.id), topic_credits=0, agent_credits=1)
+    results = await asyncio.gather(
+        consume_agent_credit(str(user.id)),
+        consume_agent_credit(str(user.id)),
+    )
+    assert sorted(results) == [False, True]

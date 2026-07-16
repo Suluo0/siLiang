@@ -139,7 +139,7 @@ class TestMasteryCheckAPI:
         assert resp.status_code == 404
 
     async def test_mastery_check_with_real_topic(self, client, db, auth_headers):
-        """真实题目评测——应返回五维分数"""
+        """真实题目评测——应返回当前三维分数。"""
         from tests.factories import create_test_topic
 
         topic = await create_test_topic(
@@ -161,8 +161,10 @@ class TestMasteryCheckAPI:
         assert "total" in data
         assert "mastered" in data
         assert "feedback" in data
-        for dim in ["keypoint", "structure", "keyword", "length", "coherence"]:
+        for dim in ["keypoint", "structure", "keyword"]:
             assert dim in data["scores"], f"missing dimension: {dim}"
+        assert "length" not in data["scores"]
+        assert "coherence" not in data["scores"]
 
     async def test_mastery_check_updates_status(self, client, db, auth_headers):
         """评测后 UserTopicStatus 应被更新"""

@@ -132,8 +132,7 @@ async def _verify_captcha(captcha_id: str, answer: str) -> Captcha:
 
 
 async def _login_user(user: User) -> TokenResponse:
-    user.last_login = datetime.now(timezone.utc)
-    await user.save()
+    await User.filter(id=user.id).update(last_login=datetime.now(timezone.utc))
     tokens = create_tokens(str(user.id), user.token_version)
     return TokenResponse(**tokens)
 
@@ -164,8 +163,9 @@ async def login(req: LoginRequest):
         raise HTTPException(status_code=403, detail="账户已被禁用")
 
     # 新设备登录 → token_version + 1 → 旧设备 token 失效
+    from tortoise.expressions import F
+    await User.filter(id=user.id).update(token_version=F("token_version") + 1)
     user.token_version += 1
-    await user.save()
     return await _login_user(user)
 
 
@@ -227,8 +227,8 @@ async def register(req: RegisterRequest):
 
 @router.post("/refresh", response_model=TokenResponse)
 async def refresh_token(req: RefreshRequest):
-    payload = decode_token(req.refresh_token)
-    if not payload or payload.get("type") != "refresh":
+    payload = decode_token(req.refresh_token, expected_type="refresh")
+    if not payload:
         raise HTTPException(status_code=401, detail="无效的 refresh token")
     user = await User.filter(id=payload["sub"], is_active=True).first()
     if not user or user.token_version != payload.get("ver", 0):
@@ -272,9 +272,11 @@ async def change_password(req: ChangePasswordRequest, request: Request):
         raise HTTPException(status_code=401, detail="用户不存在")
     if not verify_password(req.old_password, user.password_hash):
         raise HTTPException(status_code=400, detail="旧密码错误")
-    user.password_hash = hash_password(req.new_password)
-    user.token_version += 1
-    await user.save()
+    from tortoise.expressions import F
+    await User.filter(id=user.id).update(
+        password_hash=hash_password(req.new_password),
+        token_version=F("token_version") + 1,
+    )
     return {"message": "密码已修改"}
 
 

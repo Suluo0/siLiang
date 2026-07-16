@@ -8,15 +8,28 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 
 SECRET_KEY = os.getenv("JWT_SECRET")
-if not SECRET_KEY:
+
+
+def _resolve_secret(secret: str | None, environment: str) -> str:
+    normalized = (secret or "").strip()
+    is_placeholder = any(marker in normalized.lower() for marker in ("change-me", "your-", "example"))
+    if environment.lower() in {"production", "prod"}:
+        if len(normalized) < 32 or is_placeholder:
+            raise RuntimeError("production JWT_SECRET must be a non-placeholder value of at least 32 characters")
+        return normalized
+    if normalized:
+        return normalized
     import secrets
     import warnings
-    SECRET_KEY = secrets.token_urlsafe(32)
     warnings.warn("JWT_SECRET not set in environment, using a temporary random key. "
                   "Set JWT_SECRET in .env for production!")
+    return secrets.token_urlsafe(32)
+
+
+SECRET_KEY = _resolve_secret(SECRET_KEY, os.getenv("ENVIRONMENT", "development"))
 
 ALGORITHM = "HS256"
-ACCESS_EXPIRE_MINUTES = 10080  # 7 days
+ACCESS_EXPIRE_MINUTES = 15
 REFRESH_EXPIRE_DAYS = 7
 
 
@@ -42,11 +55,21 @@ def create_refresh_token(user_id: str, token_version: int) -> str:
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def decode_token(token: str) -> dict | None:
-    """解码 token，失败返回 None"""
+def decode_token(token: str, expected_type: str | None = None) -> dict | None:
+    """解码并校验 token 基本形状与用途，失败返回 None。"""
     try:
-        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    except JWTError:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if not isinstance(payload.get("sub"), str) or not payload["sub"]:
+            return None
+        if not isinstance(payload.get("ver"), int):
+            return None
+        token_type = payload.get("type")
+        if token_type not in {"access", "refresh"}:
+            return None
+        if expected_type and token_type != expected_type:
+            return None
+        return payload
+    except (JWTError, TypeError, ValueError):
         return None
 
 

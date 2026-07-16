@@ -15,9 +15,18 @@ PUBLIC_PATHS = {
     "/", "/ping", "/docs", "/openapi.json", "/redoc",
     "/api/auth/register", "/api/auth/login", "/api/auth/refresh",
     "/api/auth/captcha", "/api/auth/send-code",
-    "/api/topic/tags", "/api/topic/positions",
+    "/api/topic/tags", "/api/topic/positions", "/api/topic/list",
     "/terms", "/privacy",
 }
+
+
+def is_public_request(method: str, path: str) -> bool:
+    """单一公开路由判定源；题目详情 GET 允许匿名预览，但由 API 截断付费内容。"""
+    normalized = path.rstrip("/") or "/"
+    if normalized in PUBLIC_PATHS:
+        return True
+    parts = normalized.split("/")
+    return method.upper() == "GET" and len(parts) == 4 and parts[1:3] == ["api", "topic"]
 
 
 async def get_current_user(
@@ -28,13 +37,13 @@ async def get_current_user(
     path = request.url.path.rstrip("/")
 
     # 公开路径跳过鉴权
-    if path in PUBLIC_PATHS:
+    if is_public_request(request.method, path):
         return None
 
     if not credentials:
         raise HTTPException(status_code=401, detail="未提供认证令牌")
 
-    payload = decode_token(credentials.credentials)
+    payload = decode_token(credentials.credentials, expected_type="access")
     if not payload:
         raise HTTPException(status_code=401, detail="令牌无效或已过期")
 

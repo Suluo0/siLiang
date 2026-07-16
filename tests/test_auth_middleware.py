@@ -43,32 +43,44 @@ class TestAuthMiddleware:
         if not data.get("locked"):
             assert data.get("detailed_explanation") == "详细解释"
 
-    async def test_invalid_token_returns_401_or_truncated(self, client, db):
-        """无效 token —— 应拒绝或截断"""
+    async def test_invalid_token_returns_401(self, client, db):
+        """受保护端点的无效 token 必须拒绝。"""
+        resp = await client.get("/api/auth/me", headers={
+            "Authorization": "Bearer invalid_token_xxx"
+        })
+        assert resp.status_code == 401
+
+    async def test_public_preview_ignores_invalid_token(self, client, db):
+        """公开预览始终按匿名用户截断。"""
         from tests.factories import create_test_topic
 
         topic = await create_test_topic()
         resp = await client.get(f"/api/topic/{topic.id}", headers={
             "Authorization": "Bearer invalid_token_xxx"
         })
-        # 无效 token → 视同未登录，截断
-        assert resp.status_code in (200, 401)
-        if resp.status_code == 200:
-            assert resp.json()["locked"] is True
+        assert resp.status_code == 200
+        assert resp.json()["locked"] is True
 
     async def test_no_token_gets_quota_exhausted(self, client, db):
         """完全无 token —— 标记为配额耗尽"""
         resp = await client.get("/api/topic/list")
         assert resp.status_code == 200
 
+    async def test_no_token_cannot_call_llm(self, client, db):
+        resp = await client.post("/api/topic/generate", json={"user_input": "HashMap"})
+        assert resp.status_code == 401
+
+    async def test_no_token_cannot_access_profile(self, client, db):
+        resp = await client.get("/api/auth/me")
+        assert resp.status_code == 401
+
     async def test_expired_token_behavior(self, client, db):
         """过期 token —— 应被拒绝"""
         expired = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYWtlIiwidmVyIjowLCJleHAiOjE3MDAwMDAwMDB9.xxx"
-        resp = await client.get("/api/topic/tags", headers={
+        resp = await client.get("/api/auth/me", headers={
             "Authorization": f"Bearer {expired}"
         })
-        # 可能 401 或 200 截断
-        assert resp.status_code in (200, 401)
+        assert resp.status_code == 401
 
     async def test_public_paths_bypass_auth(self, client, db):
         """公开路径不触发鉴权"""
