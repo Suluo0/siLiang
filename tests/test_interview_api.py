@@ -2,7 +2,6 @@
 Interview API 集成测试 —— start / answer / summary / personas
 """
 import pytest
-import pytest_asyncio
 
 
 @pytest.mark.integration

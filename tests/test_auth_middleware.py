@@ -2,8 +2,6 @@
 Auth Middleware 测试 —— JWT 校验 / 未登录截断 / PUBLIC_PATHS
 """
 import pytest
-import pytest_asyncio
-import uuid
 
 
 @pytest.mark.integration

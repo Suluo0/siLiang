@@ -2,8 +2,6 @@
 Quota Middleware 测试 —— 扣减 / 403 / 零值 / 并发安全
 """
 import pytest
-import pytest_asyncio
-import uuid
 
 
 @pytest.mark.integration

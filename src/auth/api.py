@@ -1,7 +1,9 @@
 """
 Auth API — 注册 / 登录 / 续期 / 改密 / CAPTCHA / 邮箱验证
 """
-import uuid, random, re
+import uuid
+import random
+import re
 from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, field_validator

@@ -4,7 +4,6 @@ query_database capability —— NL → (Milvus表检索) → SQL → 校验 →
 """
 import re
 import json
-from typing import Any
 from src.tools.llm_client import LLMClient
 from src.tools.schema_manager import build_schema_prompt
 from src.utils import clean_json
@@ -120,7 +119,6 @@ async def query_database(query: str, context: str = "") -> dict:
 
     sql = enforce_limit(sql)
 
-    import asyncpg
     from tortoise import connections
 
     try:

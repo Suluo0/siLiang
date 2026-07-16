@@ -2,7 +2,6 @@
 Embedding 编码器 —— 硅基流动 BGE v1.5 API
 无需本地模型，不依赖 PyTorch
 """
-import os
 import numpy as np
 from typing import Optional
 import httpx

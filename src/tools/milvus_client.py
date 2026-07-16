@@ -127,7 +127,7 @@ class MilvusClient:
                 FieldSchema(name="difficulty", dtype=DataType.INT64),
             ]
             schema = CollectionSchema(fields, description="Topic Embedding Collection")
-            collection = Collection(COLLECTION_NAME, schema)
+            Collection(COLLECTION_NAME, schema)
         except Exception:
             pass
 
@@ -237,7 +237,7 @@ class MilvusClient:
                 FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=DIM),
             ]
             schema = CollectionSchema(fields, description="Knowledge Point Embeddings")
-            collection = Collection(KNOWLEDGE_EMBEDDINGS_COLLECTION, schema)
+            Collection(KNOWLEDGE_EMBEDDINGS_COLLECTION, schema)
         except Exception:
             pass
 

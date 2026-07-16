@@ -2,7 +2,6 @@
 analyze_resume capability — 解析简历文本，提取技能/经验/级别
 """
 import json
-import os
 from src.tools.llm_client import LLMClient
 from src.utils import clean_json
 

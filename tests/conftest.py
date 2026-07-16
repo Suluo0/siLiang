@@ -8,6 +8,8 @@
 """
 import asyncio
 import os
+import socket
+from urllib.parse import urlparse
 
 import pytest
 import pytest_asyncio
@@ -25,6 +27,27 @@ assert "test" in TEST_DB_URL.lower(), (
     f"TEST_DATABASE_URL 必须指向带 'test' 字样的隔离测试库,"
     f"当前值看起来像主库:{TEST_DB_URL.split('@')[-1] if '@' in TEST_DB_URL else TEST_DB_URL}"
 )
+
+
+def _assert_test_database_available(timeout: float = 3.0) -> None:
+    """集成测试的会话级探活，避免每个用例重复连接超时。"""
+    parsed = urlparse(TEST_DB_URL)
+    host = parsed.hostname or "localhost"
+    port = parsed.port or 5432
+    try:
+        with socket.create_connection((host, port), timeout=timeout):
+            return
+    except OSError as exc:
+        raise pytest.UsageError(
+            f"集成测试 PostgreSQL 不可用: {host}:{port}。"
+            "请先运行 `make test-services-up`。"
+        ) from exc
+
+
+def pytest_sessionstart(session):
+    markexpr = session.config.option.markexpr or ""
+    if any(name in markexpr for name in ("integration", "security", "concurrency", "fault")):
+        _assert_test_database_available()
 
 
 @pytest.fixture(scope="session")
@@ -149,11 +172,16 @@ def pytest_collection_modifyitems(config, items):
 
     for item in items:
         existing_markers = {m.name for m in item.iter_markers()}
-        if existing_markers & {"e2e", "slow", "unit", "integration"}:
-            continue  # 已显式标记,尊重原作者意图
-
         fixturenames = set(getattr(item, "fixturenames", ()))
-        if fixturenames & integration_fixtures:
+        uses_integration = bool(fixturenames & integration_fixtures)
+        if "unit" in existing_markers and uses_integration:
+            raise pytest.UsageError(
+                f"{item.nodeid} 标记为 unit 但使用了集成 fixture: "
+                f"{', '.join(sorted(fixturenames & integration_fixtures))}"
+            )
+        if existing_markers & {"e2e", "slow", "unit", "integration", "security", "concurrency", "fault"}:
+            continue
+        if uses_integration:
             item.add_marker(pytest.mark.integration)
         else:
             item.add_marker(pytest.mark.unit)

@@ -8,7 +8,6 @@
 from __future__ import annotations
 from typing import TypeVar, Any, Callable, Union
 from tortoise.fields import JSONField
-from tortoise.exceptions import FieldError
 from tortoise.models import Model
 
 T = TypeVar("T")

@@ -3,7 +3,9 @@ ToolExecutor —— 每个 Capability 调用的运行时保护 + 落库追踪
 trace_id / caller 由 contextvars 自动获取，无需外部传入。
 """
 from __future__ import annotations
-import asyncio, time, uuid
+import asyncio
+import time
+import uuid
 
 from src.agentv3.capability import Capability
 from src.agentv3.protocols import ToolResult
@@ -101,7 +103,6 @@ class ToolExecutor:
             self.breaker.record_success()
 
         duration = int((time.monotonic() - t_start) * 1000)
-        input_summary = kwargs.get("user_input", str(list(kwargs.values())[:1])) if kwargs else ""
         await _log_call(self.trace_id, self.cap.id, "success", duration,
                         input_summary=str(kwargs)[:300], output_summary=str(result)[:500])
 

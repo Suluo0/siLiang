@@ -4,7 +4,7 @@ Capability 数据模型 —— 每个能力自携带 schema + 自举方法
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Callable, Any, Literal
+from typing import Callable, Literal
 from enum import StrEnum
 
 from pydantic import BaseModel

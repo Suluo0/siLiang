@@ -49,7 +49,7 @@ class TestCaptchaCRUD:
         from src.models.captcha import Captcha
 
         cid = str(uuid.uuid4())
-        captcha = await Captcha.create(id=cid, code="ABCD")
+        await Captcha.create(id=cid, code="ABCD")
 
         found = await Captcha.filter(id=cid).first()
         assert found is not None
@@ -72,7 +72,7 @@ class TestOutboxCRUD:
         from src.models.outbox import Outbox
 
         oid = str(uuid.uuid4())
-        evt = await Outbox.create(
+        await Outbox.create(
             id=oid, event_type="TOPIC_CREATED",
             payload={"topic_id": str(uuid.uuid4()), "core_concept": "Test"},
             status="PENDING", retry_count=0,
@@ -144,7 +144,7 @@ class TestPromptTemplateCRUD:
 
         pid = str(uuid.uuid4())
         tname = f"tpl_{uuid.uuid4().hex[:8]}"
-        t = await PromptTemplate.create(
+        await PromptTemplate.create(
             id=pid, name=tname, user_prompt_template="这是 {topic} 的提示词",
             version=1, is_active=True,
         )
@@ -167,7 +167,7 @@ class TestPromptCallLogCRUD:
                                     version=1, is_active=True)
 
         log_id = str(uuid.uuid4())
-        log = await PromptCallLog.create(
+        await PromptCallLog.create(
             id=log_id, prompt_template_id=pid,
             trace_id=str(uuid.uuid4())[:64],
             capability_id="test_cap",

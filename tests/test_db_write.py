@@ -74,5 +74,4 @@ async def test_save_to_postgres_full_topic(db):
 
 
 if __name__ == "__main__":
-    import asyncio
     print("此文件已转为 pytest 用例,请用 `pytest tests/test_db_write.py --run-e2e` 运行")

@@ -1,5 +1,5 @@
 # TopicSystem 测试 / 开发统一入口
-.PHONY: help install test test-fast test-all test-unit test-integration test-e2e cov lint fmt clean setup-test-db deploy deploy-skip-build deploy-logs deploy-rollback docker-build
+.PHONY: help install test test-fast test-all test-unit test-integration test-security test-e2e test-services-up test-services-down cov lint fmt clean setup-test-db deploy deploy-skip-build deploy-logs deploy-rollback docker-build
 
 VENV_BIN := .venv/bin
 PY := $(VENV_BIN)/python
@@ -13,7 +13,7 @@ help: ## 显示本帮助
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 install: ## 装依赖到 .venv
-	@uv venv --python 3.13 .venv 2>/dev/null || true
+	@uv venv --python 3.12 .venv 2>/dev/null || true
 	@. $(VENV_BIN)/activate && uv pip install -r requirements.txt pytest pytest-asyncio pytest-cov pytest-mock pytest-timeout ruff httpx
 	@echo "✅ 依赖装好"
 
@@ -22,16 +22,24 @@ setup-test-db: ## 建本地测试库 topic_test
 		&& echo "✅ topic_test 已存在" \
 		|| (psql -U postgres -h localhost -c "CREATE DATABASE topic_test;" && echo "✅ 创建 topic_test")
 
-test: test-fast ## 默认快测(unit + integration,排除 e2e/slow)
+test: test-unit ## 默认只跑无外部依赖的单元测试
 
-test-fast: ## 快速测试(默认 addopts 配置)
-	@$(PYTEST)
+test-fast: test-unit ## 兼容旧命令
 
 test-unit: ## 只跑 unit
 	@$(PYTEST) -m unit
 
 test-integration: ## 只跑 integration
 	@$(PYTEST) -m integration
+
+test-security: ## 跑安全/并发/故障注入专项
+	@$(PYTEST) -m "security or concurrency or fault"
+
+test-services-up: ## 启动隔离的测试 PostgreSQL
+	@docker compose -f docker-compose.test.yml up -d --wait postgres
+
+test-services-down: ## 销毁测试服务及数据卷
+	@docker compose -f docker-compose.test.yml down -v
 
 test-e2e: ## 跑 e2e + slow(需要本地 Milvus + LLM 真实 key)
 	@$(PYTEST) -m "e2e or slow" --override-ini="addopts=-v --tb=short --strict-markers"

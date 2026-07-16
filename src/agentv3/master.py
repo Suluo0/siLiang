@@ -4,7 +4,9 @@ MasterSession —— Agent 决策主体
 参考 opencode 模式：tool 定义在 Capability 内部，Agent 通过模型原生 tool calling 选择。
 """
 from __future__ import annotations
-import uuid, json, logging
+import uuid
+import json
+import logging
 import httpx
 from langgraph.prebuilt import create_react_agent
 from langchain_core.language_models import BaseChatModel
@@ -180,7 +182,7 @@ class MasterSession:
             try:
                 gen = json.loads(gen)
             except json.JSONDecodeError:
-                return self._error_response(trace_id, f"generate_topic 返回无效 JSON")
+                return self._error_response(trace_id, "generate_topic 返回无效 JSON")
         if not isinstance(gen, dict):
             return self._error_response(trace_id, f"generate_topic 返回类型错误: {type(gen)}")
 

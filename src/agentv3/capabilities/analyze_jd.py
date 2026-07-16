@@ -2,7 +2,6 @@
 analyze_jd capability — 解析 JD 文本，提取核心要求
 """
 import json
-import os
 from src.tools.llm_client import LLMClient
 from src.utils import clean_json
 

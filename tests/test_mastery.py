@@ -2,7 +2,6 @@
 掌握度评分单元测试 —— 五维无 LLM 评分
 """
 import pytest
-import math
 
 
 @pytest.mark.unit
@@ -113,7 +112,7 @@ class TestScoreComposition:
         assert abs(total - 0.60) < 0.001  # all 0.60 → total = 0.60
 
 
-@pytest.mark.unit
+@pytest.mark.integration
 class TestMasteryCheckAPI:
     """掌握度 API 集成测试"""
 
@@ -142,7 +141,6 @@ class TestMasteryCheckAPI:
     async def test_mastery_check_with_real_topic(self, client, db, auth_headers):
         """真实题目评测——应返回五维分数"""
         from tests.factories import create_test_topic
-        import uuid
 
         topic = await create_test_topic(
             topic="Java异常处理",
@@ -169,7 +167,6 @@ class TestMasteryCheckAPI:
     async def test_mastery_check_updates_status(self, client, db, auth_headers):
         """评测后 UserTopicStatus 应被更新"""
         from tests.factories import create_test_topic
-        import uuid
 
         topic = await create_test_topic(
             topic="测试掌握度",
@@ -194,10 +191,10 @@ class TestMasteryCheckAPI:
 class TestMasteryModel:
     """Model 导入测试"""
 
-    def test_model_import(self, db):
+    def test_model_import(self):
         from src.models.mastery_attempt import MasteryAttempt
         assert MasteryAttempt.__name__ == "MasteryAttempt"
 
-    def test_user_topic_status_new_fields(self, db):
+    def test_user_topic_status_new_fields(self):
         from src.models.user_topic_status import UserTopicStatus
         assert UserTopicStatus.__name__ == "UserTopicStatus"
