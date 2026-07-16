@@ -16,6 +16,7 @@ PUBLIC_PATHS = {
     "/api/auth/register", "/api/auth/login", "/api/auth/refresh",
     "/api/auth/captcha", "/api/auth/send-code",
     "/api/topic/tags", "/api/topic/positions", "/api/topic/list",
+    "/api/interview/personas",
     "/terms", "/privacy",
 }
 

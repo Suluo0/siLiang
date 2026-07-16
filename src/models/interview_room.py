@@ -25,6 +25,9 @@ class InterviewRoom(Model):
     total_rounds = fields.IntField(default=0)
     avg_score = fields.FloatField(default=0.0)
     weakness_areas = fields.JSONField(default=[])
+    session_state = fields.JSONField(null=True)
+    version = fields.IntField(default=0)
+    expires_at = fields.DatetimeField(null=True)
 
     created_at = fields.DatetimeField(auto_now_add=True)
     ended_at = fields.DatetimeField(null=True)
