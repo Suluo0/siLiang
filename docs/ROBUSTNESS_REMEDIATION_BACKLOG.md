@@ -22,7 +22,7 @@
 | R-005 | P0 | PLAN-4; GLM P0-10,P1-29,P2-20 | 有效凭据和弱默认进入仓库，生产缺配置仍启动 | 移除跟踪凭据；环境/secret 注入；生产启动校验；修复 rsync 排除；轮换已暴露密钥 | secret scan 无高危；缺少/占位密钥时生产拒绝启动；镜像无 secret | 已修复 | |
 | R-006 | P0 | PLAN-2; GLM P0-11,P0-12,P1-25,P1-26,P1-30,P2-15,P2-29,P3-9 | Outbox 可重复消费、全量载入、静默成功，耗尽后删业务数据 | claim/lease/SKIP LOCKED/幂等键；有界 batch；指数退避；dead-letter/重放；禁止删 Topic；优雅关闭 | 双 worker 仅一次认领；故障/租约过期可恢复；死信保留 PG 数据并可人工重放；Embedding/Milvus 失败显式抛错 | 已修复 | |
 | R-007 | P0 | GLM P0-13,P1-12,P1-13,P1-14,P1-15,P2-18 | Master/Slave 吞失失败，绕过执行保护，空 topic_id 写入 | 传播 failed/partial/compensable；Slave 统一走 ToolExecutor；guard/超时/预算接线；前置失败终止 | 部分写入和补偿状态完整传播；主写失败不得 success；空/不存在 ID 在 Milvus 调用前终止 | 已修复 | |
-| R-008 | P0 | GLM P0-14,P1-31,P1-32,P2-23,P3-1 | 未净化 HTML、可篡改前端权限、缺安全头/CORS 过宽 | 去除 v-html 或采用成熟净化库；后端授权；CSP/HSTS/frame/content-type/referrer 头；最小 CORS | 存储型 XSS 不执行；篡改 localStorage 无法越权；安全头自动检查 | 待确认 | |
+| R-008 | P0 | GLM P0-14,P1-31,P1-32,P2-23,P3-1 | 未净化 HTML、可篡改前端权限、缺安全头/CORS 过宽 | 去除 v-html；过滤外链协议；后端授权；CSP/HSTS/frame/content-type/referrer 头；最小 CORS；令牌迁出 localStorage | HTML 仅按文本渲染且 javascript URL 不可点击；安全头自动检查；尚需完成 HttpOnly cookie 迁移 | 修复中 | |
 | R-009 | P1 | PLAN-5/7; GLM P1-4,P1-5,P1-6,P1-7,P1-8,P1-11,P2-12,P3-5,P3-6 | 同步 I/O 阻塞，HTTP 客户端泄漏，Embedding/Milvus 静默降级，无重连 | 线程池/异步客户端；共享连接池；分层超时/有界重试；失败显式化；健康重连 | 慢/断网/重启期间 event loop 仍响应；无零向量污染；无 FD 增长 | 待确认 | |
 | R-010 | P1 | GLM P1-9,P1-10,P2-26,P2-27 | Milvus 表达式注入，Topic/别名并发重复，向量存储不合理 | 输入转义/参数化；DB 唯一约束；upsert/get_or_create；清理低效向量列 | 恶意关键词不改变过滤语义；双请求仅一个 Topic/别名 | 待确认 | |
 | R-011 | P1 | GLM P1-18,P1-19,P1-20,P1-21,P2-2,P2-3,P2-6,P3-7 | API 手工解析/无边界，异常泄露，掌握度计数竞态，分页/截断错误 | Pydantic 边界；全局异常映射；原子计数/唯一约束；DB 分页/distinct；结构化截断；UTC aware | 422 边界、无内部错误、并发计数不丢失；大数据分页结果正确 | 待确认 | |

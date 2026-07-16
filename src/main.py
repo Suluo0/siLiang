@@ -8,7 +8,7 @@ from src.api.healthcheck import router as healthcheck_router
 from src.api.menu_api import router as menu_router
 from src.auth.api import router as auth_router
 from src.api.interview_api import router as interview_router
-from src.middleware import auth_middleware, quota_middleware
+from src.middleware import auth_middleware, quota_middleware, security_headers_middleware
 from src.agentv3.capabilities.register import register_all
 from src.agentv3.registry import CapabilityRegistry
 import asyncio
@@ -20,15 +20,16 @@ app = FastAPI(title="TopicSystem v3", version="0.3.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=[origin.strip() for origin in settings.CORS_ORIGINS.split(",") if origin.strip()],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
 )
 
 # ── 全局中间件 ──
 app.middleware("http")(quota_middleware)
 app.middleware("http")(auth_middleware)
+app.middleware("http")(security_headers_middleware)
 
 app.include_router(topic_router)
 app.include_router(healthcheck_router)

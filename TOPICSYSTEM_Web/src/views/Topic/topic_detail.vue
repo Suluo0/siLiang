@@ -30,19 +30,19 @@
       <!-- ═══ 一句话概述 ═══ -->
       <section class="section" v-if="detail.one_liner">
         <h2 class="section-title">一句话概述</h2>
-        <p class="text" v-html="formatText(detail.one_liner)"></p>
+        <p class="text">{{ displayText(detail.one_liner) }}</p>
       </section>
 
       <!-- ═══ 核心概述 ═══ -->
       <section class="section" v-if="detail.core_summary">
         <h2 class="section-title">核心概述</h2>
-        <p class="text" v-html="formatText(detail.core_summary)"></p>
+        <p class="text">{{ displayText(detail.core_summary) }}</p>
       </section>
 
       <!-- ═══ 核心要点 ═══ -->
       <section class="section" v-if="detail.core_points">
         <h2 class="section-title">核心要点</h2>
-        <div class="text" v-html="formatText(detail.core_points)"></div>
+        <div class="text">{{ displayText(detail.core_points) }}</div>
       </section>
 
       <!-- ═══ 前置知识 ═══ -->
@@ -65,7 +65,7 @@
       <section class="section" v-if="detail.detailed_explanation || isLocked('detailed_explanation')">
         <h2 class="section-title">详细解释</h2>
         <div class="locked-wrap" :class="{ masked: isLocked('detailed_explanation') }">
-          <div class="text" v-if="detail.detailed_explanation" v-html="formatText(detail.detailed_explanation)"></div>
+          <div class="text" v-if="detail.detailed_explanation">{{ displayText(detail.detailed_explanation) }}</div>
         </div>
       </section>
 
@@ -81,7 +81,7 @@
       <section class="section" v-if="detail.traps || isLocked('traps')">
         <h2 class="section-title">常见陷阱</h2>
         <div class="locked-wrap" :class="{ masked: isLocked('traps') }">
-          <p class="text" v-if="detail.traps" v-html="formatText(detail.traps)"></p>
+          <p class="text" v-if="detail.traps">{{ displayText(detail.traps) }}</p>
         </div>
       </section>
 
@@ -89,7 +89,7 @@
       <section class="section" v-if="detail.bonuses || isLocked('bonuses')">
         <h2 class="section-title">加分项</h2>
         <div class="locked-wrap" :class="{ masked: isLocked('bonuses') }">
-          <p class="text" v-if="detail.bonuses" v-html="formatText(detail.bonuses)"></p>
+          <p class="text" v-if="detail.bonuses">{{ displayText(detail.bonuses) }}</p>
         </div>
       </section>
 
@@ -141,7 +141,7 @@
         <h2 class="section-title">参考资料</h2>
         <ul class="references">
           <li v-for="(item, index) in detail.references" :key="index">
-            <a :href="item.url" target="_blank" v-if="item.url">{{ item.title }}</a>
+            <a :href="safeReferenceUrl(item.url)" target="_blank" rel="noopener noreferrer" v-if="safeReferenceUrl(item.url)">{{ item.title }}</a>
             <span v-else>{{ item.title }}</span>
             <p v-if="item.description" class="ref-desc">{{ item.description }}</p>
           </li>
@@ -241,9 +241,19 @@ const isLocked = (section) => {
   return detail.value?.locked && detail.value?.locked_sections?.includes(section)
 }
 
-const formatText = (text) => {
+const displayText = (text) => {
   if (!text) return ''
-  return text.replace(/\n/g, '<br>')
+  return text.replace(/\\n/g, '\n')
+}
+
+const safeReferenceUrl = (value) => {
+  if (!value) return ''
+  try {
+    const url = new URL(value)
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : ''
+  } catch {
+    return ''
+  }
 }
 
 const handleNewline = (code) => {

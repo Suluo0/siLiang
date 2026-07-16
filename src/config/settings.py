@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
     ENVIRONMENT: str = "development"
     JWT_SECRET: str = ""
+    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
 
     # ── Database ──
     DATABASE_URL: str = ""
