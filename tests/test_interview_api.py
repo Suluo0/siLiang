@@ -60,8 +60,8 @@ class TestInterviewStart:
             "resume": "test",
             "jd": "test",
         }, headers=auth_headers)
-        # LLM 可能不可用导致 500，但至少能路由到 handler
-        assert resp.status_code in (200, 422, 500, 404, 401)
+        # LLM 明确不可用时服务返回 503，但至少已路由到 handler。
+        assert resp.status_code in (200, 422, 503)
 
 
 @pytest.mark.integration

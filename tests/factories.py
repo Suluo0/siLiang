@@ -47,7 +47,10 @@ async def create_test_topic(topic="测试题目", domain="测试领域", **overr
 
 
 async def create_test_quota(user_id: str, agent_credits: int = 5, topic_credits: int = 20):
-    """创建用户配额"""
+    """创建或覆写用户配额，兼容注册流程自动生成的记录。"""
     from src.models.user_quota import UserQuota
-    return await UserQuota.create(id=str(uuid.uuid4()), user_id=user_id,
-                                  agent_credits=agent_credits, topic_credits=topic_credits)
+    quota, _ = await UserQuota.update_or_create(
+        user_id=user_id,
+        defaults={"agent_credits": agent_credits, "topic_credits": topic_credits},
+    )
+    return quota

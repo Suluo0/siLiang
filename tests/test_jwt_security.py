@@ -47,7 +47,7 @@ def test_production_accepts_strong_secret():
 
 @pytest.mark.parametrize("token_type", [None, "", "admin"])
 def test_unknown_token_type_rejected(token_type, monkeypatch):
-    from jose import jwt
+    import jwt
     from src.auth import jwt as jwt_module
 
     payload = {"sub": "user-1", "ver": 0, "type": token_type, "exp": 4_102_444_800}

@@ -5,7 +5,8 @@ Refresh Token: 7d, 用于续期
 """
 import os
 from datetime import datetime, timedelta, timezone
-from jose import jwt, JWTError
+import jwt
+from jwt import PyJWTError
 
 SECRET_KEY = os.getenv("JWT_SECRET")
 
@@ -69,7 +70,7 @@ def decode_token(token: str, expected_type: str | None = None) -> dict | None:
         if expected_type and token_type != expected_type:
             return None
         return payload
-    except (JWTError, TypeError, ValueError):
+    except (PyJWTError, TypeError, ValueError):
         return None
 
 
