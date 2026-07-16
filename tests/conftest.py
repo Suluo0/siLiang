@@ -138,7 +138,7 @@ async def auth_headers(client, db):
         token_version=0,
     )
 
-    captcha = await Captcha.create(id=str(uuid.uuid4()), code="1234")
+    captcha = await Captcha.issue(id=str(uuid.uuid4()), code="1234")
 
     resp = await client.post("/api/auth/login", json={
         "username": username,

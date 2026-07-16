@@ -16,7 +16,7 @@
           <el-form-item label="验证码">
             <div class="captcha-row">
               <el-input v-model="loginForm.captcha" placeholder="4位数字" maxlength="4" class="captcha-input" />
-              <span class="captcha-text" @click="refreshCaptcha">{{ captchaText || '----' }}</span>
+              <img v-if="captchaImage" :src="captchaImage" class="captcha-image" alt="点击刷新验证码" @click="refreshCaptcha" />
             </div>
           </el-form-item>
           <el-button type="primary" :loading="loginLoading" class="submit-btn" @click="handleLogin">登 录</el-button>
@@ -37,7 +37,7 @@
           <el-form-item label="验证码">
             <div class="captcha-row">
               <el-input v-model="regForm.captcha" placeholder="4位数字" maxlength="4" class="captcha-input" />
-              <span class="captcha-text" @click="refreshCaptcha">{{ captchaText || '----' }}</span>
+              <img v-if="captchaImage" :src="captchaImage" class="captcha-image" alt="点击刷新验证码" @click="refreshCaptcha" />
             </div>
           </el-form-item>
           <el-form-item label="邮箱">
@@ -79,7 +79,7 @@ const regLoading = ref(false)
 const sendingCode = ref(false)
 const agreedToTerms = ref(false)
 const captchaId = ref('')
-const captchaText = ref('')
+const captchaImage = ref('')
 
 const loginForm = reactive({ username: '', password: '', captcha: '' })
 const regForm = reactive({ username: '', password: '', captcha: '', email: '', emailCode: '' })
@@ -98,7 +98,7 @@ async function refreshCaptcha() {
   try {
     const res = await api.get('/auth/captcha')
     captchaId.value = res.data.captcha_id
-    captchaText.value = res.data.captcha_text
+    captchaImage.value = res.data.captcha_image
   } catch { ElMessage.error('获取验证码失败') }
 }
 
@@ -166,11 +166,7 @@ onMounted(() => refreshCaptcha())
 .subtitle { text-align: center; color: #999; font-size: 14px; margin: 8px 0 24px; }
 .captcha-row { display: flex; align-items: center; gap: 12px; width: 100%; }
 .captcha-input { flex: 1; }
-.captcha-text {
-  font-size: 26px; font-weight: 800; letter-spacing: 6px; color: #6366f1;
-  background: #f0f3ff; padding: 4px 14px; border-radius: 8px; cursor: pointer;
-  user-select: none; min-width: 100px; text-align: center;
-}
+.captcha-image { width: 120px; height: 40px; border-radius: 8px; cursor: pointer; object-fit: cover; }
 .send-btn { flex-shrink: 0; white-space: nowrap; }
 .submit-btn { width: 100%; height: 44px; font-size: 15px; border-radius: 10px; margin-top: 4px; }
 .toggle-link { width: 100%; margin-top: 10px; }

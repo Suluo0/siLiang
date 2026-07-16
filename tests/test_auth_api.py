@@ -3,6 +3,7 @@ Auth API 集成测试 —— 注册 / 登录 / refresh / 公开路径
 """
 import pytest
 import uuid
+import asyncio
 
 
 @pytest.mark.integration
@@ -11,22 +12,14 @@ class TestAuthRegister:
 
     async def test_register_success(self, client, db):
         """创建 captcha 后注册成功"""
-        # 1. 获取 captcha
-        resp = await client.get("/api/auth/captcha")
-        if resp.status_code == 200:
-            captcha_data = resp.json()
-            captcha_id = captcha_data.get("captcha_id", "")
-            captcha_answer = captcha_data.get("answer", "")
-        else:
-            captcha_id = "test-captcha"
-            captcha_answer = "1234"
-
-        # 2. 获取 email_code（或直接创建验证码记录）
         from src.models.captcha import Captcha
         import uuid
+        captcha_answer = "1234"
+        captcha = await Captcha.issue(id=str(uuid.uuid4()), code=captcha_answer)
+        captcha_id = str(captcha.id)
         email = f"new_{uuid.uuid4().hex[:8]}@test.com"
-        email_code = f"{uuid.uuid4().hex[:6][:6]}"
-        await Captcha.create(id=str(uuid.uuid4()), code=email_code)
+        email_code = "654321"
+        await Captcha.issue(id=str(uuid.uuid4()), code=email_code, purpose="email", target=email)
 
         resp = await client.post("/api/auth/register", json={
             "username": "newuser",
@@ -36,8 +29,7 @@ class TestAuthRegister:
             "captcha_answer": captcha_answer,
             "email_code": email_code,
         })
-        # CAPTCHA 校验可能失败（测试环境），接受 200 或 400
-        assert resp.status_code in (200, 400), resp.text
+        assert resp.status_code == 200, resp.text
 
     async def test_register_duplicate_email(self, client, db):
         """重复邮箱应被拒绝"""
@@ -55,11 +47,12 @@ class TestAuthRegister:
             password_hash=hash_password("Test123456!"), is_active=True, token_version=0,
         )
 
-        captcha = await Captcha.create(id=str(_uuid.uuid4()), code="test")
+        captcha = await Captcha.issue(id=str(_uuid.uuid4()), code="1234")
+        await Captcha.issue(id=str(_uuid.uuid4()), code="654321", purpose="email", target=email)
         resp = await client.post("/api/auth/register", json={
             "username": u2, "email": email, "password": "Test123456!",
-            "captcha_id": str(captcha.id), "captcha_answer": "test",
-            "email_code": "test",
+            "captcha_id": str(captcha.id), "captcha_answer": "1234",
+            "email_code": "654321",
         })
         # 邮箱重复应报错
         assert resp.status_code != 200
@@ -69,6 +62,34 @@ class TestAuthRegister:
             "username": "weak", "email": "weak@test.com", "password": "123",
         })
         assert resp.status_code == 422  # Pydantic validation
+
+    async def test_email_code_cannot_cross_email(self, client, db):
+        from src.models.captcha import Captcha
+
+        captcha = await Captcha.issue(id=str(uuid.uuid4()), code="1234")
+        await Captcha.issue(
+            id=str(uuid.uuid4()), code="654321", purpose="email", target="owner@test.com",
+        )
+        resp = await client.post("/api/auth/register", json={
+            "username": f"cross{uuid.uuid4().hex[:6]}",
+            "email": "victim@test.com", "password": "Test123456!",
+            "captcha_id": str(captcha.id), "captcha_answer": "1234", "email_code": "654321",
+        })
+        assert resp.status_code == 400
+
+    @pytest.mark.concurrency
+    async def test_email_code_is_consumed_once(self, db):
+        from src.auth.api import _consume_email_code
+        from src.models.captcha import Captcha
+
+        email = "race@test.com"
+        await Captcha.issue(id=str(uuid.uuid4()), code="654321", purpose="email", target=email)
+        results = await asyncio.gather(
+            _consume_email_code(email, "654321"),
+            _consume_email_code(email, "654321"),
+            return_exceptions=True,
+        )
+        assert sum(result is None for result in results) == 1
 
 
 @pytest.mark.integration

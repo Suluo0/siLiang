@@ -49,17 +49,18 @@ class TestCaptchaCRUD:
         from src.models.captcha import Captcha
 
         cid = str(uuid.uuid4())
-        await Captcha.create(id=cid, code="ABCD")
+        await Captcha.issue(id=cid, code="ABCD")
 
         found = await Captcha.filter(id=cid).first()
         assert found is not None
-        assert found.code == "ABCD"
+        assert found.code_hash
+        assert not hasattr(found, "code")
 
     async def test_used_flag(self, client, db):
         from src.models.captcha import Captcha
 
         cid = str(uuid.uuid4())
-        await Captcha.create(id=cid, code="1234", used=False)
+        await Captcha.issue(id=cid, code="1234")
         c = await Captcha.filter(id=cid, used=False).first()
         assert c is not None
 

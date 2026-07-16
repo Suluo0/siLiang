@@ -2,8 +2,12 @@
 Auth API — 注册 / 登录 / 续期 / 改密 / CAPTCHA / 邮箱验证
 """
 import uuid
-import random
 import re
+import base64
+import hashlib
+import io
+import logging
+import secrets
 from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, field_validator
@@ -11,7 +15,9 @@ from pydantic import BaseModel, field_validator
 from src.auth.jwt import create_tokens, decode_token
 from src.auth.hash import hash_password, verify_password
 from src.models.user import User
-from src.models.captcha import Captcha
+from src.models.captcha import Captcha, hash_verification_code
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -117,18 +123,33 @@ class UserResponse(BaseModel):
 # ── 工具 ──
 
 async def _verify_captcha(captcha_id: str, answer: str) -> Captcha:
-    c = await Captcha.filter(id=captcha_id).first()
-    if not c:
-        raise HTTPException(status_code=400, detail="验证码不存在")
-    if c.used:
-        raise HTTPException(status_code=400, detail="验证码已被使用")
-    if c.is_expired():
-        raise HTTPException(status_code=400, detail="验证码已过期")
-    if c.code != answer.strip():
-        raise HTTPException(status_code=400, detail="验证码错误")
-    c.used = True
-    await c.save()
-    return c
+    from datetime import timedelta
+    from tortoise.expressions import F
+
+    cutoff = datetime.now(timezone.utc) - timedelta(minutes=5)
+    digest = hash_verification_code(answer, "captcha")
+    updated = await Captcha.filter(
+        id=captcha_id, purpose="captcha", used=False,
+        created_at__gte=cutoff, code_hash=digest, attempts__lt=5,
+    ).update(used=True)
+    if updated != 1:
+        await Captcha.filter(id=captcha_id, used=False).update(attempts=F("attempts") + 1)
+        raise HTTPException(status_code=400, detail="验证码无效或已过期")
+    return await Captcha.get(id=captcha_id)
+
+
+async def _consume_email_code(email: str, code: str) -> None:
+    from datetime import timedelta
+
+    target = email.strip().lower()
+    digest = hash_verification_code(code, "email", target)
+    cutoff = datetime.now(timezone.utc) - timedelta(minutes=5)
+    challenge = await Captcha.filter(
+        purpose="email", target=target, code_hash=digest,
+        used=False, created_at__gte=cutoff,
+    ).order_by("-created_at").first()
+    if not challenge or await Captcha.filter(id=challenge.id, used=False).update(used=True) != 1:
+        raise HTTPException(status_code=400, detail="邮箱验证码无效或已过期")
 
 
 async def _login_user(user: User) -> TokenResponse:
@@ -143,9 +164,9 @@ async def _login_user(user: User) -> TokenResponse:
 
 @router.get("/captcha")
 async def get_captcha():
-    code = f"{random.randint(0, 9999):04d}"
-    c = await Captcha.create(id=str(uuid.uuid4()), code=code)
-    return {"captcha_id": str(c.id), "captcha_text": code}
+    code = "".join(secrets.choice("0123456789") for _ in range(4))
+    c = await Captcha.issue(id=str(uuid.uuid4()), code=code)
+    return {"captcha_id": str(c.id), "captcha_image": _generate_captcha_image(code)}
 
 
 # ═══════════════════════════════════════
@@ -153,8 +174,20 @@ async def get_captcha():
 # ═══════════════════════════════════════
 
 @router.post("/login", response_model=TokenResponse)
-async def login(req: LoginRequest):
+async def login(req: LoginRequest, request: Request):
     await _verify_captcha(req.captcha_id, req.captcha_answer)
+
+    from datetime import timedelta
+    target = hashlib.sha256(
+        f"{request.client.host if request.client else 'unknown'}:{req.username.lower()}".encode()
+    ).hexdigest()
+    cutoff = datetime.now(timezone.utc) - timedelta(minutes=1)
+    if await Captcha.filter(purpose="login_attempt", target=target, created_at__gte=cutoff).count() >= 5:
+        raise HTTPException(status_code=429, detail="登录尝试过于频繁")
+    await Captcha.issue(
+        id=str(uuid.uuid4()), code=secrets.token_hex(16),
+        purpose="login_attempt", target=target,
+    )
 
     user = await User.filter(username=req.username).first()
     if not user or not verify_password(req.password, user.password_hash):
@@ -177,9 +210,16 @@ async def login(req: LoginRequest):
 async def send_verification_code(req: SendCodeRequest):
     await _verify_captcha(req.captcha_id, req.captcha_answer)
 
-    code = f"{random.randint(100000, 999999)}"
-    # 存入 Captcha 表，等注册时校验
-    await Captcha.create(id=str(uuid.uuid4()), code=code)
+    from datetime import timedelta
+    target = req.email.strip().lower()
+    now = datetime.now(timezone.utc)
+    recent = Captcha.filter(purpose="email", target=target)
+    if await recent.filter(created_at__gte=now - timedelta(minutes=1)).exists():
+        raise HTTPException(status_code=429, detail="验证码发送过于频繁")
+    if await recent.filter(created_at__gte=now - timedelta(days=1)).count() >= 10:
+        raise HTTPException(status_code=429, detail="今日验证码发送次数已用尽")
+    code = "".join(secrets.choice("0123456789") for _ in range(6))
+    await Captcha.issue(id=str(uuid.uuid4()), code=code, purpose="email", target=target)
 
     await _send_email(req.email, code)
     return {"message": "验证码已发送，5 分钟内有效"}
@@ -194,14 +234,8 @@ async def register(req: RegisterRequest):
     # 1. 图形验证码
     await _verify_captcha(req.captcha_id, req.captcha_answer)
 
-    # 2. 邮箱验证码（从 Captcha 表查最近未使用的）
-    email_c = await Captcha.filter(code=req.email_code, used=False).order_by("-created_at").first()
-    if not email_c:
-        raise HTTPException(status_code=400, detail="邮箱验证码错误")
-    if email_c.is_expired():
-        raise HTTPException(status_code=400, detail="邮箱验证码已过期")
-    email_c.used = True
-    await email_c.save()
+    # 2. 邮箱码必须绑定当前注册邮箱，并原子消费。
+    await _consume_email_code(req.email, req.email_code)
 
     # 3. 去重
     if await User.filter(email=req.email).exists():
@@ -311,4 +345,24 @@ async def update_preferences(request: Request = None):
 async def _send_email(to: str, code: str):
     from src.utils.mail import send
     send(to, "TopicSystem 邮箱验证", f"您的 TopicSystem 验证码: {code}，5 分钟有效。")
-    print(f"[CODE] {code} → {to}")
+    logger.debug("verification email dispatched to %s", to)
+
+
+def _generate_captcha_image(code: str) -> str:
+    from PIL import Image, ImageDraw, ImageFont
+
+    width, height = 120, 40
+    image = Image.new("RGB", (width, height), color=(242, 246, 252))
+    draw = ImageDraw.Draw(image)
+    for _ in range(8):
+        draw.line(
+            [(secrets.randbelow(width), secrets.randbelow(height)),
+             (secrets.randbelow(width), secrets.randbelow(height))],
+            fill=(120 + secrets.randbelow(80), 120 + secrets.randbelow(80), 120 + secrets.randbelow(80)),
+        )
+    font = ImageFont.load_default(size=24)
+    for index, char in enumerate(code):
+        draw.text((10 + index * 27, 6), char, font=font, fill=(20, 50, 90))
+    buffer = io.BytesIO()
+    image.save(buffer, format="PNG")
+    return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode("ascii")
