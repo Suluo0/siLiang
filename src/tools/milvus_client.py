@@ -102,7 +102,7 @@ class MilvusClient:
 
     def insert(self, topic_id, core_concept, embedding, domain, keywords, difficulty=3):
         if not self._check_available():
-            return
+            raise RuntimeError("Milvus is unavailable")
         from pymilvus import Collection
         self.init_collection()
         collection = Collection(COLLECTION_NAME)

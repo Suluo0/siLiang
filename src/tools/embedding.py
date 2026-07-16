@@ -42,9 +42,9 @@ class EmbeddingEncoder:
         return True
 
     def encode(self, text: str) -> np.ndarray:
-        """将文本编码为向量，失败返回零向量"""
+        """将文本编码为向量；任何降级都显式失败，禁止零向量入库。"""
         if not self.available or not text:
-            return np.zeros(self.dim, dtype=np.float32)
+            raise RuntimeError("embedding service unavailable or input is empty")
         try:
             resp = httpx.post(
                 self.api_url,
@@ -60,7 +60,7 @@ class EmbeddingEncoder:
                 timeout=30,
             )
             if resp.status_code != 200:
-                return np.zeros(self.dim, dtype=np.float32)
+                raise RuntimeError(f"embedding service returned HTTP {resp.status_code}")
             data = resp.json()
             embedding = data["data"][0]["embedding"]
             vec = np.array(embedding, dtype=np.float32)
@@ -69,8 +69,8 @@ class EmbeddingEncoder:
             if norm > 0:
                 vec = vec / norm
             return vec
-        except Exception:
-            return np.zeros(self.dim, dtype=np.float32)
+        except Exception as exc:
+            raise RuntimeError("embedding request failed") from exc
 
     @property
     def dim(self) -> int:
