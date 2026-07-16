@@ -6,6 +6,7 @@ class Settings(BaseSettings):
 
     # ── Database ──
     DATABASE_URL: str = ""
+    DATABASE_READ_URL: str = ""
 
     # ── Milvus ──
     MILVUS_HOST: str = "localhost"
