@@ -86,7 +86,7 @@ class CapabilityRegistry:
         return cls._breaker_map[group]
 
     @classmethod
-    async def execute(cls, cap_id: str, **kwargs) -> ToolResult:
+    async def execute(cls, cap_id: str, *, state: dict | None = None, **kwargs) -> ToolResult:
         """
         系统唯一的全功能切面入口。
         无论谁调用，超时、熔断、日志、耗时、异常分类全线生效。
@@ -97,7 +97,7 @@ class CapabilityRegistry:
         budget = current_budget.get()
         breaker = cls._get_breaker(cap)
         executor = ToolExecutor(cap, budget=budget, breaker=breaker)
-        return await executor.execute({}, **kwargs)
+        return await executor.execute(state or {}, **kwargs)
 
     @classmethod
     async def call(cls, cap_id: str, **kwargs):

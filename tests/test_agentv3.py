@@ -130,6 +130,54 @@ class TestSlaveSession:
         with pytest.raises(SlavePermissionError, match="不在 Slave 白名单"):
             SlaveSession(grants=[save_pg])
 
+    @pytest.mark.asyncio
+    async def test_semantic_failure_is_propagated(self, monkeypatch):
+        from src.agentv3.capabilities.register import register_all
+        from src.agentv3.protocols import ToolResult
+        from src.agentv3.registry import CapabilityRegistry
+        from src.agentv3.slave import SlaveSession
+        from src.agentv3.slave_registry import SlaveCapabilityRegistry
+
+        register_all()
+        SlaveCapabilityRegistry.clear()
+        SlaveCapabilityRegistry.register("save_to_postgres")
+        cap = CapabilityRegistry.get("save_to_postgres")
+
+        async def fail(_cls, _cap_id, **_kwargs):
+            return ToolResult(success=True, data={"success": False, "error": "write failed"})
+
+        monkeypatch.setattr(CapabilityRegistry, "execute", classmethod(fail))
+        result = await SlaveSession([cap]).execute({"generated_topic": {}})
+
+        assert result.success is False
+        assert result.completed == []
+        assert result.failed[0].error == "write failed"
+
+    @pytest.mark.asyncio
+    async def test_missing_topic_id_stops_milvus_before_handler(self, monkeypatch):
+        from src.agentv3.capabilities.register import register_all
+        from src.agentv3.protocols import ToolResult
+        from src.agentv3.registry import CapabilityRegistry
+        from src.agentv3.slave import SlaveSession
+        from src.agentv3.slave_registry import SlaveCapabilityRegistry
+
+        register_all()
+        SlaveCapabilityRegistry.clear()
+        SlaveCapabilityRegistry.register("save_to_milvus")
+        cap = CapabilityRegistry.get("save_to_milvus")
+        captured = {}
+
+        async def reject_empty(_cls, _cap_id, **kwargs):
+            captured.update(kwargs)
+            return ToolResult(success=True, data={"success": False, "error": "topic_id 为空"})
+
+        monkeypatch.setattr(CapabilityRegistry, "execute", classmethod(reject_empty))
+        result = await SlaveSession([cap]).execute({"normalized": {}})
+
+        assert captured["topic_id"] == ""
+        assert result.success is False
+        assert result.topic_id is None
+
 
 class TestCapabilityModel:
     def test_format_for_prompt(self):
@@ -216,6 +264,41 @@ class TestToolExecutor:
         result = await exec_.execute({})
         assert not result.success
         assert "超时" in result.error
+
+
+class TestMasterWriteResult:
+    @pytest.mark.asyncio
+    async def test_partial_slave_failure_never_returns_success(self, monkeypatch):
+        import src.agentv3.master as master_module
+        from src.agentv3.master import MasterSession
+        from src.agentv3.protocols import FailedCap, SlaveResult
+
+        class FakeSlave:
+            def __init__(self, grants):
+                self.grants = grants
+
+            async def execute(self, _state):
+                return SlaveResult(
+                    success=False,
+                    partial=True,
+                    completed=["save_to_postgres"],
+                    failed=[FailedCap("save_to_milvus", "unavailable", compensable=True)],
+                    compensable=True,
+                    topic_id="topic-1",
+                )
+
+        monkeypatch.setattr(master_module, "SlaveSession", FakeSlave)
+        session = MasterSession()
+        session._slave_grants = [object()]
+        result = await session._handle_generated(
+            {"topic": {"topic": "T", "domain": "D"}}, {}, "trace", [],
+        )
+
+        assert result["success"] is False
+        assert result["partial"] is True
+        assert result["compensable"] is True
+        assert result["source"] == "write_failed"
+        assert result["topic_id"] == "topic-1"
 
 
 # ── Layer 3: Golden Dataset 回归测试 ──

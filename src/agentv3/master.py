@@ -203,16 +203,24 @@ class MasterSession:
                 }
                 slave = SlaveSession(grants=self._slave_grants)
                 sr: SlaveResult = await slave.execute(slave_state)
-                if sr.topic_id:
-                    return {
-                        "success": True, "source": "generated",
-                        "topic_id": sr.topic_id,
-                        "topic_name": topic_info.get("topic", ""),
-                        "domain": topic_info.get("domain", ""),
-                        "trace_id": trace_id, "tool_calls": calls,
-                    }
-            except Exception:
-                pass
+                return {
+                    "success": sr.success,
+                    "partial": sr.partial,
+                    "compensable": sr.compensable,
+                    "source": "generated" if sr.success else "write_failed",
+                    "topic_id": sr.topic_id,
+                    "topic_name": topic_info.get("topic", ""),
+                    "domain": topic_info.get("domain", ""),
+                    "errors": [
+                        {"capability_id": item.capability_id, "error": item.error}
+                        for item in sr.failed
+                    ],
+                    "trace_id": trace_id,
+                    "tool_calls": calls,
+                }
+            except Exception as exc:
+                logger.exception("Slave write failed")
+                return self._error_response(trace_id, f"写入失败: {exc}")
 
         return {
             "success": True, "source": "generated",

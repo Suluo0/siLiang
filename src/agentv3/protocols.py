@@ -22,6 +22,7 @@ class FailedCap:
     capability_id: str
     error: str
     retryable: bool = False
+    compensable: bool = False
 
 
 @dataclass

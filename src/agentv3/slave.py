@@ -3,11 +3,11 @@ SlaveSession —— 独立事务上下文
 Master 显式授予能力后，Slave 在隔离环境中执行写入。
 """
 from __future__ import annotations
-import asyncio
 import copy
 from src.agentv3.slave_registry import SlaveCapabilityRegistry
 from src.agentv3.capability import Capability
 from src.agentv3.protocols import SlaveResult, FailedCap
+from src.agentv3.registry import CapabilityRegistry
 
 
 class SlavePermissionError(Exception):
@@ -53,24 +53,33 @@ class SlaveSession:
                 failed.append(FailedCap(cap.id, "Slave 总调用次数已达上限", False))
                 continue
 
-            # 异常隔离 —— Slave 崩溃不影响 Master
+            # 统一走 ToolExecutor，使超时、熔断、预算和前置条件均生效。
             try:
                 kwargs = self._build_kwargs(cap_id, state)
-                if asyncio.iscoroutinefunction(cap.handler):
-                    result = await cap.handler(**kwargs)
-                else:
-                    result = cap.handler(**kwargs)
+                tool_result = await CapabilityRegistry.execute(cap_id, state=state, **kwargs)
                 self._invocation_count[cap_id] = count + 1
+                if not tool_result.success:
+                    failed.append(FailedCap(cap.id, tool_result.error or "执行失败", False))
+                    continue
+                result = tool_result.data
+                if not isinstance(result, dict):
+                    failed.append(FailedCap(cap.id, "返回值不是结构化对象", False))
+                    continue
+                if result.get("success") is False or result.get("error"):
+                    failed.append(FailedCap(
+                        cap.id,
+                        str(result.get("error") or "能力返回失败"),
+                        retryable=bool(result.get("compensable", False)),
+                        compensable=bool(result.get("compensable", False)),
+                    ))
+                    continue
                 completed.append(cap_id)
                 self._update_state(state, result)
             except Exception as e:
                 failed.append(FailedCap(cap.id, str(e), False))
 
         topic_id = state.get("_topic_id") or state.get("topic_id")
-        compensable = any(
-            f.capability_id == "save_to_milvus" and f.error
-            for f in failed
-        )
+        compensable = any(f.compensable for f in failed)
 
         return SlaveResult(
             success=len(completed) == len(self.tools),

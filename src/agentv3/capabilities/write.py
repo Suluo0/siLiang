@@ -248,6 +248,11 @@ async def save_to_milvus(
     topic_id: str, core_concept: str, domain: str, keywords: str, difficulty: int = 3
 ) -> dict:
     """Slave 专用：写入 Milvus。失败时标记 Topic 状态 + 写入 Outbox 补偿。"""
+    if not topic_id:
+        return {"success": False, "compensable": False, "error": "topic_id 为空"}
+    topic = await Topic.filter(id=topic_id).first()
+    if not topic:
+        return {"success": False, "compensable": False, "error": "PostgreSQL Topic 不存在"}
     try:
         encoder = EmbeddingEncoder.get_instance()
         vector = encoder.encode(core_concept)
@@ -275,6 +280,7 @@ async def save_to_milvus(
             await Outbox.create(
                 id=str(uuid.uuid4()),
                 event_type="TOPIC_CREATED",
+                idempotency_key=f"TOPIC_CREATED:{topic_id}",
                 payload={
                     "topic_id": topic_id,
                     "core_concept": core_concept,
