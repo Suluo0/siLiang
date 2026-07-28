@@ -57,6 +57,7 @@ class Topic(Model):
     class Meta:
         table = "topic"
         schema = "public"
+        unique_together = ("topic", "domain")
 
     def __str__(self):
         return f"Topic({self.id}, {self.topic})"

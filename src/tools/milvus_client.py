@@ -92,7 +92,10 @@ class MilvusClient:
             from pymilvus import Collection
             collection = Collection(COLLECTION_NAME)
             collection.load()
-            expr_parts = [f'keywords like "%{kw}%"' for kw in keywords if kw]
+            # 转义特殊字符，防止注入
+            def _escape_milvus_value(value: str) -> str:
+                return value.replace('\\', '\\\\').replace('"', '\\"').replace("'", "\\'")
+            expr_parts = [f'keywords like "%{_escape_milvus_value(kw)}%"' for kw in keywords if kw and kw.strip()]
             if not expr_parts:
                 return []
             expr = " or ".join(expr_parts)
