@@ -1,10 +1,16 @@
 """Browser-facing security response headers."""
+import uuid
 from starlette.requests import Request
 from starlette.responses import Response
 
 
 async def security_headers_middleware(request: Request, call_next) -> Response:
+    # 接收或生成 X-Request-ID
+    request_id = request.headers.get("X-Request-ID") or str(uuid.uuid4())
+    request.state.request_id = request_id
+    
     response = await call_next(request)
+    response.headers["X-Request-ID"] = request_id
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; "
         "object-src 'none'; form-action 'self'; script-src 'self'; "

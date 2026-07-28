@@ -27,18 +27,20 @@ app = FastAPI(title="TopicSystem v3", version="0.3.0")
 async def global_exception_handler(request: Request, exc: Exception):
     """全局异常处理器：隐藏内部错误细节，返回稳定错误码"""
     logger.exception("Unhandled exception: %s %s", request.method, request.url.path)
+    request_id = getattr(request.state, "request_id", None)
     return JSONResponse(
         status_code=500,
-        content={"detail": "服务器内部错误", "error_code": "INTERNAL_ERROR"},
+        content={"detail": "服务器内部错误", "error_code": "INTERNAL_ERROR", "request_id": request_id},
     )
 
 
 @app.exception_handler(ValueError)
 async def value_error_handler(request: Request, exc: ValueError):
     """处理参数验证错误"""
+    request_id = getattr(request.state, "request_id", None)
     return JSONResponse(
         status_code=422,
-        content={"detail": str(exc), "error_code": "VALIDATION_ERROR"},
+        content={"detail": str(exc), "error_code": "VALIDATION_ERROR", "request_id": request_id},
     )
 
 app.add_middleware(
