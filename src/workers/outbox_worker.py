@@ -11,7 +11,7 @@ from src.models.outbox import Outbox
 from src.models.topic import Topic
 from src.tools.embedding import EmbeddingEncoder
 from src.tools.milvus_client import MilvusClient
-from src.utils.mail import ALERT_EMAIL, send_alert
+from src.utils.mail import ALERT_EMAIL, send_alert_async
 
 logger = logging.getLogger("outbox_worker")
 
@@ -65,10 +65,10 @@ async def process_one(record: Outbox) -> None:
 
     try:
         core_concept = record.payload.get("core_concept", topic.core_summary or "")
-        vector = EmbeddingEncoder.get_instance().encode(core_concept)
+        vector = await EmbeddingEncoder.get_instance().encode_async(core_concept)
         if not np.isfinite(vector).all() or float(np.linalg.norm(vector)) == 0:
             raise RuntimeError("embedding is zero or non-finite")
-        MilvusClient.get_instance().insert(
+        await MilvusClient.get_instance().insert_async(
             topic_id=topic_id, core_concept=core_concept, embedding=vector.tolist(),
             domain=record.payload.get("domain", topic.domain or ""),
             keywords=record.payload.get("keywords", topic.keywords or ""),
@@ -109,7 +109,7 @@ async def _dead_letter(record: Outbox, message: str, retry_count: int | None = N
     logger.error("Outbox moved to dead-letter: event=%s topic=%s error=%s", record.id, topic_id, message)
     if ALERT_EMAIL:
         try:
-            send_alert("[TopicSystem] Outbox dead-letter", f"event={record.id} topic={topic_id}")
+            await send_alert_async("[TopicSystem] Outbox dead-letter", f"event={record.id} topic={topic_id}")
         except Exception:
             logger.exception("Outbox dead-letter alert failed")
 

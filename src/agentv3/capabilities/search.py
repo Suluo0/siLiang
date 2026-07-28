@@ -17,7 +17,7 @@ async def search_knowledge(concept: str, keywords: list[str], top_k: int = 10) -
     milvus = MilvusClient.get_instance()
 
     # Dense 检索
-    query_vec = encoder.encode(concept)
+    query_vec = await encoder.encode_async(concept)
     dense_hits = milvus.search_dense(query_vec.tolist(), top_k=top_k)
 
     # Sparse 检索

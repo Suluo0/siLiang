@@ -13,7 +13,7 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, field_validator
 
 from src.auth.jwt import create_tokens, decode_token
-from src.auth.hash import hash_password, verify_password
+from src.auth.hash import hash_password_async, verify_password_async
 from src.models.user import User
 from src.models.captcha import Captcha, hash_verification_code
 
@@ -190,7 +190,7 @@ async def login(req: LoginRequest, request: Request):
     )
 
     user = await User.filter(username=req.username).first()
-    if not user or not verify_password(req.password, user.password_hash):
+    if not user or not await verify_password_async(req.password, user.password_hash):
         raise HTTPException(status_code=401, detail="用户名或密码错误")
     if not user.is_active:
         raise HTTPException(status_code=403, detail="账户已被禁用")
@@ -246,7 +246,7 @@ async def register(req: RegisterRequest):
     # 4. 创建
     user = await User.create(
         id=str(uuid.uuid4()), username=req.username, email=req.email,
-        password_hash=hash_password(req.password), token_version=0,
+        password_hash=await hash_password_async(req.password), token_version=0,
     )
 
     from src.models.user_quota import UserQuota
@@ -304,11 +304,11 @@ async def change_password(req: ChangePasswordRequest, request: Request):
     user = await User.filter(id=uid).first()
     if not user:
         raise HTTPException(status_code=401, detail="用户不存在")
-    if not verify_password(req.old_password, user.password_hash):
+    if not await verify_password_async(req.old_password, user.password_hash):
         raise HTTPException(status_code=400, detail="旧密码错误")
     from tortoise.expressions import F
     await User.filter(id=user.id).update(
-        password_hash=hash_password(req.new_password),
+        password_hash=await hash_password_async(req.new_password),
         token_version=F("token_version") + 1,
     )
     return {"message": "密码已修改"}
@@ -343,8 +343,8 @@ async def update_preferences(request: Request = None):
 # ═══════════════════════════════════════
 
 async def _send_email(to: str, code: str):
-    from src.utils.mail import send
-    send(to, "TopicSystem 邮箱验证", f"您的 TopicSystem 验证码: {code}，5 分钟有效。")
+    from src.utils.mail import send_async
+    await send_async(to, "TopicSystem 邮箱验证", f"您的 TopicSystem 验证码: {code}，5 分钟有效。")
     logger.debug("verification email dispatched to %s", to)
 
 

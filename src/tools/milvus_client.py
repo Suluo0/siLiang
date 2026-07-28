@@ -2,6 +2,7 @@
 Milvus 向量数据库客户端 (可选)
 如果 Milvus 不可达，所有操作优雅降级
 """
+import asyncio
 from typing import Optional
 from src.config.settings import settings
 
@@ -108,6 +109,10 @@ class MilvusClient:
         collection = Collection(COLLECTION_NAME)
         collection.insert([[topic_id], [core_concept], [embedding], [domain], [keywords], [difficulty]])
         collection.flush()
+
+    async def insert_async(self, topic_id, core_concept, embedding, domain, keywords, difficulty=3):
+        """异步插入向量数据"""
+        await asyncio.to_thread(self.insert, topic_id, core_concept, embedding, domain, keywords, difficulty)
 
     def init_collection(self):
         """仅在 Milvus 可用时初始化（不建索引，索引在插入数据后单独调用 build_index）"""

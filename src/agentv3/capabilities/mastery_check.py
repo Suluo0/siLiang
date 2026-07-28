@@ -147,9 +147,9 @@ async def mastery_check(
     expected_text = (core_summary or "") + " " + (core_points or "")
     if expected_text.strip() and answer_text.strip():
         try:
-            v_answer = whiten(np.asarray(encoder.encode(answer_text), dtype=np.float32))
-            v_expected = whiten(np.asarray(encoder.encode(expected_text), dtype=np.float32))
-            v_neg = whiten(np.asarray(encoder.encode(_NEG_ANCHOR_TEXT), dtype=np.float32))
+            v_answer = whiten(np.asarray(await encoder.encode_async(answer_text), dtype=np.float32))
+            v_expected = whiten(np.asarray(await encoder.encode_async(expected_text), dtype=np.float32))
+            v_neg = whiten(np.asarray(await encoder.encode_async(_NEG_ANCHOR_TEXT), dtype=np.float32))
             s_good = float(cosine(v_answer, v_expected))
             s_bad = float(cosine(v_answer, v_neg))
             margin = s_good - s_bad

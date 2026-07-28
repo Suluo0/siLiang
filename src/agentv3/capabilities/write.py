@@ -76,7 +76,7 @@ async def _semantic_dedup(name: str, description: str | None = None) -> Knowledg
         return None
 
     search_text = f"{name} {description}" if description else name
-    vec = encoder.encode(search_text)
+    vec = await encoder.encode_async(search_text)
     milvus.build_knowledge_index()
     candidates = milvus.search_knowledge_embeddings(vec.tolist(), top_k=5)
     if not candidates:
@@ -120,7 +120,7 @@ async def _sync_knowledge_embedding(kd: KnowledgeDict):
     encoder = EmbeddingEncoder.get_instance()
     if not encoder.available:
         return
-    vec = encoder.encode(kd.name)
+    vec = await encoder.encode_async(kd.name)
     milvus = MilvusClient.get_instance()
     milvus.insert_knowledge_embedding(str(kd.id), kd.name, vec.tolist())
 
@@ -255,7 +255,7 @@ async def save_to_milvus(
         return {"success": False, "compensable": False, "error": "PostgreSQL Topic 不存在"}
     try:
         encoder = EmbeddingEncoder.get_instance()
-        vector = encoder.encode(core_concept)
+        vector = await encoder.encode_async(core_concept)
         milvus = MilvusClient.get_instance()
         milvus.insert(
             topic_id=topic_id, core_concept=core_concept,

@@ -25,7 +25,7 @@ async def check_duplicate(concept: str, domain: str = "") -> dict:
         from src.tools.milvus_client import MilvusClient
         encoder = EmbeddingEncoder.get_instance()
         milvus = MilvusClient.get_instance()
-        vec = encoder.encode(concept)
+        vec = await encoder.encode_async(concept)
         hits = milvus.search_dense(vec.tolist(), top_k=1)
     except Exception:
         return {"duplicate": False, "matched_topic": None, "similarity": 0.0, "method": "l1_only"}

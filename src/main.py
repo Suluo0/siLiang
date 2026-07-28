@@ -1,6 +1,7 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from tortoise.contrib.fastapi import register_tortoise
 from src.config.settings import settings
 from src.api.topic_api import router as topic_router
@@ -12,11 +13,33 @@ from src.middleware import auth_middleware, quota_middleware, security_headers_m
 from src.agentv3.capabilities.register import register_all
 from src.agentv3.registry import CapabilityRegistry
 import asyncio
+import logging
+
+logger = logging.getLogger(__name__)
 
 register_all()
 CapabilityRegistry.freeze()
 
 app = FastAPI(title="TopicSystem v3", version="0.3.0")
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """全局异常处理器：隐藏内部错误细节，返回稳定错误码"""
+    logger.exception("Unhandled exception: %s %s", request.method, request.url.path)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "服务器内部错误", "error_code": "INTERNAL_ERROR"},
+    )
+
+
+@app.exception_handler(ValueError)
+async def value_error_handler(request: Request, exc: ValueError):
+    """处理参数验证错误"""
+    return JSONResponse(
+        status_code=422,
+        content={"detail": str(exc), "error_code": "VALIDATION_ERROR"},
+    )
 
 app.add_middleware(
     CORSMiddleware,

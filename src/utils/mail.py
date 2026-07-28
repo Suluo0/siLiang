@@ -1,3 +1,4 @@
+import asyncio
 import os
 import smtplib
 from email.mime.text import MIMEText
@@ -24,7 +25,17 @@ def send(to: str, subject: str, body: str):
         pass
 
 
+async def send_async(to: str, subject: str, body: str):
+    await asyncio.to_thread(send, to, subject, body)
+
+
 def send_alert(subject: str, body: str):
     if not ALERT_EMAIL:
         return
     send(ALERT_EMAIL, subject, body)
+
+
+async def send_alert_async(subject: str, body: str):
+    if not ALERT_EMAIL:
+        return
+    await send_async(ALERT_EMAIL, subject, body)

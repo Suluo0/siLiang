@@ -2,9 +2,12 @@
 Embedding 编码器 —— 硅基流动 BGE v1.5 API
 无需本地模型，不依赖 PyTorch
 """
+import asyncio
+
+import httpx
 import numpy as np
 from typing import Optional
-import httpx
+
 from src.config.settings import settings
 
 
@@ -59,6 +62,38 @@ class EmbeddingEncoder:
                 },
                 timeout=30,
             )
+            if resp.status_code != 200:
+                raise RuntimeError(f"embedding service returned HTTP {resp.status_code}")
+            data = resp.json()
+            embedding = data["data"][0]["embedding"]
+            vec = np.array(embedding, dtype=np.float32)
+            # L2 归一化
+            norm = np.linalg.norm(vec)
+            if norm > 0:
+                vec = vec / norm
+            return vec
+        except Exception as exc:
+            raise RuntimeError("embedding request failed") from exc
+
+    async def encode_async(self, text: str) -> np.ndarray:
+        """异步将文本编码为向量；任何降级都显式失败，禁止零向量入库。"""
+        if not self.available or not text:
+            raise RuntimeError("embedding service unavailable or input is empty")
+        try:
+            async with httpx.AsyncClient() as client:
+                resp = await client.post(
+                    self.api_url,
+                    json={
+                        "model": self.model_name,
+                        "input": text,
+                        "encoding_format": "float",
+                    },
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    timeout=30,
+                )
             if resp.status_code != 200:
                 raise RuntimeError(f"embedding service returned HTTP {resp.status_code}")
             data = resp.json()

@@ -28,8 +28,8 @@ async def verify_match(
     llm = LLMClient.get_instance()
 
     # Score A: 向量余弦
-    query_vec = encoder.encode(query_concept)
-    cand_vec = encoder.encode(candidate_concept)
+    query_vec = await encoder.encode_async(query_concept)
+    cand_vec = await encoder.encode_async(candidate_concept)
     score_a = cosine(query_vec, cand_vec)
 
     if score_a < 0.75:
