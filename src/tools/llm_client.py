@@ -2,6 +2,8 @@
 统一 LLM 客户端 —— 唯一 LLM 通信入口
 所有参数由调用方传入，不预设业务逻辑
 """
+import json
+import logging
 import os
 from typing import Optional, AsyncIterator
 import httpx
@@ -9,10 +11,46 @@ from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
 from src.config.llm_config import LLMConfig
 
+logger = logging.getLogger(__name__)
+
 
 def _clean_proxy_env():
     for key in ("http_proxy", "https_proxy", "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "all_proxy"):
         os.environ.pop(key, None)
+
+
+def parse_json_safe(text: str) -> dict:
+    """安全解析JSON，处理各种边界情况"""
+    if not text or not text.strip():
+        return {}
+    # 尝试提取JSON块
+    text = text.strip()
+    # 处理markdown代码块
+    if text.startswith("```"):
+        lines = text.split("\n")
+        json_lines = []
+        in_block = False
+        for line in lines:
+            if line.strip().startswith("```json") or line.strip() == "```":
+                in_block = not in_block
+                continue
+            if in_block:
+                json_lines.append(line)
+        if json_lines:
+            text = "\n".join(json_lines)
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        # 尝试修复常见问题
+        try:
+            # 移除尾随逗号
+            import re
+            fixed = re.sub(r',\s*}', '}', text)
+            fixed = re.sub(r',\s*]', ']', fixed)
+            return json.loads(fixed)
+        except (json.JSONDecodeError, Exception):
+            logger.warning("Failed to parse JSON response: %s...", text[:200])
+            return {}
 
 
 class LLMClient:
@@ -61,6 +99,12 @@ class LLMClient:
         msgs = [SystemMessage(content=system_prompt)] if system_prompt else []
         msgs.append(HumanMessage(content=query))
         return (await llm.ainvoke(msgs)).content
+
+    async def ainvoke_json(self, query: str, system_prompt: Optional[str] = None,
+                           temperature: float = 0.1, max_tokens: int = 2048) -> dict:
+        """异步调用并解析JSON响应"""
+        raw = await self.ainvoke(query, system_prompt, temperature, max_tokens, json_mode=True)
+        return parse_json_safe(raw)
 
     # ── 流式 ──
 
